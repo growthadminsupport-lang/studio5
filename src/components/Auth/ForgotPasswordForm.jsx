@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import "./Auth.css";
 
 function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -7,45 +8,43 @@ function ForgotPasswordForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: replace with real API call that triggers a reset email
     console.log("Password reset requested for:", email);
     setSent(true);
   };
 
-  if (sent) {
-    return (
-      <div className="auth-form">
-        <h1>Check your email</h1>
-        <p>
-          If an account exists for <strong>{email}</strong>, we've sent a
-          password reset link.
-        </p>
-        <Link to="/login">Back to Login</Link>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="auth-form">
-      <h1>Forgot Password</h1>
-      <p>Enter your email and we'll send you a reset link.</p>
+    <div className="auth-form">
+      <h1>Reset your password</h1>
+      <p className="auth-subtitle">Enter your email and we'll send you a link to reset it.</p>
 
-      <label>
-        Email
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </label>
-
-      <button type="submit">Send Reset Link</button>
+      {sent ? (
+        <div className="auth-success-box">
+          ✅
+          <span>
+            If an account exists for that email, we've sent a password reset
+            link to it. Check your inbox (and spam folder) — the link expires
+            in 1 hour.
+          </span>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <label>
+            <input
+              type="email"
+              placeholder="Email *"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </label>
+          <button type="submit">Send reset link</button>
+        </form>
+      )}
 
       <div className="auth-links">
-        <Link to="/login">Back to Login</Link>
+        <Link to="/login">Back to login</Link>
       </div>
-    </form>
+    </div>
   );
 }
 

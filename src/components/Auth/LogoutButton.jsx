@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 function LogoutButton() {
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("growth_user_email");
-    sessionStorage.removeItem("growth_user_email");
-    // TODO: also call backend to invalidate the session/token if applicable
-    navigate("/login");
+    logout();
+    navigate("/login", { replace: true });
   };
 
   return (

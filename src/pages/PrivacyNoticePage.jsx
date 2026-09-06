@@ -1,0 +1,62 @@
+import { Link } from "react-router-dom";
+import "../components/Auth/Auth.css";
+import "./PrivacyNotice.css";
+
+function PrivacyNoticePage() {
+  return (
+    <div className="auth-page">
+      <div className="privacy-card">
+        <h1>Privacy Notice</h1>
+        <p>
+          GrowTH is a class project (Digital Media Engineering, Khon Kaen
+          University) for tracking child growth, puberty development, and
+          AI-assisted bone age screening. This notice explains what data we
+          collect, why, and how it's handled, in the spirit of Thailand's
+          Personal Data Protection Act (PDPA).
+        </p>
+
+        <h2>What we collect</h2>
+        <ul>
+          <li>Account: full name, email, phone number, hashed password.</li>
+          <li>Child profile: name, sex, date of birth, and your relationship to the child.</li>
+          <li>Growth records: height, weight, and the date measured.</li>
+          <li>Puberty screening answers, as reported by you.</li>
+          <li>Bone-age X-ray images you choose to upload, and any resulting prediction.</li>
+        </ul>
+        <p>
+          We only collect what each feature needs to function (data
+          minimization) — nothing is sold or shared with third parties.
+        </p>
+
+        <h2>How it's used</h2>
+        <p>
+          To calculate growth percentiles/SDS against standard pediatric
+          growth references, compile puberty screening summaries, and (once
+          connected) run bone-age prediction — all shown back to you inside
+          your own account. None of these results are a clinical diagnosis.
+        </p>
+
+        <h2>How it's stored</h2>
+        <p>
+          Data lives in a PostgreSQL database. Passwords are hashed (never
+          stored in plain text). A child's records are only visible to
+          accounts linked to that child as a guardian — not to other users.
+        </p>
+
+        <h2>Your controls</h2>
+        <p>
+          You can edit or delete any growth record, puberty screening, or
+          child profile at any time from within the app. You can delete your
+          entire account from your Profile page, which removes your login
+          and unlinks you from any children's records.
+        </p>
+
+        <Link to="/register" className="privacy-back-link">
+          ← Back to registration
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+export default PrivacyNoticePage;

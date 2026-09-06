@@ -13,7 +13,7 @@ function Footer() {
       </div>
 
       <div className="footer-links">
-        <Link to="/privacy-policy">Privacy Policy</Link>
+        <Link to="/privacy-notice">Privacy Policy</Link>
         <Link to="/terms-of-service">Terms of Service</Link>
         <Link to="/contact">Contact Us</Link>
         <Link to="/references">References</Link>

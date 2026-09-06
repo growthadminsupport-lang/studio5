@@ -9,27 +9,31 @@ import PubertyPage from "./pages/PubertyPage";
 import BoneAgePage from "./pages/BoneAgePage";
 import KnowledgePage from "./pages/KnowledgePage";
 import ProfilePage from "./pages/ProfilePage";
+import PrivacyNoticePage from "./pages/PrivacyNoticePage";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
-      {/* Auth pages — no Navbar/Footer */}
+      {/* Public routes — no login required */}
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
 
-      {/* App pages — wrapped in Navbar/Footer */}
-      <Route element={<MainLayout />}>
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/growth" element={<GrowthPage />} />
-        <Route path="/puberty" element={<PubertyPage />} />
-        <Route path="/bone-age" element={<BoneAgePage />} />
-        <Route path="/knowledge" element={<KnowledgePage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+      {/* Protected routes — require login */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<MainLayout />}>
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/growth" element={<GrowthPage />} />
+          <Route path="/puberty" element={<PubertyPage />} />
+          <Route path="/bone-age" element={<BoneAgePage />} />
+          <Route path="/knowledge" element={<KnowledgePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Route>
       </Route>
     </Routes>
   );
 }
-
 export default App;
