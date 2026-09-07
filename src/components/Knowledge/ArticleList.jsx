@@ -1,78 +1,60 @@
 import { useState } from "react";
+import "./Knowledge.css";
 
 const articles = [
-  {
-    id: 1,
-    title: "Understanding Bone Age Assessment",
-    category: "bone age",
-    snippet: "How bone age is measured and why it matters for growth tracking.",
-    citation: "Source: American Academy of Pediatrics",
-  },
-  {
-    id: 2,
-    title: "Puberty Stages Explained",
-    category: "puberty",
-    snippet: "A guide to the physical stages of puberty in children.",
-    citation: "Source: WHO Child Growth Standards",
-  },
-  {
-    id: 3,
-    title: "Nutrition for Healthy Growth",
-    category: "nutrition",
-    snippet: "Key nutrients that support healthy childhood development.",
-    citation: "Source: UNICEF Nutrition Guidelines",
-  },
+  { id: 1, label: "Article", title: "Navigating Growth Spurts", desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.", category: "growth", icon: "📏", color: "teal" },
+  { id: 2, label: "Guide", title: "Nutrition for Pre-teens", desc: "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.", category: "nutrition", icon: "🍴", color: "mint" },
+  { id: 3, label: "Explainer", title: "Understanding Bone Age", desc: "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.", category: "bone age", icon: "🩹", color: "cream" },
 ];
 
-const categories = ["all", "bone age", "puberty", "nutrition"];
+const categories = ["all", "bone age", "growth", "nutrition"];
 
 function ArticleList() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
   const filtered = articles.filter((a) => {
-    const matchesSearch =
-      a.title.toLowerCase().includes(search.toLowerCase()) ||
-      a.category.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = category === "all" || a.category === category;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="article-section">
+    <div className="knowledge-section">
+      <h2 className="knowledge-heading">Learn</h2>
       <input
         type="text"
         placeholder="Search articles..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="article-search"
+        className="knowledge-search"
       />
 
-      <div className="article-filters">
+      <div className="knowledge-filters">
         {categories.map((cat) => (
           <button
             key={cat}
             className={category === cat ? "active" : ""}
             onClick={() => setCategory(cat)}
           >
-            {cat}
+            {cat === "all" ? "All" : cat.charAt(0).toUpperCase() + cat.slice(1)}
           </button>
         ))}
       </div>
 
-      <div className="article-grid">
-        {filtered.length === 0 ? (
-          <p>No articles found.</p>
-        ) : (
-          filtered.map((a) => (
-            <div key={a.id} className="article-card">
+      <div className="knowledge-grid">
+        {filtered.map((a) => (
+          <div key={a.id} className="knowledge-card">
+            <div className={`knowledge-icon-tile ${a.color}`}>{a.icon}</div>
+            <div className="knowledge-card-body">
+              <span className="knowledge-label">{a.label}</span>
               <h3>{a.title}</h3>
-              <p>{a.snippet}</p>
-              <p className="article-citation">{a.citation}</p>
-              <button>Read More</button>
+              <p>{a.desc}</p>
+              <p className="knowledge-citation">Source: reviewed medical references</p>
+              <button className="knowledge-readmore">Read More</button>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );

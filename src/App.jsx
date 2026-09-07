@@ -11,12 +11,14 @@ import KnowledgePage from "./pages/KnowledgePage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivacyNoticePage from "./pages/PrivacyNoticePage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import NotificationsPage from "./pages/NotificationsPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
     <Routes>
       {/* Public routes — no login required */}
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -31,6 +33,7 @@ function App() {
           <Route path="/bone-age" element={<BoneAgePage />} />
           <Route path="/knowledge" element={<KnowledgePage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
         </Route>
       </Route>
     </Routes>

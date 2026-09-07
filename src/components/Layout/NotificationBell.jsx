@@ -1,55 +1,39 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-
-const initialNotifications = [
-  { id: 1, text: "Bone age result is ready for review.", read: false },
-  { id: 2, text: "New article added: Understanding Puberty Stages.", read: false },
-  { id: 3, text: "Growth measurement reminder for this month.", read: true },
-];
+import { useNotifications } from "../../context/NotificationsContext";
+import "./Notifications.css";
 
 function NotificationBell() {
-  const [notifications, setNotifications] = useState(initialNotifications);
   const [open, setOpen] = useState(false);
-
+  const { notifications, markAsRead, clearAll } = useNotifications();
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAsRead = (id) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
-  };
-
-  const clearAll = () => {
-    setNotifications([]);
-  };
-
   return (
-    <div className="notification-bell">
-      <button onClick={() => setOpen(!open)} className="bell-button">
+    <div className="profile-menu">
+      <button className="bell-button" onClick={() => setOpen(!open)}>
         🔔 {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
       </button>
 
       {open && (
         <div className="notification-dropdown">
           {notifications.length === 0 ? (
-            <p className="empty-state">No notifications</p>
+            <p className="empty-state">No notifications yet</p>
           ) : (
-            <ul>
-              {notifications.map((n) => (
-                <li key={n.id} className={n.read ? "read" : "unread"}>
-                  <span>{n.text}</span>
-                  {!n.read && (
-                    <button onClick={() => markAsRead(n.id)}>Mark as read</button>
-                  )}
-                </li>
-              ))}
-            </ul>
+            notifications.slice(0, 3).map((n) => (
+              <div key={n.id} className="notification-card">
+                <div className="notification-text">
+                  <h4>{n.title}</h4>
+                  <p>{n.description}</p>
+                  <span className="notification-time">{n.time}</span>
+                </div>
+                <button className="notification-close" onClick={() => markAsRead(n.id)}>
+                  ✕
+                </button>
+              </div>
+            ))
           )}
-
           <div className="dropdown-actions">
-            <Link to="/notifications" onClick={() => setOpen(false)}>
-              View All
-            </Link>
+            <Link to="/notifications" onClick={() => setOpen(false)}>View All</Link>
             <button onClick={clearAll}>Clear All</button>
           </div>
         </div>

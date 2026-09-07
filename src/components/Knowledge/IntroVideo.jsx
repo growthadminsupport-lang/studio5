@@ -1,19 +1,10 @@
+import "./Knowledge.css";
+
 function IntroVideo() {
   return (
-    <div className="intro-video-section">
-      <h2>Introduction to GrowTH</h2>
-      <video
-        controls
-        width="100%"
-        poster="/video-poster.jpg"
-      >
-        <source src="/intro-video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-      <p>
-        Learn the purpose of GrowTH, its main features, and how to use the
-        platform.
-      </p>
+    <div className="intro-video-block">
+      <button className="intro-play-button" aria-label="Play introduction video">▶</button>
+      <p className="intro-video-caption">Promo video — coming soon</p>
     </div>
   );
 }
