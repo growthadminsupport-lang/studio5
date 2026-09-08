@@ -6,7 +6,7 @@ export default function TermsPage() {
     <div className="legal-page">
       <div className="legal-page__inner">
         <Link to="/register" className="legal-page__back">
-          &larr; Back
+          &larr; Back to Registration
         </Link>
 
         <h1>Terms of Service</h1>

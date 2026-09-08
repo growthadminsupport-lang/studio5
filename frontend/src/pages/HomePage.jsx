@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
 import dashboardPreview from "../assets/logo_dashboard.png";
 import IntroVideo from "../components/Layout/IntroVideo";
+import { useTheme } from "../context/ThemeContext";
 import "./HomePage.css";
 
 /**
@@ -11,12 +11,7 @@ import "./HomePage.css";
  * Once a user logs in, redirect them to the real DashboardPage instead.
  */
 export default function HomePage() {
-  const [isDark, setIsDark] = useState(false);
-
-  const toggleTheme = () => {
-    setIsDark((prev) => !prev);
-    document.documentElement.classList.toggle("dark");
-  };
+  const { theme, toggleTheme } = useTheme();
 
   const articles = [
     {
@@ -218,7 +213,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="footer__links">
-            <Link to="/privacy">Privacy Policy</Link>
+            <Link to="/privacy-notice">Privacy Policy</Link>
             <Link to="/contact">Contact Support</Link>
           </div>
         </div>
