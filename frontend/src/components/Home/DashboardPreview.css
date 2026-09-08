@@ -1,13 +1,14 @@
 .dp {
-  background: #fdf8ee;
+  background: var(--color-card);
   border: 1px solid var(--color-border);
   border-radius: 14px;
   padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 10px;
-  width: 100%
+  gap: 16px;
+  font-size: 12px;
+  width: 100%;
+  min-height: 220px;
 }
 
 .dp__top {
