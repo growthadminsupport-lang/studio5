@@ -14,12 +14,20 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
 import HomePage from "./pages/HomePage";
 import TermsPage from "./pages/TermsPage";
+import PublicLayout from "./components/PublicLayout/PublicLayout";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (
     <Routes>
       {/* Public routes — no login required */}
-      <Route path="/" element={<HomePage />} />
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Route>
+
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />

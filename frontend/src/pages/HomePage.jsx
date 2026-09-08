@@ -42,41 +42,6 @@ export default function HomePage() {
 
   return (
     <div className="home">
-      {/* ---------- Navbar ---------- */}
-      <header className="navbar">
-        <div className="navbar__inner">
-          <Link to="/" className="navbar__brand">
-            <img src={logo} alt="GrowTH" className="navbar__logo" />
-            <span className="navbar__brand-text">GrowTH</span>
-          </Link>
-
-          <nav className="navbar__links">
-            <a href="#home" className="navbar__link navbar__link--active">
-              Home
-            </a>
-            <a href="#about" className="navbar__link">
-              About
-            </a>
-            <a href="#contact" className="navbar__link">
-              Contact
-            </a>
-          </nav>
-
-          <div className="navbar__actions">
-            <Link to="/login" className="btn btn--primary btn--sm">
-              Login / Sign Up
-            </Link>
-            <button
-              type="button"
-              className="icon-btn"
-              aria-label="Toggle dark mode"
-              onClick={toggleTheme}
-            >
-              <MoonIcon />
-            </button>
-          </div>
-        </div>
-      </header>
 
       <main>
         {/* ---------- Hero ---------- */}
@@ -201,23 +166,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* ---------- Footer ---------- */}
-      <footer id="contact" className="footer">
-        <div className="footer__inner">
-          <div>
-            <h3>GrowTH</h3>
-            <p>Faculty of Engineering, Khon Kaen University – Digital Media Engineering Department</p>
-            <p className="footer__disclaimer">
-              © 2026 GrowTH. Medical Disclaimer: this platform is for tracking
-              purposes only and does not replace professional medical advice.
-            </p>
-          </div>
-          <div className="footer__links">
-            <Link to="/privacy-notice">Privacy Policy</Link>
-            <Link to="/contact">Contact Support</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

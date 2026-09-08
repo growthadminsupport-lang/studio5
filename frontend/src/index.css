@@ -32,3 +32,23 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+:root {
+  --color-bg: #f4f6fb;
+  --color-card: #ffffff;
+  --color-primary: #00695c;
+  --color-primary-hover: #00544a;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-border: #d1d5db;
+}
+
+[data-theme="dark"] {
+  --color-bg: #0b1120;
+  --color-card: #111a2e;
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #14b8a6;
+  --color-text: #e5e7eb;
+  --color-text-muted: #94a3b8;
+  --color-border: #1f2a3d;
+}

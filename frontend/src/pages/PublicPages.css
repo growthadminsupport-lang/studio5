@@ -1,0 +1,91 @@
+.public-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  color: var(--color-text);
+}
+
+.public-page__eyebrow {
+  color: var(--color-primary);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.public-page h1 {
+  margin: 8px 0 16px;
+  font-size: 32px;
+}
+
+.public-page__intro {
+  color: var(--color-text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 700px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.about-card,
+.contact-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.about-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.about-card p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.about-origin {
+  background: rgba(45, 212, 191, 0.08);
+  border: 1px solid var(--color-primary);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.about-origin h3 {
+  margin: 0 0 8px;
+}
+
+.about-origin p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.contact-row {
+  display: flex;
+  gap: 14px;
+  padding: 12px 0;
+}
+
+.contact-row h4 {
+  margin: 0 0 4px;
+}
+
+.contact-row p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+}
