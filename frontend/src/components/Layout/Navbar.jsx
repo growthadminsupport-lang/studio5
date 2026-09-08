@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
 import NotificationBell from "./NotificationBell";
 import ProfileMenu from "./ProfileMenu";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo_dashboard.png";
 import "./Navbar.css";
 
 function Navbar() {
@@ -10,7 +10,7 @@ function Navbar() {
     <nav className="navbar">
       <Link to="/dashboard" className="navbar-logo">
         <img src={logo} alt="" />
-        <span>GrowTH</span>
+        
       </Link>
 
       <div className="navbar-links">
