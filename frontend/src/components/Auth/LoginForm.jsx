@@ -1,40 +1,38 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import logo from "../../assets/logo.png";
+import "./Auth.css";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
-
-    // TODO: replace with real API call to your backend
     console.log("Login attempt:", { email, password, remember });
 
-    // Fake "success" for now so you can see the flow work
-    if (remember) {
-      localStorage.setItem("growth_user_email", email);
-    } else {
-      sessionStorage.setItem("growth_user_email", email);
-    }
-
-    navigate("/dashboard");
+    login(email, remember);
+    navigate("/dashboard", { replace: true });
   };
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      <h1>Sign In</h1>
+      <img src={logo} alt="GrowTH" className="auth-logo" />
+      <h1>Welcome back</h1>
+      <p className="auth-subtitle">Log in to track your child's growth</p>
 
       {error && <p className="auth-error">{error}</p>}
 
       <label>
-        Email
         <input
           type="email"
+          placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -42,29 +40,35 @@ function LoginForm() {
       </label>
 
       <label>
-        Password
         <input
           type="password"
+          placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
       </label>
 
-      <label className="checkbox-row">
-        <input
-          type="checkbox"
-          checked={remember}
-          onChange={(e) => setRemember(e.target.checked)}
-        />
-        Remember me
-      </label>
+      <div className="remember-forgot-row">
+        <label className="checkbox-row remember-me">
+          <input
+            type="checkbox"
+            checked={remember}
+            onChange={(e) => setRemember(e.target.checked)}
+          />
+          <span>Remember me</span>
+        </label>
+        <Link to="/forgot-password" className="forgot-link-inline">
+          Forgot password?
+        </Link>
+      </div>
 
       <button type="submit">Log In</button>
 
       <div className="auth-links">
-        <Link to="/forgot-password">Forgot password?</Link>
-        <Link to="/register">Create an account</Link>
+        <span>
+          New here? <Link to="/register">Create an account</Link>
+        </span>
       </div>
     </form>
   );
