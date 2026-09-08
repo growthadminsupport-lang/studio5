@@ -46,9 +46,6 @@ export default function HomePage() {
       <main>
         {/* ---------- Hero ---------- */}
         <section id="home" className="hero">
-          <div className="hero__plus" aria-hidden="true">
-            <PlusIcon />
-          </div>
 
           <img src={logo} alt="" className="hero__mascot" aria-hidden="true" />
 

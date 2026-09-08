@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNotifications } from "../../context/NotificationsContext";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo_dashboard.png";
 import "./Navbar.css";
  
 function Navbar() {
@@ -37,7 +37,6 @@ function Navbar() {
       <div className="app-navbar__inner">
         <Link to="/dashboard" className="app-navbar__brand">
           <img src={logo} alt="GrowTH" className="app-navbar__logo" />
-          <span>GrowTH</span>
         </Link>
  
         <nav className="app-navbar__links">

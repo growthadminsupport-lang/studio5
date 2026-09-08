@@ -53,13 +53,13 @@
 }
 
 .btn--outline {
-  background: var(--color-card);
-  color: var(--color-primary);
+  background: transparent;
+  color: var(--color-text);
   border-color: var(--color-primary);
 }
 
 .btn--outline:hover {
-  background: var(--color-bg);
+  background: rgba(45, 212, 191, 0.1);
 }
 
 /* ---------- Hero ---------- */
@@ -68,13 +68,6 @@
   background: var(--color-bg);
   text-align: center;
   padding: 72px 24px 88px;
-}
-
-.hero__plus {
-  position: absolute;
-  top: 64px;
-  right: 12%;
-  color: #f5a524;
 }
 
 .hero__mascot {
