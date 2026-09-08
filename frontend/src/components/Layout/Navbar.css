@@ -32,7 +32,11 @@
 .app-navbar__brand span {
   font-weight: 800;
   font-size: 1.15rem;
-  background: linear-gradient(90deg, #2f6fed, var(--color-primary));
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-primary-hover)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
