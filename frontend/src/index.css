@@ -41,6 +41,8 @@ a:hover {
   --color-text: #1f2937;
   --color-text-muted: #6b7280;
   --color-border: #d1d5db;
+  --color-mint: #b9f3e4;
+  --color-cream: #fdf3d7;
 }
 
 [data-theme="dark"] {
@@ -51,4 +53,6 @@ a:hover {
   --color-text: #e5e7eb;
   --color-text-muted: #94a3b8;
   --color-border: #1f2a3d;
+  --color-mint: #134e4a;
+  --color-cream: #422006;
 }

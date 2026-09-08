@@ -1,20 +1,9 @@
 .home {
-  --color-primary: #0f6d5e;
-  --color-primary-dark: #0b5548;
-  --color-mint: #b9f3e4;
-  --color-cream: #fdf3d7;
-  --color-bg-tint: #f4f6fb;
-  --color-text: #1b2430;
-  --color-text-muted: #667085;
-  --color-border: #e6e9f0;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --radius-pill: 999px;
-
   color: var(--color-text);
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  background: var(--color-bg);
 }
 
 .home * {
@@ -26,71 +15,23 @@
   color: inherit;
 }
 
-/* ---------- Navbar ---------- */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: #fff;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.navbar__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 14px 32px;
-  display: flex;
-  align-items: center;
-  gap: 40px;
-}
-
-.navbar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-right: auto;
-}
-
-.navbar__logo {
-  height: 32px;
-}
 
 
-.navbar__links {
-  display: flex;
-  gap: 32px;
-}
 
-.navbar__link {
-  font-weight: 500;
-  color: var(--color-text-muted);
-  padding-bottom: 4px;
-  border-bottom: 2px solid transparent;
-}
+
+
+
+
+
+
+
+
 
 .navbar__link--active {
   color: var(--color-text);
   border-bottom-color: var(--color-primary);
 }
 
-.navbar__actions {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-}
 
 .icon-btn:hover {
   background: var(--color-bg-tint);

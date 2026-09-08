@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
-import dashboardPreview from "../assets/logo_dashboard.png";
+import DashboardPreview from "../components/Home/DashboardPreview";
 import IntroVideo from "../components/Layout/IntroVideo";
 import { useTheme } from "../context/ThemeContext";
 import "./HomePage.css";
@@ -83,15 +83,7 @@ export default function HomePage() {
               <span className="dot dot--green" />
             </div>
             <div className="browser-frame__body">
-              {dashboardPreview ? (
-                <img
-                  src={dashboardPreview}
-                  alt="GrowTH dashboard preview"
-                  className="browser-frame__image"
-                />
-              ) : (
-                <DashboardPlaceholder />
-              )}
+              <DashboardPreview />
             </div>
           </div>
         </section>
