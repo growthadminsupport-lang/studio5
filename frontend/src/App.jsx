@@ -13,6 +13,7 @@ import PrivacyNoticePage from "./pages/PrivacyNoticePage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
 import HomePage from "./pages/HomePage";
+import TermsPage from "./pages/TermsPage";
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
-
+      <Route path="/terms" element={<TermsPage />} />
+      
       {/* Protected routes — require login */}
       <Route element={<ProtectedRoute />}>
         <Route element={<MainLayout />}>
