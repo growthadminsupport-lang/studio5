@@ -130,3 +130,8 @@
 .public-layout__content {
   flex: 1;
 }
+
+.public-navbar__logo-full {
+  height: 40px;
+  width: auto;
+}

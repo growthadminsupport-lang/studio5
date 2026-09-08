@@ -1,6 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/logo_dashboard.png";
 import "./PublicLayout.css";
 
 function PublicNavbar() {
@@ -10,8 +10,7 @@ function PublicNavbar() {
     <header className="public-navbar">
       <div className="public-navbar__inner">
         <Link to="/" className="public-navbar__brand">
-          <img src={logo} alt="GrowTH" />
-          <span>GrowTH</span>
+          <img src={logo} alt="GrowTH"className="public-navbar__logo-full"  />
         </Link>
 
         <nav className="public-navbar__links">

@@ -1,5 +1,5 @@
 .app-footer {
-  background: repeating-linear-gradient(135deg, #b9f3e4 0, #b9f3e4 10px, #d9f7ec 10px, #d9f7ec 20px);
+  background: repeating-linear-gradient(135deg, var(--color-mint) 0, var(--color-mint) 10px, rgba(45, 212, 191, 0.15) 10px, rgba(45, 212, 191, 0.15) 20px);
   margin-top: 60px;
 }
 
@@ -14,48 +14,48 @@
 
 .app-footer__col h3 {
   margin: 0 0 10px;
-  color: #0b5548;
+  color: var(--color-primary);
 }
 
 .app-footer__col h4 {
   margin: 0 0 12px;
-  color: #1b2430;
+  color: var(--color-text);
   font-size: 0.95rem;
 }
 
 .app-footer__col p {
   margin: 0;
-  color: #344054;
+  color: var(--color-text);
   font-size: 0.88rem;
   max-width: 340px;
 }
 
 .app-footer__col a {
   display: block;
-  color: #344054;
+  color: var(--color-text);
   text-decoration: none;
   font-size: 0.88rem;
   margin-bottom: 10px;
 }
 .app-footer__col a:hover {
-  color: #0b5548;
+  color: var(--color-primary);
 }
 
 .app-footer__bottom {
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 24px 32px;
-  border-top: 1px solid rgba(11, 85, 72, 0.15);
+  border-top: 1px solid var(--color-border);
 }
 
 .app-footer__bottom p {
   margin: 4px 0;
   font-size: 0.8rem;
-  color: #344054;
+  color: var(--color-text);
 }
 
 .app-footer__disclaimer {
-  color: #52606d;
+  color: var(--color-text-muted);
   max-width: 720px;
 }
 

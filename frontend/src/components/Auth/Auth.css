@@ -154,9 +154,9 @@
    (.auth-info) and RegisterForm (.terms-row). */
 
 .auth-info {
-  background: #f0fbf7;
-  color: #0b5548;
-  border: 1px solid #b9f3e4;
+  background: rgba(45, 212, 191, 0.1);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
   border-radius: 10px;
   padding: 10px 14px;
   font-size: 0.85rem;
@@ -167,17 +167,12 @@
   align-items: flex-start;
   gap: 8px;
   font-size: 0.82rem;
-  color: #667085;
+  color: var(--color-text-muted);
   line-height: 1.4;
 }
 
-.terms-row input[type="checkbox"] {
-  margin-top: 3px;
-  flex-shrink: 0;
-}
-
 .terms-row a {
-  color: #0f6d5e;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
 }

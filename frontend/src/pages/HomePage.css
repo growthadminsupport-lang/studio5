@@ -395,18 +395,18 @@
 
 .footer h3 {
   margin: 0 0 8px;
-  color: #0b5548;
+  color: var(--color-primary);
 }
 
 .footer p {
   margin: 4px 0;
-  color: #1b2430;
+  color: var(--color-text);
   font-size: 0.9rem;
   max-width: 480px;
 }
 
 .footer__disclaimer {
-  color: #52606d;
+  color: var(--color-text-muted);
   font-size: 0.8rem;
 }
 
@@ -414,7 +414,7 @@
   display: flex;
   gap: 24px;
   font-weight: 600;
-  color: #0b5548;
+  color: var(--color-primary);
 }
 
 /* ---------- Responsive ---------- */
