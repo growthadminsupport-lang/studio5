@@ -15,9 +15,12 @@ function LoginForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
-    console.log("Login attempt:", { email, password, remember });
 
-    login(email, remember);
+    const result = login(email, password, remember);
+    if (!result.success) {
+      setError(result.error);
+      return;
+    }
     navigate("/dashboard", { replace: true });
   };
 
