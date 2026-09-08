@@ -109,7 +109,24 @@
   font-size: 14px;
   white-space: nowrap;
 }
-
 .public-footer__links a {
-  color: var(--color-text);
+  color: #eafff6;
+}
+
+.public-footer h3 {
+  color: #5eead4;
+}
+
+.public-footer p {
+  color: rgba(234, 255, 246, 0.75);
+}
+
+.public-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.public-layout__content {
+  flex: 1;
 }

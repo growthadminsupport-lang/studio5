@@ -7,7 +7,7 @@
   flex-direction: column;
   gap: 10px;
   font-size: 10px;
-  max-width: 340px;
+  width: 100%
 }
 
 .dp__top {

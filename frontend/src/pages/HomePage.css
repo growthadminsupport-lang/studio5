@@ -16,17 +16,6 @@
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
 .navbar__link--active {
   color: var(--color-text);
   border-bottom-color: var(--color-primary);
@@ -144,6 +133,7 @@
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 10px;
+  color: var(--color-text);
 }
 
 .section__heading p {
@@ -159,9 +149,11 @@
 
 /* ---------- Browser mockup / dashboard preview ---------- */
 .browser-frame {
-  background: #f4f6fb;
+  background: var(--color-bg);
   border-radius: var(--radius-lg);
   padding: 16px;
+  max-width: 480px;
+  margin: 0 auto;
   box-shadow: 0 20px 40px -20px rgba(15, 30, 60, 0.25);
 }
 
