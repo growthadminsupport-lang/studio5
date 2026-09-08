@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../assets/logo_dashboard.png";
+import logo from "../assets/logo.png";
 import dashboardPreview from "../assets/logo_dashboard.png";
+import IntroVideo from "../components/Layout/IntroVideo";
 import "./HomePage.css";
 
 /**
@@ -51,6 +52,7 @@ export default function HomePage() {
         <div className="navbar__inner">
           <Link to="/" className="navbar__brand">
             <img src={logo} alt="GrowTH" className="navbar__logo" />
+            <span className="navbar__brand-text">GrowTH</span>
           </Link>
 
           <nav className="navbar__links">
@@ -170,12 +172,9 @@ export default function HomePage() {
 
         {/* ---------- Promo video ---------- */}
         <section className="section section--white">
-          <div className="video-promo">
-            <button type="button" className="video-promo__play" aria-label="Play promo video">
-              <PlayIcon />
-            </button>
-            <span className="video-promo__caption">Promo video — coming soon</span>
-          </div>
+          {/* Pass a real src once the intro video is hosted, e.g.
+              <IntroVideo src="/videos/growth-intro.mp4" poster={dashboardPreview} /> */}
+          <IntroVideo />
         </section>
 
         {/* ---------- Knowledge ---------- */}
@@ -265,13 +264,6 @@ function PlusIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="M12 5v14M5 12h14" strokeLinecap="round" />
-    </svg>
-  );
-}
-function PlayIcon() {
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z" />
     </svg>
   );
 }
