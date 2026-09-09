@@ -13,10 +13,9 @@ import "./ProfileMenu.css";
 function ProfileMenu() {
   const [open, setOpen] = useState(false);
 
-  const { logout, user } = useAuth();
+  const { logout, email } = useAuth();
   const navigate = useNavigate();
 
-  const email = user?.email || "";
   const initial = email ? email.charAt(0).toUpperCase() : "U";
 
   const handleLogout = () => {
@@ -45,7 +44,6 @@ function ProfileMenu() {
 
       {open && (
         <div className="profile-dropdown">
-
           <Link
             to="/profile"
             onClick={() => setOpen(false)}
@@ -76,7 +74,6 @@ function ProfileMenu() {
             <LogOut size={17} strokeWidth={1.8} />
             <span>Log out</span>
           </button>
-
         </div>
       )}
     </div>
@@ -84,3 +81,4 @@ function ProfileMenu() {
 }
 
 export default ProfileMenu;
+

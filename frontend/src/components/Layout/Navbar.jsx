@@ -26,8 +26,8 @@ function Navbar() {
       </div>
 
       <div className="navbar-actions">
-        <NotificationBell />
         <ThemeToggle />
+        <NotificationBell />
         <ProfileMenu />
       </div>
     </nav>

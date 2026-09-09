@@ -110,25 +110,19 @@
 
 
 .theme-button {
-  width: 38px;
-  height: 38px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
+  width: 38px;
+  height: 38px;
+  padding: 0;
   background: transparent;
-  border: 1px solid #d1d5db;
-  border-radius: 50%;
-
+  border: none;
   color: #004640;
   cursor: pointer;
-
-  transition: all 0.2s ease;
 }
 
 .theme-button:hover {
-  border-color: #00685f;
   color: #00685f;
 }
 
