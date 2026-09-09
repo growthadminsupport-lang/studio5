@@ -80,7 +80,7 @@ function ArticleList() {
               <p>{a.desc}</p>
               <p className="knowledge-citation">Source: reviewed medical references</p>
               <Link
-                to={`/knowledge/${a.slug}`}
+                to="/knowledge/navigating-growth-spurts"
                 className="knowledge-readmore"
               >
                 Read More
