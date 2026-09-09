@@ -47,32 +47,22 @@
 }
 
 .navbar-links a {
-
-  color: #00685f;
-
+  color: var(--color-text-muted);
   font-weight: 500;
-
   font-size: 15px;
-
 }
 
-.navbar-links a:hover,
-
-.navbar-links a:active,
-
-.navbar-links a.active {
-
+.navbar-links a:hover {
   color: #00685f;
-
 }
 
 .navbar-links a.active {
-
+  color: #00685f;
   border-bottom: 2px solid #00685f;
-
   padding-bottom: 4px;
-
 }
+
+
 
 .navbar-divider {
 
