@@ -10,6 +10,7 @@ import BoneAgePage from "./pages/BoneAgePage";
 import KnowledgePage from "./pages/KnowledgePage";
 import ProfilePage from "./pages/ProfilePage";
 import PrivacyNoticePage from "./pages/PrivacyNoticePage";
+import TermsOfUsePage from "./pages/TermsOfUsePage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
 
@@ -22,6 +23,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
+      <Route path="/termsofusepage" element={<TermsOfUsePage />} />
 
       {/* App pages — wrapped in Navbar/Footer */}
       <Route element={<ProtectedRoute />}>
