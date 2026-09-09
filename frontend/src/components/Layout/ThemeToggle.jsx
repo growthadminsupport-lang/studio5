@@ -11,12 +11,13 @@ function ThemeToggle() {
       aria-label="Toggle theme"
     >
       {theme === "light" ? (
-        <Sun size={21} strokeWidth={1.8} />
-      ) : (
         <Moon size={21} strokeWidth={1.8} />
+      ) : (
+        <Sun size={21} strokeWidth={1.8} />
       )}
     </button>
   );
 }
 
 export default ThemeToggle;
+
