@@ -1,10 +1,38 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./Knowledge.css";
 
 const articles = [
-  { id: 1, label: "Article", title: "Navigating Growth Spurts", desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.", category: "growth", icon: "📏", color: "teal" },
-  { id: 2, label: "Guide", title: "Nutrition for Pre-teens", desc: "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.", category: "nutrition", icon: "🍴", color: "mint" },
-  { id: 3, label: "Explainer", title: "Understanding Bone Age", desc: "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.", category: "bone age", icon: "🩹", color: "cream" },
+  {
+    id: 1,
+    slug: "navigating-growth-spurts",
+    label: "Article",
+    title: "Navigating Growth Spurts",
+    desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.",
+    category: "growth",
+    icon: "📏",
+    color: "teal",
+  },
+  {
+    id: 2,
+    slug: "nutrition-for-pre-teens",
+    label: "Guide",
+    title: "Nutrition for Pre-teens",
+    desc: "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.",
+    category: "nutrition",
+    icon: "🍴",
+    color: "mint",
+  },
+  {
+    id: 3,
+    slug: "understanding-bone-age",
+    label: "Explainer",
+    title: "Understanding Bone Age",
+    desc: "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.",
+    category: "bone age",
+    icon: "🩹",
+    color: "cream",
+  },
 ];
 
 const categories = ["all", "bone age", "growth", "nutrition"];
@@ -51,9 +79,14 @@ function ArticleList() {
               <h3>{a.title}</h3>
               <p>{a.desc}</p>
               <p className="knowledge-citation">Source: reviewed medical references</p>
-              <button className="knowledge-readmore">Read More</button>
-            </div>
+              <Link
+                to={`/knowledge/${a.slug}`}
+                className="knowledge-readmore"
+              >
+                Read More
+              </Link>
           </div>
+        </div>
         ))}
       </div>
     </div>

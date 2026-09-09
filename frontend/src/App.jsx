@@ -13,6 +13,7 @@ import PrivacyNoticePage from "./pages/PrivacyNoticePage";
 import TermsOfUsePage from "./pages/TermsOfUsePage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
+import ArticlePage from "./pages/ArticlePage";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="/knowledge" element={<KnowledgePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/knowledge/:slug" element={<ArticlePage />} />
         </Route>
       </Route>
     </Routes>
