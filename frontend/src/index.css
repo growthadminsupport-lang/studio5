@@ -8,18 +8,32 @@
   --color-border: #d1d5db;
   --color-success-bg: #eaf7ec;
   --color-success-text: #1c7a34;
+
   --radius: 16px;
   --radius-input: 12px;
+
   --font-family: "Segoe UI", Roboto, sans-serif;
+
+  /* Global sizing */
+  --font-size-base: 17px;
+  --font-size-small: 14px;
+  --font-size-body: 16px;
+  --font-size-heading: 32px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  font-size: 17px;
+}
+
 body {
   margin: 0;
   font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -31,4 +45,12 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
 }

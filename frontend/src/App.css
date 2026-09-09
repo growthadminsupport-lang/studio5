@@ -182,3 +182,15 @@
     border-right-color: var(--border);
   }
 }
+
+[data-theme="dark"] {
+  --color-bg: #111827;
+  --color-card: #1f2937;
+  --color-primary: #2aa89a;
+  --color-primary-hover: #36b9aa;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+  --color-success-bg: #163b25;
+  --color-success-text: #6ee7b7;
+}

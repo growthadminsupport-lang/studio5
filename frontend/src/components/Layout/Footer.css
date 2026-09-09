@@ -1,11 +1,18 @@
 .site-footer {
   background: #eaf7f0;
-  padding: 24px 48px;
+  padding: 24px 40px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
   gap: 24px;
   flex-wrap: wrap;
+  text-align: center;
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .footer-left h4 {
@@ -23,6 +30,8 @@
 
 .footer-right {
   display: flex;
+  justify-content: center;
+  align-items: center;
   gap: 24px;
   font-size: 14px;
   white-space: nowrap;
@@ -33,4 +42,10 @@
     flex-direction: column;
     padding: 20px;
   }
+
+  .footer-right {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
 }
+
