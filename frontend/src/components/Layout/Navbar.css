@@ -46,6 +46,7 @@
 
 }
 
+
 .navbar-links a {
   color: var(--color-text-muted);
   font-weight: 500;
@@ -54,6 +55,7 @@
 
 .navbar-links a:hover {
   color: #00685f;
+  text-decoration: none;
 }
 
 .navbar-links a.active {
@@ -61,6 +63,8 @@
   border-bottom: 2px solid #00685f;
   padding-bottom: 4px;
 }
+
+
 
 
 
