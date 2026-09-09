@@ -49,8 +49,8 @@ function RegisterForm() {
       <label className="checkbox-row">
         <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />
         <span>
-          I agree to the {" "} 
-          <Link to="/termofusepage">terms of use</Link> and
+          I agree to the {" "}
+          <Link to="/terms">terms of use</Link>{" "} and {" "}
           <Link to="/privacy-notice">privacy notice</Link>
         </span>
       </label>

@@ -23,7 +23,7 @@ function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
-      <Route path="/termsofusepage" element={<TermsOfUsePage />} />
+      <Route path="/terms" element={<TermsOfUsePage />} />
 
       {/* App pages — wrapped in Navbar/Footer */}
       <Route element={<ProtectedRoute />}>
