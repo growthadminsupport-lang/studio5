@@ -6,7 +6,7 @@
 
   justify-content: space-between;
 
-  padding: 14px 40px;
+  padding: 10px 40px;
 
   background: white;
 
@@ -32,17 +32,14 @@
 
 .navbar-logo img {
 
-  height: 32px;
+  height: 48px;
 
 }
 
 .navbar-links {
 
   display: flex;
-
-  align-items: center;
-
-  gap: 28px;
+  gap: 24px;
 
 }
 
