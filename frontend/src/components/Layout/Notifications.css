@@ -1,33 +1,56 @@
 .bell-button {
   position: relative;
-  background: none;
-  border: none;
-  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  color: #004640;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bell-button:hover {
+  border-color: #00685f;
+  color: #00685f;
 }
 
 .badge {
   position: absolute;
-  top: -4px;
-  right: -6px;
+  top: -3px;
+  right: -3px;
+  min-width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #dc2626;
   color: white;
   font-size: 10px;
-  padding: 1px 5px;
+  font-weight: 600;
   border-radius: 999px;
+}
+
+/* Notification dropdown */
+
+.notification-menu {
+  position: relative;
 }
 
 .notification-dropdown {
   position: absolute;
   right: 0;
-  top: 44px;
+  top: 48px;
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
   width: 320px;
   padding: 12px;
-  z-index: 10;
+  z-index: 100;
 }
 
 .notification-card {
@@ -61,14 +84,21 @@
 }
 
 .notification-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: white;
   color: #dc2626;
   border: 1px solid #dc2626;
   border-radius: 50%;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
-  line-height: 1;
+  padding: 0;
+}
+
+.notification-close:hover {
+  background: #fef2f2;
 }
 
 .dropdown-actions {
@@ -76,6 +106,16 @@
   justify-content: space-between;
   font-size: 13px;
   padding-top: 6px;
+}
+
+.dropdown-actions a {
+  color: #00685f;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.dropdown-actions a:hover {
+  text-decoration: underline;
 }
 
 .dropdown-actions button {
@@ -98,3 +138,4 @@
 .notification-card.full {
   max-width: 700px;
 }
+

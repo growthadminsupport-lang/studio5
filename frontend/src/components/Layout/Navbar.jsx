@@ -4,6 +4,7 @@ import NotificationBell from "./NotificationBell";
 import ProfileMenu from "./ProfileMenu";
 import logo from "../../assets/logo_dashboard.png";
 import "./Navbar.css";
+import ThemeToggle from "./ThemeToggle";
 
 function Navbar() {
   return (
@@ -26,6 +27,7 @@ function Navbar() {
 
       <div className="navbar-actions">
         <NotificationBell />
+        <ThemeToggle />
         <ProfileMenu />
       </div>
     </nav>
