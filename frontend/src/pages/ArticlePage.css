@@ -1,54 +1,168 @@
 .article-page {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 40px 24px 60px;
 }
 
-.article-back-link {
-  display: inline-block;
-  margin-bottom: 30px;
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.article-category {
-  display: block;
-  margin-bottom: 10px;
+/* Article / Guide / Explainer */
+.article-type {
   color: var(--color-primary);
   font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 12px;
 }
 
-.article-page h1 {
-  margin: 0 0 30px;
-  color: var(--color-text);
-  font-size: 36px;
+/* White article box */
+.article-card {
+  background: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  padding: 48px;
 }
 
-.article-content {
+.article-card h1 {
+  margin: 0 0 16px;
   color: var(--color-text);
+  font-size: 38px;
+  line-height: 1.2;
+}
+
+.article-description {
+  color: var(--color-text-muted);
+  font-size: 17px;
   line-height: 1.7;
-  font-size: 16px;
+  margin: 0 0 36px;
 }
 
-.article-content h2 {
-  margin-top: 30px;
-  margin-bottom: 10px;
+.article-section {
+  margin-top: 36px;
+}
+
+.article-section h2,
+.article-sources h2 {
   color: var(--color-text);
+  font-size: 22px;
+  margin: 0 0 14px;
 }
 
-.article-content p {
-  margin-bottom: 18px;
+.article-section-content {
+  color: var(--color-text);
+  font-size: 16px;
+  line-height: 1.75;
 }
 
-@media (max-width: 480px) {
+.article-section-content p {
+  margin: 0 0 18px;
+}
+
+.article-section-content ul {
+  padding-left: 22px;
+  margin: 0 0 18px;
+}
+
+.article-section-content li {
+  margin-bottom: 12px;
+}
+
+.article-section-content strong {
+  font-weight: 700;
+}
+
+/* Nutrition table */
+.article-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 15px;
+}
+
+.article-table th,
+.article-table td {
+  border: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-table th {
+  background: #f7f8f8;
+  font-weight: 700;
+}
+
+/* Sources */
+.article-sources {
+  margin-top: 42px;
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.article-sources ul {
+  padding-left: 22px;
+}
+
+.article-sources li {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+/* Disclaimer */
+.article-disclaimer {
+  margin-top: 32px;
+  padding: 16px;
+  background: #f7f8f8;
+  border-radius: 8px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Back button */
+.article-back-link {
+  display: inline-block;
+  margin-top: 28px;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.article-back-link:hover {
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
   .article-page {
-    padding: 24px 18px;
+    padding: 24px 16px 40px;
   }
 
-  .article-page h1 {
-    font-size: 28px;
+  .article-card {
+    padding: 28px 20px;
+  }
+
+  .article-card h1 {
+    font-size: 30px;
+  }
+
+  .article-description {
+    font-size: 16px;
+  }
+
+  .article-section h2,
+  .article-sources h2 {
+    font-size: 20px;
+  }
+
+  .article-table {
+    font-size: 13px;
+  }
+
+  .article-table th,
+  .article-table td {
+    padding: 8px;
   }
 }
+
