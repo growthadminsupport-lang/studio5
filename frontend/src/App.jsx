@@ -38,6 +38,8 @@ function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/knowledge/:slug" element={<ArticlePage />} />
           <Route path="/privacy" element={<PrivacyNoticePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
     </Routes>

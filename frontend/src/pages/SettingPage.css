@@ -1,0 +1,112 @@
+.settings-page-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 0 20px 60px;
+}
+
+.settings-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #004d40;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.settings-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.settings-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 20px;
+}
+
+/* Avatar Upload Photo */
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.photo-avatar {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: #00685f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #00685f;
+  border: 2px solid #ffffff;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Alert Banner */
+.success-alert {
+  background-color: #edf7ed;
+  color: #1e4620;
+  padding: 14px 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.success-icon {
+  color: #2e7d32;
+}
+
+/* Password Form Fields */
+.settings-input-group {
+  margin-bottom: 20px;
+}
+
+.settings-input-group input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 15px;
+  color: #1f2937;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.settings-input-group input:focus {
+  border-color: #00685f;
+}
+
+.input-hint {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 6px 0 0 4px;
+}
