@@ -7,7 +7,7 @@ function MainLayout() {
     <div className="app-layout">
       <Navbar />
       <main className="main-content">
-        <Outlet /> {/* Required to render child routes like AboutPage */}
+        <Outlet />
       </main>
       <Footer />
     </div>
