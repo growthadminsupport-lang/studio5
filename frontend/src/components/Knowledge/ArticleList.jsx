@@ -66,7 +66,9 @@ function ArticleList() {
             className={category === cat ? "active" : ""}
             onClick={() => setCategory(cat)}
           >
-            {cat === "all" ? "All" : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            {cat === "all"
+              ? "All"
+              : cat.replace(/\b\w/g, (char) => char.toUpperCase())}
           </button>
         ))}
       </div>
