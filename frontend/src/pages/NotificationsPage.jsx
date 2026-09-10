@@ -33,7 +33,6 @@ function NotificationsPage() {
         <div className="notifications-list">
           {notifications.map((item) => (
             <div key={item.id} className="notification-card">
-              {/* Red Close Button */}
               <button
                 type="button"
                 className="dismiss-btn"
@@ -44,21 +43,17 @@ function NotificationsPage() {
               </button>
 
               <div className="notification-body">
-                {/* Left side text */}
                 <div className="notification-text">
                   <h3 className="notification-card-title">{item.title}</h3>
                   <p className="notification-card-desc">{item.description}</p>
                 </div>
 
-                {/* Right side avatar & time */}
                 <div className="notification-meta">
-                  <div className="avatar-frame">
-                    <img
-                      src={profileAvatar}
-                      alt="User Avatar"
-                      className="notification-avatar"
-                    />
-                  </div>
+                  <img
+                    src={profileAvatar}
+                    alt="User avatar"
+                    className="notification-avatar"
+                  />
                   <span className="notification-time">{item.time}</span>
                 </div>
               </div>
