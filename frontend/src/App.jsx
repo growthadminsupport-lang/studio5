@@ -18,7 +18,6 @@ import NotificationsPage from "./pages/NotificationsPage";
 import ArticlePage from "./pages/ArticlePage";
 import SettingsPage from "./pages/SettingsPage";
 import ContactPage from "./pages/ContactPage";
-import AboutPage from "./pages/AboutPage";
 
 function App() {
   return (
@@ -26,6 +25,7 @@ function App() {
       {/* Public Pages */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/knowledge" element={<KnowledgePage />} />
         <Route path="/knowledge/:slug" element={<ArticlePage />} />
