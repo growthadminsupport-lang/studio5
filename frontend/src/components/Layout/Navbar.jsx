@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext"; // Adjust import path to match your AuthContext location
+import { useAuth } from "../../context/AuthContext";
 import NotificationBell from "./NotificationBell";
 import ProfileMenu from "./ProfileMenu";
 import ThemeToggle from "./ThemeToggle";
@@ -31,7 +31,7 @@ function Navbar() {
           ) : (
             <>
               <NavLink to="/">Home</NavLink>
-              <NavLink to="/about">About</NavLink>
+              <NavLink to="/knowledge">Resources</NavLink>
               <NavLink to="/contact">Contact</NavLink>
             </>
           )}
