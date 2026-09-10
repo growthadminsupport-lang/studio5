@@ -5,11 +5,14 @@ import "./PrivacyNotice.css";
 
 function PrivacyNoticePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const auth = useAuth();
+
+  // Checks for either email or user object from AuthContext
+  const isLoggedIn = Boolean(auth?.email || auth?.user);
 
   const handleBack = () => {
-    if (user) {
-      navigate(-1);
+    if (isLoggedIn) {
+      navigate(-1); // Returns to previous page in app
     } else {
       navigate("/register");
     }
@@ -68,7 +71,7 @@ function PrivacyNoticePage() {
           className="privacy-back-link"
           onClick={handleBack}
         >
-          ← {user ? "Back" : "Back to registration"}
+          ← {isLoggedIn ? "Back" : "Back to registration"}
         </button>
       </div>
     </div>
