@@ -1,12 +1,30 @@
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, logout } = useAuth();
 
   return (
-    <nav className="navbar">
-      {/* Brand & Links omitted for brevity */}
+    <header className="navbar">
+      <div className="navbar-brand">
+        <Link to="/" className="logo-text">
+          GrowTH
+        </Link>
+      </div>
+
+      <nav className="navbar-links">
+        <NavLink to="/" end className={({ isActive }) => (isActive ? "active" : "")}>
+          Home
+        </NavLink>
+        <NavLink to="/about" className={({ isActive }) => (isActive ? "active" : "")}>
+          About
+        </NavLink>
+        <NavLink to="/contact" className={({ isActive }) => (isActive ? "active" : "")}>
+          Contact
+        </NavLink>
+      </nav>
 
       <div className="navbar-actions">
         {isLoggedIn ? (
@@ -23,8 +41,9 @@ function Navbar() {
             Log in / Sign up
           </Link>
         )}
+        <ThemeToggle />
       </div>
-    </nav>
+    </header>
   );
 }
 
