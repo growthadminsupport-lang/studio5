@@ -1,28 +1,70 @@
-import { useNotifications } from "../context/NotificationsContext";
-import "../components/Layout/Notifications.css";
-
+import { useState } from "react";
+import { X } from "lucide-react";
+import profileAvatar from "../assets/profileAvator.png";
+import "./NotificationsPage.css";
 
 function NotificationsPage() {
-  const { notifications, markAsRead } = useNotifications();
+  const [notifications, setNotifications] = useState([
+    {
+      id: 1,
+      title: "Growth update available",
+      description: "Your child's latest growth data has been updated.",
+      time: "30 Min ago",
+    },
+    {
+      id: 2,
+      title: "Profile updated",
+      description: "Your profile information has been successfully updated.",
+      time: "2 hours ago",
+    },
+  ]);
+
+  const handleDismiss = (id) => {
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+  };
 
   return (
-    <div className="notifications-page">
-      <h1>Notifications</h1>
+    <div className="notifications-page-container">
+      <h1 className="notifications-title">Notifications</h1>
+
       {notifications.length === 0 ? (
-        <p className="empty-state">No notifications yet</p>
+        <p className="no-notifications-text">No notifications yet</p>
       ) : (
-        notifications.map((n) => (
-          <div key={n.id} className="notification-card full">
-            <div className="notification-text">
-              <h4>{n.title}</h4>
-              <p>{n.description}</p>
+        <div className="notifications-list">
+          {notifications.map((item) => (
+            <div key={item.id} className="notification-card">
+              {/* Red Close Button */}
+              <button
+                type="button"
+                className="dismiss-btn"
+                onClick={() => handleDismiss(item.id)}
+                aria-label="Dismiss notification"
+              >
+                <X size={15} color="#ffffff" strokeWidth={3} />
+              </button>
+
+              <div className="notification-body">
+                {/* Left side text */}
+                <div className="notification-text">
+                  <h3 className="notification-card-title">{item.title}</h3>
+                  <p className="notification-card-desc">{item.description}</p>
+                </div>
+
+                {/* Right side avatar & time */}
+                <div className="notification-meta">
+                  <div className="avatar-frame">
+                    <img
+                      src={profileAvatar}
+                      alt="User Avatar"
+                      className="notification-avatar"
+                    />
+                  </div>
+                  <span className="notification-time">{item.time}</span>
+                </div>
+              </div>
             </div>
-            <div className="notification-side">
-              <button className="notification-close" onClick={() => markAsRead(n.id)}>✕</button>
-              <span className="notification-time">{n.time}</span>
-            </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
     </div>
   );
