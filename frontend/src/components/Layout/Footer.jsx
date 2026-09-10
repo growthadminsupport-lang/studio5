@@ -8,7 +8,7 @@ function Footer() {
         <div className="footer-left">
           <h4>GrowTH</h4>
           <p>
-            Faculty of Engineering, Khon Kaen University - Digital Media
+            Faculty of Engineering, Khon Kaen University — Digital Media
             Engineering Department
           </p>
           <p>
@@ -17,7 +17,7 @@ function Footer() {
           </p>
         </div>
 
-        <div className="footer-links">
+        <div className="footer-right">
           <Link to="/privacy">Privacy Policy</Link>
           <Link to="/contact">Contact Support</Link>
         </div>
