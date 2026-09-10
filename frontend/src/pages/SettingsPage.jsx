@@ -11,7 +11,7 @@ function SettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
-  // Validation: At least 8 characters, at least 1 letter, at least 1 number
+  // Validation: At least 8 characters, 1 letter, and 1 number
   const isValidNewPassword = (pw) => {
     return pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
   };
@@ -23,7 +23,6 @@ function SettingsPage() {
     e.preventDefault();
     if (!isFormValid) return;
 
-    // Perform API call to update password here
     setPasswordSuccess(true);
     setCurrentPassword("");
     setNewPassword("");
@@ -63,38 +62,44 @@ function SettingsPage() {
           )}
 
           <form onSubmit={handleUpdatePassword}>
-            {/* Current Password Field */}
-            <div className="floating-field">
-              <label htmlFor="currentPassword">Current password</label>
+            {/* Current Password */}
+            <div className="float-field">
               <input
                 id="currentPassword"
                 type="password"
+                placeholder=" "
                 value={currentPassword}
                 onChange={(e) => {
                   setCurrentPassword(e.target.value);
                   setPasswordSuccess(false);
                 }}
               />
+              <label htmlFor="currentPassword">Current password</label>
             </div>
 
-            {/* New Password Field */}
-            <div className={`floating-field ${showNewPwError ? "error" : ""}`}>
-              <label htmlFor="newPassword">New password</label>
+            {/* New Password */}
+            <div className={`float-field ${showNewPwError ? "error" : ""}`}>
               <input
                 id="newPassword"
                 type="password"
+                placeholder=" "
                 value={newPassword}
                 onChange={(e) => {
                   setNewPassword(e.target.value);
                   setPasswordSuccess(false);
                 }}
               />
+              <label htmlFor="newPassword">New password</label>
             </div>
 
-            {/* Red Error Message */}
-            {showNewPwError && (
+            {/* Helper or Error Message */}
+            {showNewPwError ? (
               <p className="error-message">
                 Password must be at least 8 characters and include a letter and a number
+              </p>
+            ) : (
+              <p className="input-hint">
+                At least 8 characters, with a letter and a number
               </p>
             )}
 

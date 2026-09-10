@@ -72,7 +72,7 @@
   cursor: pointer;
 }
 
-/* Success Banner */
+/* Success Alert */
 .success-alert {
   background-color: #edf7ed;
   color: #1e4620;
@@ -90,62 +90,82 @@
   color: #2e7d32;
 }
 
-/* Floating Input Fields */
-.floating-field {
+/* Floating Label Field Logic */
+.float-field {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
-.floating-field label {
-  position: absolute;
-  top: -9px;
-  left: 14px;
-  background: #ffffff;
-  padding: 0 6px;
-  font-size: 12px;
-  color: #6b7280;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.floating-field input {
+.float-field input {
   width: 100%;
-  padding: 14px 16px;
+  height: 52px;
+  padding: 0 16px;
   border: 1px solid #d1d5db;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 15px;
   color: #1f2937;
   outline: none;
-  box-sizing: border-box;
   background: #ffffff;
-  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.floating-field input:focus {
+.float-field label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 4px;
+  font-size: 15px;
+  color: #6b7280;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* Float label to top notch on focus or non-empty input */
+.float-field input:focus ~ label,
+.float-field input:not(:placeholder-shown) ~ label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  transform-origin: left top;
+  background: #ffffff;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.float-field input:focus {
   border-color: #00685f;
 }
 
 /* Red Error State */
-.floating-field.error label {
+.float-field.error input {
+  border: 1.5px solid #d93025;
+}
+
+.float-field.error input:focus ~ label,
+.float-field.error input:not(:placeholder-shown) ~ label {
   color: #d93025;
 }
 
-.floating-field.error input {
-  border: 1.5px solid #d93025;
+.input-hint {
+  font-size: 12.5px;
+  color: #6b7280;
+  margin: -10px 0 20px 4px;
 }
 
 .error-message {
   color: #d93025;
   font-size: 12.5px;
-  margin: -12px 0 18px 4px;
+  margin: -10px 0 20px 4px;
   line-height: 1.4;
 }
 
-/* Submit Button States */
+/* Disabled/Active Button States */
 .btn-update-password {
   width: 100%;
-  padding: 14px;
-  border-radius: 28px;
+  height: 48px;
+  border-radius: 24px;
   font-size: 15px;
   font-weight: 600;
   border: none;
@@ -154,7 +174,7 @@
 
 .btn-update-password:disabled {
   background-color: #e0e0e0;
-  color: #8e8e8e;
+  color: #a1a1aa;
   cursor: not-allowed;
   box-shadow: none;
 }
