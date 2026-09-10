@@ -14,6 +14,7 @@ import TermsOfUsePage from "./pages/TermsOfUsePage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
 import ArticlePage from "./pages/ArticlePage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return (
