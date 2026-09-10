@@ -1,48 +1,34 @@
 import { Link } from "react-router-dom";
 
 function HomePage() {
+  // Sample 3 featured articles
+  const featuredArticles = [
+    { slug: "understanding-growth-spurts", title: "Understanding Growth Spurts" },
+    { slug: "early-puberty-signs", title: "Early Puberty Signs" },
+    { slug: "nutrition-for-development", title: "Nutrition for Development" },
+  ];
+
   return (
     <section className="gt-knowledge-section">
-      <div className="gt-knowledge-header">
-        <div>
-          <span className="gt-knowledge-tag">Knowledge</span>
-          <h2 className="gt-knowledge-title">Nurturing Knowledge</h2>
-        </div>
-        <Link to="/knowledge" className="gt-view-all-link">
-          View all →
+      <div className="gt-section-header">
+        <h2>Nurturing Knowledge</h2>
+        {/* "View all" goes to the Knowledge / Resources page */}
+        <Link to="/knowledge" className="gt-view-all-btn">
+          View all
         </Link>
       </div>
 
       <div className="gt-articles-grid">
-        <Link
-          to="/knowledge/navigating-growth-spurts"
-          state={{ from: "home" }}
-          className="gt-article-card"
-        >
-          <h3>Understanding Growth Spurts</h3>
-          <p>Learn what triggers growth spurts and how to track height velocity accurately.</p>
-          <span className="gt-read-more">Read article →</span>
-        </Link>
-
-        <Link
-          to="/knowledge/early-puberty-signs"
-          state={{ from: "home" }}
-          className="gt-article-card"
-        >
-          <h3>Early Puberty Signs</h3>
-          <p>Recognize physical indicators and know when to consult a specialist.</p>
-          <span className="gt-read-more">Read article →</span>
-        </Link>
-
-        <Link
-          to="/knowledge/nutrition-for-development"
-          state={{ from: "home" }}
-          className="gt-article-card"
-        >
-          <h3>Nutrition for Development</h3>
-          <p>Essential dietary habits and nutrients that support optimal physical growth.</p>
-          <span className="gt-read-more">Read article →</span>
-        </Link>
+        {featuredArticles.map((article) => (
+          <Link
+            key={article.slug}
+            to={`/knowledge/${article.slug}`}
+            state={{ from: "home" }} /* Passes origin state */
+            className="gt-article-card"
+          >
+            <h3>{article.title}</h3>
+          </Link>
+        ))}
       </div>
     </section>
   );

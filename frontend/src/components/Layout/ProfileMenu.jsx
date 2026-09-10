@@ -12,8 +12,45 @@ function ProfileMenu() {
 
   return (
     <div className="profile-menu">
-      {/* ... your existing dropdown menu JSX ... */}
-      <button onClick={handleLogout}>Log out</button>
+      <button
+        className="profile-trigger"
+        onClick={() => setOpen(!open)}
+        aria-label="Profile menu"
+      >
+        <span className="profile-avatar">
+          {initial}
+        </span>
+
+        <ChevronDown
+          className={`profile-arrow ${open ? "open" : ""}`}
+          size={16}
+          strokeWidth={1.8}
+        />
+      </button>
+
+      {open && (
+        <div className="profile-dropdown">
+          <Link
+            to="/profile"
+            onClick={() => setOpen(false)}
+          >
+            <User size={17} strokeWidth={1.8} />
+            <span>Profile</span>
+          </Link>
+
+          <Link
+            to="/settings"
+            onClick={() => setOpen(false)}
+          >
+            <Settings size={17} strokeWidth={1.8} />
+            <span>Setting</span>
+          </Link>
+
+          <div className="profile-dropdown-divider" />
+
+          <button onClick={handleLogout}>Log out</button>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 function KnowledgePage() {
   const allArticles = [
-    { slug: "navigating-growth-spurts", title: "navigating-growth-spurts" },
+    { slug: "understanding-growth-spurts", title: "Understanding Growth Spurts" },
     { slug: "early-puberty-signs", title: "Early Puberty Signs" },
     { slug: "nutrition-for-development", title: "Nutrition for Development" },
     // additional articles...

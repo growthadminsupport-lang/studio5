@@ -1,53 +1,63 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import NotificationBell from "./NotificationBell";
+import ProfileMenu from "./ProfileMenu";
+import ThemeToggle from "./ThemeToggle";
+import logo from "../../assets/logo_dashboard.png";
+import "./Navbar.css";
 
 function Navbar() {
-  const { isLoggedIn, logout } = useAuth();
+  const { user } = useAuth() || {};
   const navigate = useNavigate();
-  const [showDropdown, setShowDropdown] = useState(false);
-
-  const handleLogout = () => {
-    logout();
-    setShowDropdown(false);
-    navigate("/"); // Send user back to public Home page
-  };
 
   return (
     <nav className="navbar">
-      <Link to="/" className="logo">GrowTH</Link>
+      {/* Left: Brand Logo */}
+      <div className="navbar-brand">
+        <Link to={user ? "/dashboard" : "/"} className="navbar-logo">
+          <img src={logo} alt="GrowTH" />
+        </Link>
+      </div>
 
-      <div className="nav-links">
-        {!isLoggedIn ? (
-          /* Public Navbar Links */
+      {/* Center: Navigation Links */}
+      <div className="navbar-links">
+        {user ? (
           <>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-            <Link to="/contact">Contact</Link>
-            <Link to="/login" className="btn-login">Log in</Link>
-            <Link to="/signup" className="btn-signup">Sign up</Link>
+            <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/growth">Growth</NavLink>
+            <NavLink to="/puberty">Puberty</NavLink>
+            <NavLink to="/bone-age">AI Prediction</NavLink>
+            <span className="navbar-divider" />
+            <NavLink to="/knowledge">Resources</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
           </>
         ) : (
-          /* Authenticated Navbar Links */
           <>
-            <Link to="/dashboard">Dashboard</Link>
-            <Link to="/resources">Resources</Link>
-            <Link to="/contact">Contact</Link>
-            
-            <div className="user-menu-container">
-              <button 
-                onClick={() => setShowDropdown(!showDropdown)} 
-                className="user-menu-btn"
-              >
-                Profile ▾
-              </button>
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
+          </>
+        )}
+      </div>
 
-              {showDropdown && (
-                <div className="dropdown-menu">
-                  <button onClick={handleLogout}>Log out</button>
-                </div>
-              )}
-            </div>
+      {/* Right: Actions */}
+      <div className="navbar-actions">
+        {user ? (
+          <>
+            <ThemeToggle />
+            <NotificationBell />
+            <ProfileMenu />
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="login-btn-pill"
+              onClick={() => navigate("/login")}
+            >
+              Login / Sign Up
+            </button>
+            <ThemeToggle />
           </>
         )}
       </div>

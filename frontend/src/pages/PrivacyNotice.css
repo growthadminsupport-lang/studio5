@@ -32,6 +32,23 @@
   margin: 8px 0;
 }
 
+.privacy-back-btn {
+  background: transparent;
+  border: none;
+  color: #00685f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 24px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.privacy-back-btn:hover {
+  text-decoration: underline;
+}
+
 .privacy-back-link {
   background: transparent;
   border: none;

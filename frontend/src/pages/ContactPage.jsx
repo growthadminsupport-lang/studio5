@@ -72,7 +72,7 @@ function ContactPage() {
             <div className="gt-success-banner">
               <div className="gt-banner-text">
                 <CheckCircle2 size={18} color="#00685f" />
-                <span>Thanks - your message has been sent.</span>
+                <span>Thank - your message has been sent.</span>
               </div>
               <button
                 type="button"

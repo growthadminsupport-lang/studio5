@@ -1,27 +1,28 @@
 .account-page-container {
   max-width: 600px;
-  margin: 40px auto;
+  margin: 30px auto;
   padding: 0 20px 60px;
 }
 
-/* Header Section */
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .profile-avatar-large {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #00685f;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  overflow: hidden;
   margin-bottom: 12px;
+}
+
+.profile-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .profile-name {
@@ -51,7 +52,6 @@
   text-decoration: underline;
 }
 
-/* Cards Wrapper */
 .account-cards-container {
   display: flex;
   flex-direction: column;
@@ -69,44 +69,59 @@
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
-  margin: 0 0 16px;
+  margin: 0 0 18px;
 }
 
-/* Form & Inputs */
-.input-group {
+/* Floating Input Fields */
+.float-field {
   position: relative;
   margin-bottom: 20px;
 }
 
-.input-group label {
-  position: absolute;
-  top: -9px;
-  left: 14px;
-  background: #ffffff;
-  padding: 0 6px;
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.input-group input {
+.float-field input {
   width: 100%;
-  padding: 14px 16px;
+  height: 52px;
+  padding: 0 16px;
   border: 1px solid #d1d5db;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 15px;
   color: #1f2937;
   outline: none;
+  background: #ffffff;
   box-sizing: border-box;
 }
 
-.input-group input:focus {
+.float-field label {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  padding: 0 4px;
+  font-size: 15px;
+  color: #6b7280;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.float-field input:focus ~ label,
+.float-field input:not(:placeholder-shown) ~ label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  transform-origin: left top;
+  background: #ffffff;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.float-field input:focus {
   border-color: #00685f;
 }
 
 /* Buttons */
 .btn-primary {
   width: 100%;
-  padding: 12px;
+  height: 48px;
   background: #00685f;
   color: white;
   border: none;
@@ -128,7 +143,7 @@
 
 .btn-outline {
   width: 100%;
-  padding: 12px;
+  height: 48px;
   background: transparent;
   color: #00685f;
   border: 1.5px solid #00685f;
@@ -145,7 +160,7 @@
 
 .btn-danger-outline {
   width: 100%;
-  padding: 12px;
+  height: 48px;
   background: transparent;
   color: #dc2626;
   border: 1.5px solid #dc2626;

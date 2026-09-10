@@ -1,18 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import profileAvatar from "../assets/profileAvator.png";
 import "./ProfilePage.css";
 
 function ProfilePage() {
   const { logout, email } = useAuth();
   const navigate = useNavigate();
-
   const [fullName, setFullName] = useState("Name XX");
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Logic to save name change
   };
 
   const handleLogout = () => {
@@ -22,7 +21,6 @@ function ProfilePage() {
 
   const handleDeleteAccount = () => {
     if (window.confirm("Are you sure you want to delete your account?")) {
-      // Logic to delete account
       logout();
       navigate("/login", { replace: true });
     }
@@ -33,7 +31,7 @@ function ProfilePage() {
       {/* Profile Header */}
       <div className="profile-header">
         <div className="profile-avatar-large">
-          <User size={40} />
+          <img src={profileAvatar} alt="Profile" className="profile-avatar-img" />
         </div>
         <h2 className="profile-name">{fullName || "User Name"}</h2>
         <p className="profile-email">{email || "username@gmail.com"}</p>
@@ -48,14 +46,15 @@ function ProfilePage() {
         <div className="account-card">
           <h3>Account</h3>
           <form onSubmit={handleSave}>
-            <div className="input-group">
-              <label htmlFor="fullName">Full name</label>
+            <div className="float-field">
               <input
                 id="fullName"
                 type="text"
+                placeholder=" "
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
               />
+              <label htmlFor="fullName">Full name</label>
             </div>
             <button type="submit" className="btn-primary">
               Save changes
