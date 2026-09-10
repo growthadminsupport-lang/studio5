@@ -12,32 +12,35 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-left">
+      {/* Left: Brand Logo */}
+      <div className="navbar-brand">
         <Link to={user ? "/dashboard" : "/"} className="navbar-logo">
           <img src={logo} alt="GrowTH" />
         </Link>
-
-        <div className="navbar-links">
-          {user ? (
-            <>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/growth">Growth</NavLink>
-              <NavLink to="/puberty">Puberty</NavLink>
-              <NavLink to="/bone-age">AI Prediction</NavLink>
-              <span className="navbar-divider" />
-              <NavLink to="/knowledge">Resources</NavLink>
-              <NavLink to="/contact">Contact</NavLink>
-            </>
-          ) : (
-            <>
-              <NavLink to="/">Home</NavLink>
-              <NavLink to="/knowledge">Resources</NavLink>
-              <NavLink to="/contact">Contact</NavLink>
-            </>
-          )}
-        </div>
       </div>
 
+      {/* Center: Navigation Links */}
+      <div className="navbar-links">
+        {user ? (
+          <>
+            <NavLink to="/dashboard">Dashboard</NavLink>
+            <NavLink to="/growth">Growth</NavLink>
+            <NavLink to="/puberty">Puberty</NavLink>
+            <NavLink to="/bone-age">AI Prediction</NavLink>
+            <span className="navbar-divider" />
+            <NavLink to="/knowledge">Resources</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
+          </>
+        ) : (
+          <>
+            <NavLink to="/">Home</NavLink>
+            <NavLink to="/about">About</NavLink>
+            <NavLink to="/contact">Contact</NavLink>
+          </>
+        )}
+      </div>
+
+      {/* Right: Actions */}
       <div className="navbar-actions">
         {user ? (
           <>

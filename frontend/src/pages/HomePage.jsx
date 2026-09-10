@@ -8,7 +8,7 @@ import {
   BriefcaseMedical, 
   ArrowRight 
 } from "lucide-react";
-import logoImg from "../assets/logo.png"; // Ensure path matches your project assets
+import logoImg from "../assets/logo.png";
 import "./HomePage.css";
 
 function HomePage() {
@@ -149,14 +149,17 @@ function HomePage() {
               Expert articles to guide you through every stage.
             </p>
           </div>
-          <Link to="/learn" className="gt-view-all-link">
+          <Link to="/knowledge" className="gt-view-all-link">
             View all <ArrowRight size={14} />
           </Link>
         </div>
 
         <div className="gt-articles-grid">
           {/* Article 1 */}
-          <div className="gt-article-card" onClick={() => navigate("/learn")}>
+          <div 
+            className="gt-article-card" 
+            onClick={() => navigate("/knowledge/navigating-growth-spurts")}
+          >
             <div className="gt-article-banner teal-bg">
               <Ruler size={32} color="#00685f" />
             </div>
@@ -170,7 +173,10 @@ function HomePage() {
           </div>
 
           {/* Article 2 */}
-          <div className="gt-article-card" onClick={() => navigate("/learn")}>
+          <div 
+            className="gt-article-card" 
+            onClick={() => navigate("/knowledge/nutrition-for-pre-teens")}
+          >
             <div className="gt-article-banner mint-bg">
               <Utensils size={32} color="#00685f" />
             </div>
@@ -184,7 +190,10 @@ function HomePage() {
           </div>
 
           {/* Article 3 */}
-          <div className="gt-article-card" onClick={() => navigate("/learn")}>
+          <div 
+            className="gt-article-card" 
+            onClick={() => navigate("/knowledge/understanding-bone-age")}
+          >
             <div className="gt-article-banner yellow-bg">
               <BriefcaseMedical size={32} color="#d97706" />
             </div>

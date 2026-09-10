@@ -1,26 +1,25 @@
 import { Link } from "react-router-dom";
-import "./Footer.css"; // or your existing footer stylesheet
+import "./Footer.css";
 
 function Footer() {
   return (
-    <footer className="footer-container">
-      <div className="footer-content">
-        <div className="footer-left">
-          <strong className="footer-brand">GrowTH</strong>
-          <p className="footer-disclaimer">
+    <footer className="gt-footer">
+      <div className="gt-footer-container">
+        {/* Left Side: Brand & Disclaimer */}
+        <div className="gt-footer-brand">
+          <h3 className="gt-footer-logo">GrowTH</h3>
+          <p className="gt-footer-subtext">
             Faculty of Engineering, Khon Kaen University - Digital Media Engineering Department
-            <br />
+          </p>
+          <p className="gt-footer-disclaimer">
             © 2026 GrowTH. Medical Disclaimer: this platform is for tracking purposes only and does not replace professional medical advice.
           </p>
         </div>
 
-        <div className="footer-right">
-          <Link to="/privacy-notice" className="footer-link">
-            Privacy Policy
-          </Link>
-          <Link to="/contact" className="footer-link">
-            Contact Support
-          </Link>
+        {/* Right Side: Links */}
+        <div className="gt-footer-links">
+          <Link to="/privacy-notice">Privacy Policy</Link>
+          <Link to="/contact">Contact Support</Link>
         </div>
       </div>
     </footer>
