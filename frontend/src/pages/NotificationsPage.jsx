@@ -2,9 +2,9 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import profileAvatar from "../assets/profileAvator.png";
 import "./NotificationsPage.css";
-
+import { useNotifications } from "../context/NotificationsContext";
 function NotificationsPage() {
-  const [notifications, setNotifications] = useState([
+  const { notifications, markAsRead } = useNotifications([
     {
       id: 1,
       title: "Growth update available",

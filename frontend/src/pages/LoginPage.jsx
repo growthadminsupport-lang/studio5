@@ -13,15 +13,11 @@ function LoginPage() {
   // Redirect to previous page if kicked here by ProtectedRoute, otherwise go to /dashboard
   const from = location.state?.from?.pathname || "/dashboard";
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await login({ email, password });
-      navigate(from, { replace: true }); // Redirects to Dashboard
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
-  };
+  const handleSubmit = (e) => {
+  e.preventDefault();
+  login(email, false); // Pass string email and remember preference
+  navigate(from, { replace: true });
+};
 
   return (
     <div className="login-container">
