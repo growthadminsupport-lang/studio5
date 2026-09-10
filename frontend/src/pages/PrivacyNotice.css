@@ -33,9 +33,20 @@
 }
 
 .privacy-back-link {
+  background: transparent;
+  border: none;
+  color: #00685f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 20px;
   display: inline-block;
-  margin-top: 24px;
-  font-weight: 500;
+  text-decoration: none;
+}
+
+.privacy-back-link:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 480px) {

@@ -1,8 +1,20 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "../components/Auth/Auth.css";
 import "./PrivacyNotice.css";
 
 function PrivacyNoticePage() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleBack = () => {
+    if (user) {
+      navigate(-1);
+    } else {
+      navigate("/register");
+    }
+  };
+
   return (
     <div className="auth-page">
       <div className="privacy-card">
@@ -51,9 +63,13 @@ function PrivacyNoticePage() {
           and unlinks you from any children's records.
         </p>
 
-        <Link to="/register" className="privacy-back-link">
-          ← Back to registration
-        </Link>
+        <button
+          type="button"
+          className="privacy-back-link"
+          onClick={handleBack}
+        >
+          ← {user ? "Back" : "Back to registration"}
+        </button>
       </div>
     </div>
   );

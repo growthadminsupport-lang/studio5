@@ -18,7 +18,7 @@ import ArticlePage from "./pages/ArticlePage";
 function App() {
   return (
     <Routes>
-      {/* Auth pages — no Navbar/Footer */}
+      {/* Auth pages — standalone without Navbar/Footer */}
       <Route path="/" element={<Navigate to="/login" replace />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
@@ -37,6 +37,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/knowledge/:slug" element={<ArticlePage />} />
+          <Route path="/privacy" element={<PrivacyNoticePage />} />
         </Route>
       </Route>
     </Routes>
