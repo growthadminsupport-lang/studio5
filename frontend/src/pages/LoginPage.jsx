@@ -3,31 +3,57 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const [password, setPassword] = useState("");
-  
+  const [rememberMe, setRememberMe] = useState(true);
+
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
-  // Redirect to previous page if kicked here by ProtectedRoute, otherwise go to /dashboard
+  // Target destination saved by ProtectedRoute, falling back to /dashboard
   const from = location.state?.from?.pathname || "/dashboard";
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      await login({ email, password });
-      navigate(from, { replace: true }); // Redirects to Dashboard
-    } catch (error) {
-      console.error("Login failed:", error);
-    }
+    
+    // Call AuthContext login with email and remember state
+    login(emailInput, rememberMe);
+    
+    // Redirect to Dashboard (or target route)
+    navigate(from, { replace: true });
   };
 
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit}>
         <h2>Log in to GrowTH</h2>
-        {/* Email & Password Inputs */}
+        
+        <input
+          type="email"
+          placeholder="Email address"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          required
+        />
+        
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <label>
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+          />
+          Remember me
+        </label>
+
         <button type="submit">Log in</button>
       </form>
     </div>

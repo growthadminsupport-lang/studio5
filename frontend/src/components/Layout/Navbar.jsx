@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
-  const { user, logout } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
 
   return (
     <nav className="navbar">
-      {/* Brand & Links */}
-      
+      {/* Brand & Links omitted for brevity */}
+
       <div className="navbar-actions">
-        {user ? (
+        {isLoggedIn ? (
           <>
             <Link to="/dashboard" className="navbar-link">
               Dashboard
