@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Mail, Bug, Check, X } from "lucide-react";
+import { MapPin, Mail, Bug, CheckCircle2, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./ContactPage.css";
 
@@ -16,7 +16,6 @@ function ContactPage() {
     e.preventDefault();
     if (!subject.trim() || !message.trim()) return;
 
-    // Trigger success message state
     setShowSuccess(true);
     setSubject("");
     setMessage("");
@@ -69,11 +68,11 @@ function ContactPage() {
             </p>
           </div>
 
-          {/* Thank You Success Banner */}
+          {/* Thank You Banner */}
           {showSuccess && (
             <div className="contact-success-banner">
               <div className="banner-left">
-                <Check size={16} className="check-icon" />
+                <CheckCircle2 size={16} className="check-icon" />
                 <span>Thank - your message has been sent.</span>
               </div>
               <button
@@ -88,7 +87,6 @@ function ContactPage() {
           )}
 
           <form onSubmit={handleSubmit} className="contact-form">
-            {/* Your Email Field */}
             <div className="float-field">
               <input
                 id="contactEmail"
@@ -101,7 +99,6 @@ function ContactPage() {
               <label htmlFor="contactEmail">Your email *</label>
             </div>
 
-            {/* Subject Field */}
             <div className="float-field">
               <input
                 id="contactSubject"
@@ -114,7 +111,6 @@ function ContactPage() {
               <label htmlFor="contactSubject">Subject*</label>
             </div>
 
-            {/* Message Field */}
             <div className="float-field text-area-field">
               <textarea
                 id="contactMessage"
