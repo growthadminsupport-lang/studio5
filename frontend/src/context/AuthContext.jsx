@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
   const user = isLoggedIn ? { email } : null;
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, email, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, email, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

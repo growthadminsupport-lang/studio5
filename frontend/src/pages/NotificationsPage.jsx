@@ -20,8 +20,8 @@ function NotificationsPage() {
   ]);
 
   const handleDismiss = (id) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
-  };
+  markAsRead(id); 
+  }
 
   return (
     <div className="notifications-page-container">
