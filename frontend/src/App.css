@@ -1,57 +1,73 @@
-import { Routes, Route } from "react-router-dom";
-import MainLayout from "./components/Layout/MainLayout";
-import HomePage from "./pages/HomePage";
-import AboutPage from "./pages/AboutPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import DashboardPage from "./pages/DashboardPage";
-import GrowthPage from "./pages/GrowthPage";
-import PubertyPage from "./pages/PubertyPage";
-import BoneAgePage from "./pages/BoneAgePage";
-import KnowledgePage from "./pages/KnowledgePage";
-import ProfilePage from "./pages/ProfilePage";
-import PrivacyNoticePage from "./pages/PrivacyNoticePage";
-import TermsOfUsePage from "./pages/TermsOfUsePage";
-import ProtectedRoute from "./components/Auth/ProtectedRoute";
-import NotificationsPage from "./pages/NotificationsPage";
-import ArticlePage from "./pages/ArticlePage";
-import SettingsPage from "./pages/SettingsPage";
-import ContactPage from "./pages/ContactPage";
+/* ==========================================================================
+   Global Resets & Base Styles for GrowTH
+   ========================================================================== */
 
-function App() {
-  return (
-    <Routes>
-      {/* Public Pages */}
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/knowledge" element={<KnowledgePage />} />
-        <Route path="/knowledge/:slug" element={<ArticlePage />} />
-        <Route path="/privacy-notice" element={<PrivacyNoticePage />} />
-        <Route path="/terms" element={<TermsOfUsePage />} />
-      </Route>
-
-      {/* Standalone Auth Pages */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
-      {/* Protected App Pages */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<MainLayout />}>
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/growth" element={<GrowthPage />} />
-          <Route path="/puberty" element={<PubertyPage />} />
-          <Route path="/bone-age" element={<BoneAgePage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-export default App;
+:root {
+  --color-primary: #00685f;
+  --color-primary-hover: #00524b;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-card-bg: #ffffff;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+  --color-primary: #2aa89a;
+  --color-primary-hover: #36b9aa;
+  --color-bg: #111827;
+  --color-surface: #1f2937;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+  --color-card-bg: #1f2937;
+}
+
+html, body {
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout Wrapper for Sticky Footer */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+}
+
+a {
+  color: inherit;
+}
+
+.theme-button {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.theme-button:hover {
+  background-color: var(--color-border);
+}
