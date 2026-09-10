@@ -2,7 +2,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 40px;
+  padding: 14px 48px;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   position: sticky;
@@ -13,12 +13,13 @@
 .navbar-brand {
   display: flex;
   align-items: center;
-  flex: 1;
+  width: 220px; /* Fixed width balance */
 }
 
 .navbar-logo img {
-  height: 40px;
+  height: 42px;
   width: auto;
+  display: block;
 }
 
 .navbar-links {
@@ -26,7 +27,7 @@
   align-items: center;
   justify-content: center;
   gap: 36px;
-  flex: 2;
+  flex: 1;
 }
 
 .navbar-links a {
@@ -34,9 +35,9 @@
   font-size: 15px;
   font-weight: 500;
   color: #4b5563;
-  transition: color 0.2s ease;
   position: relative;
-  padding-bottom: 4px;
+  padding-bottom: 6px;
+  transition: color 0.2s ease;
 }
 
 .navbar-links a:hover,
@@ -61,7 +62,7 @@
   align-items: center;
   justify-content: flex-end;
   gap: 16px;
-  flex: 1;
+  width: 220px; /* Fixed width balance */
 }
 
 .login-btn-pill {
@@ -69,7 +70,7 @@
   color: #00685f;
   border: 1.5px solid #00685f;
   border-radius: 20px;
-  padding: 8px 20px;
+  padding: 7px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -77,5 +78,5 @@
 }
 
 .login-btn-pill:hover {
-  background-color: #e8f5f3;
+  background-color: #eaf6f4;
 }

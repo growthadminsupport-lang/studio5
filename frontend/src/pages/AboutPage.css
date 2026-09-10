@@ -1,0 +1,91 @@
+.gt-about-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 56px 24px 80px;
+  color: #1f2937;
+  font-family: inherit;
+}
+
+.gt-about-tag {
+  color: #00685f;
+  font-size: 14px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.gt-about-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 20px 0;
+  line-height: 1.25;
+}
+
+.gt-about-description {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 48px;
+}
+
+/* 2x2 Grid */
+.gt-about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.gt-about-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.gt-card-icon {
+  margin-bottom: 12px;
+}
+
+.gt-about-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.gt-about-card p {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Callout Box */
+.gt-about-origin-box {
+  background-color: #eaf6f4;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-top: 24px;
+}
+
+.gt-about-origin-box h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.gt-about-origin-box p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #4b5563;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .gt-about-grid {
+    grid-template-columns: 1fr;
+  }
+}
