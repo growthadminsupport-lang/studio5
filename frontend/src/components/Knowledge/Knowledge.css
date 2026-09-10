@@ -5,25 +5,26 @@
 .knowledge-section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 50px 40px 70px;
+  padding: 40px 0px 70px;
 }
 
 .knowledge-heading {
-  text-align: center;
-  margin: 0 0 24px;
+  text-align: left;
+  margin: 0 0 20px;
   color: #004640;
-  font-size: 32px;
+  font-size: 20px;
 }
 
 /* Search box */
 .knowledge-search {
   display: block;
   width: 100%;
-  max-width: 500px;
-  margin: 0 auto 20px;
   padding: 12px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  margin: 0 0 20px;
+
+  border: 1px solid #b8bec7;
+  border-radius: 20px;
+
   font-size: 15px;
   box-sizing: border-box;
 }
@@ -31,10 +32,10 @@
 /* Category buttons */
 .knowledge-filters {
   display: flex;
-  justify-content: center;
-  gap: 10px;
+  justify-content: flex-start;
+  gap: 14px;
   flex-wrap: wrap;
-  margin-bottom: 36px;
+  margin-bottom: 60px;
 }
 
 .knowledge-filters button {
@@ -60,15 +61,13 @@
 .knowledge-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  gap: 18px;
   align-items: stretch;
 }
 
 .knowledge-card {
-  background: white;
-  border-radius: 12px;
+ border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
 }
 
 .knowledge-icon-tile {
@@ -104,15 +103,12 @@
 }
 
 .knowledge-card h3 {
-  margin: 8px 0 10px;
-  color: var(--color-text);
-  font-size: 20px;
+  font-size: 16px;
 }
 
 .knowledge-card p {
-  color: var(--color-text-muted);
-  line-height: 1.6;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .knowledge-citation {
