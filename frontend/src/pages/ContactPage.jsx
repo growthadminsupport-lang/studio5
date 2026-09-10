@@ -5,7 +5,7 @@ import "./ContactPage.css";
 
 function ContactPage() {
   const { email: userEmail } = useAuth() || {};
-  const activeEmail = userEmail || "Momo mama@gmail.com";
+  const activeEmail = userEmail || "growth.admin.support@gmail.com";
 
   const [email, setEmail] = useState(activeEmail);
   const [subject, setSubject] = useState("");
@@ -22,32 +22,31 @@ function ContactPage() {
   };
 
   return (
-    <div className="contact-page-container">
-      <span className="contact-subtitle">Contact</span>
-      <h1 className="contact-title">Get in touch</h1>
+    <div className="gt-contact-wrapper">
+      <span className="gt-contact-subtitle">Contact</span>
+      <h1 className="gt-contact-title">Get in touch</h1>
 
-      <div className="contact-cards-stack">
-        {/* Department & Email Info Card */}
-        <div className="contact-info-card">
-          <div className="info-row">
-            <div className="info-icon">
-              <MapPin size={18} color="#00685f" />
+      <div className="gt-contact-stack">
+        {/* Top Info Card */}
+        <div className="gt-contact-card">
+          <div className="gt-info-row">
+            <div className="gt-info-icon">
+              <MapPin size={20} color="#00685f" />
             </div>
-            <div className="info-content">
+            <div className="gt-info-content">
               <strong>Department</strong>
               <p>
-                Digital Media Engineering Program, Faculty of Engineering
-                <br />
+                Digital Media Engineering Program, Faculty of Engineering<br />
                 Khon Kaen University, Mueang Khon Kaen District, Khon Kaen 40002, Thailand
               </p>
             </div>
           </div>
 
-          <div className="info-row">
-            <div className="info-icon">
-              <Mail size={18} color="#00685f" />
+          <div className="gt-info-row">
+            <div className="gt-info-icon">
+              <Mail size={20} color="#00685f" />
             </div>
-            <div className="info-content">
+            <div className="gt-info-content">
               <strong>Email</strong>
               <p>
                 Contact the Faculty of Engineering, KKU DME program directly — exact department email TBD.
@@ -56,38 +55,39 @@ function ContactPage() {
           </div>
         </div>
 
-        {/* Support Form Card */}
-        <div className="contact-form-card">
-          <div className="form-header">
-            <div className="form-header-title">
-              <Bug size={20} color="#00685f" className="bug-icon" />
+        {/* Bottom Form Card */}
+        <div className="gt-contact-card">
+          <div className="gt-form-header">
+            <div className="gt-title-with-icon">
+              <Bug size={22} color="#00685f" className="gt-bug-icon" />
               <h2>Report a bug / contact support</h2>
             </div>
-            <p className="signed-in-text">
+            <p className="gt-signed-in">
               Signed in as {activeEmail} — we’ll use this to follow up.
             </p>
           </div>
 
-          {/* Thank You Banner */}
+          {/* Success Banner */}
           {showSuccess && (
-            <div className="contact-success-banner">
-              <div className="banner-left">
-                <CheckCircle2 size={16} className="check-icon" />
+            <div className="gt-success-banner">
+              <div className="gt-banner-text">
+                <CheckCircle2 size={18} color="#00685f" />
                 <span>Thank - your message has been sent.</span>
               </div>
               <button
                 type="button"
-                className="close-banner-btn"
+                className="gt-banner-close"
                 onClick={() => setShowSuccess(false)}
                 aria-label="Close notification"
               >
-                <X size={16} />
+                <X size={16} color="#00685f" />
               </button>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="contact-form">
-            <div className="float-field">
+          <form onSubmit={handleSubmit} className="gt-contact-form">
+            {/* Email Field */}
+            <div className="gt-float-field">
               <input
                 id="contactEmail"
                 type="email"
@@ -99,7 +99,8 @@ function ContactPage() {
               <label htmlFor="contactEmail">Your email *</label>
             </div>
 
-            <div className="float-field">
+            {/* Subject Field */}
+            <div className="gt-float-field">
               <input
                 id="contactSubject"
                 type="text"
@@ -111,7 +112,8 @@ function ContactPage() {
               <label htmlFor="contactSubject">Subject*</label>
             </div>
 
-            <div className="float-field text-area-field">
+            {/* Message Field */}
+            <div className="gt-float-field">
               <textarea
                 id="contactMessage"
                 placeholder=" "
@@ -123,7 +125,7 @@ function ContactPage() {
               <label htmlFor="contactMessage">Message*</label>
             </div>
 
-            <button type="submit" className="btn-send-message">
+            <button type="submit" className="gt-send-btn">
               Send message
             </button>
           </form>

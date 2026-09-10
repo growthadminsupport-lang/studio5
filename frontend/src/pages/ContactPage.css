@@ -1,16 +1,116 @@
-/* Success Banner & Icon Alignment */
-.contact-success-banner {
-  background-color: #e8f5f3;
-  border: 1px solid #c8e6c9;
-  border-radius: 20px;
-  padding: 10px 16px;
+/* Page Layout Container */
+.gt-contact-wrapper {
+  max-width: 760px;
+  margin: 36px auto;
+  padding: 0 20px 60px;
+  box-sizing: border-box;
+}
+
+.gt-contact-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #00685f;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.gt-contact-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0b2524;
+  margin: 0 0 24px 0;
+}
+
+.gt-contact-stack {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Card Styling */
+.gt-contact-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Info Rows (Map & Email) */
+.gt-info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
   margin-bottom: 20px;
 }
 
-.banner-left {
+.gt-info-row:last-child {
+  margin-bottom: 0;
+}
+
+.gt-info-icon {
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gt-info-content strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.gt-info-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* Form Header */
+.gt-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.gt-title-with-icon h2 {
+  font-size: 19px;
+  font-weight: 700;
+  color: #0d3836;
+  margin: 0;
+}
+
+.gt-bug-icon {
+  flex-shrink: 0;
+}
+
+.gt-signed-in {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+/* Success Banner */
+.gt-success-banner {
+  background-color: #e8f5f3;
+  border: 1px solid #d0ebe7;
+  border-radius: 20px;
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.gt-banner-text {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -19,18 +119,97 @@
   font-weight: 500;
 }
 
-.check-icon {
-  color: #00685f;
-  flex-shrink: 0;
-}
-
-.close-banner-btn {
+.gt-banner-close {
   background: transparent;
   border: none;
-  color: #00685f;
   cursor: pointer;
   padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Floating Input Fields */
+.gt-contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.gt-float-field {
+  position: relative;
+  width: 100%;
+}
+
+.gt-float-field input,
+.gt-float-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #9ca3af;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #1f2937;
+  outline: none;
+  background: #ffffff;
+  box-sizing: border-box;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.gt-float-field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.gt-float-field label {
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  background: transparent;
+  padding: 0 4px;
+  font-size: 14px;
+  color: #6b7280;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.gt-float-field input:focus ~ label,
+.gt-float-field input:not(:placeholder-shown) ~ label,
+.gt-float-field textarea:focus ~ label,
+.gt-float-field textarea:not(:placeholder-shown) ~ label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  transform-origin: left top;
+  background: #ffffff;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.gt-float-field input:focus,
+.gt-float-field textarea:focus {
+  border-color: #00685f;
+}
+
+/* Submit Button */
+.gt-send-btn {
+  align-self: flex-start;
+  background-color: #005f56;
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 95, 86, 0.2);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  margin-top: 4px;
+}
+
+.gt-send-btn:hover {
+  background-color: #004d45;
+}
+
+.gt-send-btn:active {
+  transform: scale(0.98);
 }
