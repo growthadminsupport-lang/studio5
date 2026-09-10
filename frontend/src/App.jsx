@@ -17,6 +17,7 @@ import NotificationsPage from "./pages/NotificationsPage";
 import ArticlePage from "./pages/ArticlePage";
 import SettingsPage from "./pages/SettingsPage";
 import ContactPage from "./pages/ContactPage";
+import AboutPage from "./pages/AboutPage";
 
 function App() {
   return (
