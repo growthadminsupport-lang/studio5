@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { Camera, CheckCircle2 } from "lucide-react";
-import profileAvatar from "../assets/profileAvator.png";
+import { useAuth } from "../context/AuthContext";
 import "./SettingsPage.css";
 
 function SettingsPage() {
+  const { email } = useAuth();
+  const initial = email ? email.charAt(0).toUpperCase() : "G";
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
+  // Validation: At least 8 characters, 1 letter, and 1 number
   const isValidNewPassword = (pw) => {
     return pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
   };
@@ -34,13 +38,13 @@ function SettingsPage() {
           <h2>Profile photo</h2>
           <div className="avatar-wrapper">
             <div className="photo-avatar">
-              <img src={profileAvatar} alt="Profile" className="avatar-img" />
+              <span className="avatar-letter">{initial}</span>
               <button
                 type="button"
                 className="camera-badge"
                 aria-label="Upload photo"
               >
-                <Camera size={14} color="#ffffff" />
+                <Camera size={14} />
               </button>
             </div>
           </div>
@@ -58,6 +62,7 @@ function SettingsPage() {
           )}
 
           <form onSubmit={handleUpdatePassword}>
+            {/* Current Password */}
             <div className="float-field">
               <input
                 id="currentPassword"
@@ -72,6 +77,7 @@ function SettingsPage() {
               <label htmlFor="currentPassword">Current password</label>
             </div>
 
+            {/* New Password */}
             <div className={`float-field ${showNewPwError ? "error" : ""}`}>
               <input
                 id="newPassword"
@@ -86,6 +92,7 @@ function SettingsPage() {
               <label htmlFor="newPassword">New password</label>
             </div>
 
+            {/* Helper or Error Message */}
             {showNewPwError ? (
               <p className="error-message">
                 Password must be at least 8 characters and include a letter and a number
@@ -96,6 +103,7 @@ function SettingsPage() {
               </p>
             )}
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="btn-update-password"

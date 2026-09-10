@@ -32,11 +32,10 @@
   margin: 0 0 20px;
 }
 
-/* Precise Avatar & Badge Alignment */
+/* Avatar Photo */
 .avatar-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
   padding: 10px 0;
 }
 
@@ -45,22 +44,25 @@
   width: 90px;
   height: 90px;
   border-radius: 50%;
+  background: #00685f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  display: block;
+.avatar-letter {
+  font-size: 36px;
+  font-weight: 600;
 }
 
 .camera-badge {
   position: absolute;
-  bottom: 0px;
-  right: 0px;
+  bottom: 2px;
+  right: 2px;
   background: #00685f;
   border: 2px solid #ffffff;
+  color: white;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -68,11 +70,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  padding: 0;
 }
 
-/* Success Banner */
+/* Success Alert */
 .success-alert {
   background-color: #edf7ed;
   color: #1e4620;
@@ -90,7 +90,7 @@
   color: #2e7d32;
 }
 
-/* Floating Input Fields */
+/* Floating Label Field Logic */
 .float-field {
   position: relative;
   margin-bottom: 16px;
@@ -107,7 +107,7 @@
   outline: none;
   background: #ffffff;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
 .float-field label {
@@ -123,6 +123,7 @@
   transition: all 0.2s ease;
 }
 
+/* Float label to top notch on focus or non-empty input */
 .float-field input:focus ~ label,
 .float-field input:not(:placeholder-shown) ~ label {
   top: 0;
@@ -137,7 +138,7 @@
   border-color: #00685f;
 }
 
-/* Error State */
+/* Red Error State */
 .float-field.error input {
   border: 1.5px solid #d93025;
 }
@@ -160,7 +161,7 @@
   line-height: 1.4;
 }
 
-/* Button States */
+/* Disabled/Active Button States */
 .btn-update-password {
   width: 100%;
   height: 48px;
@@ -175,6 +176,7 @@
   background-color: #e0e0e0;
   color: #a1a1aa;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .btn-update-password:enabled {
