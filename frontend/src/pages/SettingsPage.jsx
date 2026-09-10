@@ -1,20 +1,32 @@
 import { useState } from "react";
-import { User, Camera, CheckCircle2 } from "lucide-react";
+import { Camera, CheckCircle2 } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import "./SettingsPage.css";
 
 function SettingsPage() {
+  const { email } = useAuth();
+  const initial = email ? email.charAt(0).toUpperCase() : "G";
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
 
+  // Validation: At least 8 characters, at least 1 letter, at least 1 number
+  const isValidNewPassword = (pw) => {
+    return pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
+  };
+
+  const showNewPwError = newPassword.length > 0 && !isValidNewPassword(newPassword);
+  const isFormValid = currentPassword.trim().length > 0 && isValidNewPassword(newPassword);
+
   const handleUpdatePassword = (e) => {
     e.preventDefault();
-    if (currentPassword && newPassword) {
-      // Simulate password update success
-      setPasswordSuccess(true);
-      setCurrentPassword("");
-      setNewPassword("");
-    }
+    if (!isFormValid) return;
+
+    // Perform API call to update password here
+    setPasswordSuccess(true);
+    setCurrentPassword("");
+    setNewPassword("");
   };
 
   return (
@@ -27,7 +39,7 @@ function SettingsPage() {
           <h2>Profile photo</h2>
           <div className="avatar-wrapper">
             <div className="photo-avatar">
-              <User size={48} />
+              <span className="avatar-letter">{initial}</span>
               <button
                 type="button"
                 className="camera-badge"
@@ -51,30 +63,47 @@ function SettingsPage() {
           )}
 
           <form onSubmit={handleUpdatePassword}>
-            <div className="settings-input-group">
+            {/* Current Password Field */}
+            <div className="floating-field">
+              <label htmlFor="currentPassword">Current password</label>
               <input
+                id="currentPassword"
                 type="password"
-                placeholder="Current password"
                 value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
+                onChange={(e) => {
+                  setCurrentPassword(e.target.value);
+                  setPasswordSuccess(false);
+                }}
               />
             </div>
 
-            <div className="settings-input-group">
+            {/* New Password Field */}
+            <div className={`floating-field ${showNewPwError ? "error" : ""}`}>
+              <label htmlFor="newPassword">New password</label>
               <input
+                id="newPassword"
                 type="password"
-                placeholder="New password"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  setPasswordSuccess(false);
+                }}
               />
-              <p className="input-hint">
-                At least 8 characters, with a letter and a number
-              </p>
             </div>
 
-            <button type="submit" className="btn-primary">
+            {/* Red Error Message */}
+            {showNewPwError && (
+              <p className="error-message">
+                Password must be at least 8 characters and include a letter and a number
+              </p>
+            )}
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="btn-update-password"
+              disabled={!isFormValid}
+            >
               Update password
             </button>
           </form>

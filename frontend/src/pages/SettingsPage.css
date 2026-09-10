@@ -6,7 +6,7 @@
 
 .settings-title {
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
   color: #004d40;
   margin-bottom: 24px;
   text-align: left;
@@ -32,7 +32,7 @@
   margin: 0 0 20px;
 }
 
-/* Avatar Upload Photo */
+/* Avatar Photo */
 .avatar-wrapper {
   display: flex;
   justify-content: center;
@@ -51,6 +51,11 @@
   justify-content: center;
 }
 
+.avatar-letter {
+  font-size: 36px;
+  font-weight: 600;
+}
+
 .camera-badge {
   position: absolute;
   bottom: 2px;
@@ -67,7 +72,7 @@
   cursor: pointer;
 }
 
-/* Alert Banner */
+/* Success Banner */
 .success-alert {
   background-color: #edf7ed;
   color: #1e4620;
@@ -76,7 +81,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   margin-bottom: 20px;
 }
@@ -85,12 +90,25 @@
   color: #2e7d32;
 }
 
-/* Password Form Fields */
-.settings-input-group {
+/* Floating Input Fields */
+.floating-field {
+  position: relative;
   margin-bottom: 20px;
 }
 
-.settings-input-group input {
+.floating-field label {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: #ffffff;
+  padding: 0 6px;
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.floating-field input {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #d1d5db;
@@ -99,14 +117,55 @@
   color: #1f2937;
   outline: none;
   box-sizing: border-box;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
 }
 
-.settings-input-group input:focus {
+.floating-field input:focus {
   border-color: #00685f;
 }
 
-.input-hint {
-  font-size: 12px;
-  color: #6b7280;
-  margin: 6px 0 0 4px;
+/* Red Error State */
+.floating-field.error label {
+  color: #d93025;
+}
+
+.floating-field.error input {
+  border: 1.5px solid #d93025;
+}
+
+.error-message {
+  color: #d93025;
+  font-size: 12.5px;
+  margin: -12px 0 18px 4px;
+  line-height: 1.4;
+}
+
+/* Submit Button States */
+.btn-update-password {
+  width: 100%;
+  padding: 14px;
+  border-radius: 28px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-update-password:disabled {
+  background-color: #e0e0e0;
+  color: #8e8e8e;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-update-password:enabled {
+  background-color: #00685f;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 104, 95, 0.2);
+}
+
+.btn-update-password:enabled:hover {
+  background-color: #00524b;
 }
