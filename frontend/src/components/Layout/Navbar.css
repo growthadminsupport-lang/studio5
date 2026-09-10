@@ -1,3 +1,4 @@
+/* src/components/Layout/Navbar.css */
 .navbar {
   display: flex;
   align-items: center;
@@ -12,6 +13,10 @@
   box-sizing: border-box;
 }
 
+.navbar-brand {
+  width: 180px;
+}
+
 .logo-text {
   font-size: 22px;
   font-weight: 800;
@@ -21,13 +26,19 @@
 
 .navbar-links {
   display: flex;
-  gap: 32px;
+  align-items: center;
+  justify-content: center;
+  gap: 36px;
+  flex: 1;
 }
 
 .navbar-links a {
   text-decoration: none;
-  color: #4b5563;
+  font-size: 15px;
   font-weight: 500;
+  color: #4b5563;
+  position: relative;
+  padding-bottom: 4px;
 }
 
 .navbar-links a.active {
@@ -37,17 +48,18 @@
 
 .navbar-actions {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  justify-content: flex-end;
+  width: 180px;
 }
 
 .login-btn-pill {
-  background-color: #eaf6f4;
+  background: transparent;
   color: #00685f;
-  padding: 8px 18px;
+  border: 1.5px solid #00685f;
   border-radius: 20px;
+  padding: 7px 20px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
-  border: none;
   cursor: pointer;
 }
