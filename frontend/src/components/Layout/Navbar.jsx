@@ -1,37 +1,64 @@
-import { Link, NavLink } from "react-router-dom";
-import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext"; // Adjust import path to match your AuthContext location
 import NotificationBell from "./NotificationBell";
 import ProfileMenu from "./ProfileMenu";
+import ThemeToggle from "./ThemeToggle";
 import logo from "../../assets/logo_dashboard.png";
 import "./Navbar.css";
-import ThemeToggle from "./ThemeToggle";
 
 function Navbar() {
+  const { user } = useAuth() || {};
+  const navigate = useNavigate();
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Link to="/dashboard" className="navbar-logo">
-          <img src={logo} alt="" />
+        <Link to={user ? "/dashboard" : "/"} className="navbar-logo">
+          <img src={logo} alt="GrowTH" />
         </Link>
 
         <div className="navbar-links">
-          <NavLink to="/dashboard">Dashboard</NavLink>
-          <NavLink to="/growth">Growth</NavLink>
-          <NavLink to="/puberty">Puberty</NavLink>
-          <NavLink to="/bone-age">AI Prediction</NavLink>
-          <span className="navbar-divider" />
-          <NavLink to="/knowledge">Resources</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
+          {user ? (
+            <>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/growth">Growth</NavLink>
+              <NavLink to="/puberty">Puberty</NavLink>
+              <NavLink to="/bone-age">AI Prediction</NavLink>
+              <span className="navbar-divider" />
+              <NavLink to="/knowledge">Resources</NavLink>
+              <NavLink to="/contact">Contact</NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to="/">Home</NavLink>
+              <NavLink to="/about">About</NavLink>
+              <NavLink to="/contact">Contact</NavLink>
+            </>
+          )}
         </div>
       </div>
 
       <div className="navbar-actions">
-        <ThemeToggle />
-        <NotificationBell />
-        <ProfileMenu />
+        {user ? (
+          <>
+            <ThemeToggle />
+            <NotificationBell />
+            <ProfileMenu />
+          </>
+        ) : (
+          <>
+            <button
+              type="button"
+              className="login-btn-pill"
+              onClick={() => navigate("/login")}
+            >
+              Login / Sign Up
+            </button>
+            <ThemeToggle />
+          </>
+        )}
       </div>
     </nav>
-
   );
 }
 
