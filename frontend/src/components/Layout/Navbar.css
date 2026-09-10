@@ -3,8 +3,8 @@
   align-items: center;
   justify-content: flex-start;
 
-  padding: 16px 24px;
-  min-height: 118px;
+  padding: 10px 24px; /* Reduced vertical padding from 16px */
+  min-height: 64px;   /* Reduced overall height from 118px */
 
   background: white;
   border-bottom: 1px solid #cfe4e1;
@@ -25,7 +25,7 @@
 }
 
 .navbar-logo img {
-  height: 64px;
+  height: 38px; /* Scale logo down from 64px */
   width: auto;
 }
 
@@ -38,7 +38,7 @@
 .navbar-links a {
   color: var(--color-text-muted);
   font-weight: 500;
-  font-size: 16px;
+  font-size: 15px;
   text-decoration: none;
 }
 
@@ -50,12 +50,12 @@
 .navbar-links a.active {
   color: #00685f;
   border-bottom: 2px solid #00685f;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
 }
 
 .navbar-divider {
   width: 1px;
-  height: 24px;
+  height: 20px;
   background: #d1d5db;
   margin: 0 -4px;
 }
@@ -72,8 +72,8 @@
   align-items: center;
   justify-content: center;
 
-  width: 38px;
-  height: 38px;
+  width: 32px;  /* Slightly smaller button bounds */
+  height: 32px;
   padding: 0;
 
   background: transparent;

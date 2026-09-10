@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   User,
-  Users,
   Settings,
   LogOut,
   ChevronDown,
@@ -53,14 +52,6 @@ function ProfileMenu() {
           </Link>
 
           <Link
-            to="/children"
-            onClick={() => setOpen(false)}
-          >
-            <Users size={17} strokeWidth={1.8} />
-            <span>My Children</span>
-          </Link>
-
-          <Link
             to="/settings"
             onClick={() => setOpen(false)}
           >
@@ -81,4 +72,3 @@ function ProfileMenu() {
 }
 
 export default ProfileMenu;
-
