@@ -15,6 +15,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import NotificationsPage from "./pages/NotificationsPage";
 import ArticlePage from "./pages/ArticlePage";
 import SettingsPage from "./pages/SettingsPage";
+import ContactPage from "./pages/ContactPage";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyNoticePage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/contact" element={<ContactPage />} />
         </Route>
       </Route>
     </Routes>

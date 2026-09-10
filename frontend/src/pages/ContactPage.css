@@ -1,0 +1,214 @@
+.contact-page-container {
+  max-width: 720px;
+  margin: 30px auto;
+  padding: 0 20px 60px;
+}
+
+.contact-subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #00685f;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.contact-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0d2826;
+  margin: 0 0 24px 0;
+}
+
+.contact-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Info Card */
+.contact-info-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.info-icon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.info-content strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 4px;
+}
+
+.info-content p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #6b7280;
+  line-height: 1.5;
+}
+
+/* Form Card */
+.contact-form-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.form-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.form-header-title h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f3a38;
+  margin: 0;
+}
+
+.signed-in-text {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+}
+
+/* Thank You Success Banner */
+.contact-success-banner {
+  background-color: #e8f5f3;
+  border: 1px solid #c8e6c9;
+  border-radius: 20px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: #00685f;
+  font-weight: 500;
+}
+
+.check-icon {
+  color: #00685f;
+}
+
+.close-banner-btn {
+  background: transparent;
+  border: none;
+  color: #00685f;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form inputs & Notch Floating Label */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.float-field {
+  position: relative;
+}
+
+.float-field input,
+.float-field textarea {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #a0aab0;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #1f2937;
+  outline: none;
+  background: #ffffff;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.float-field textarea {
+  resize: vertical;
+}
+
+.float-field label {
+  position: absolute;
+  left: 14px;
+  top: 18px;
+  transform: translateY(0);
+  background: transparent;
+  padding: 0 4px;
+  font-size: 14px;
+  color: #6b7280;
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+/* Floating logic on focus or when input is not empty */
+.float-field input:focus ~ label,
+.float-field input:not(:placeholder-shown) ~ label,
+.float-field textarea:focus ~ label,
+.float-field textarea:not(:placeholder-shown) ~ label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  transform-origin: left top;
+  background: #ffffff;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.float-field input:focus,
+.float-field textarea:focus {
+  border-color: #00685f;
+}
+
+/* Send Message Button */
+.btn-send-message {
+  align-self: flex-start;
+  background-color: #005f56;
+  color: #ffffff;
+  padding: 12px 28px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 10px rgba(0, 95, 86, 0.2);
+  margin-top: 6px;
+}
+
+.btn-send-message:hover {
+  background-color: #004d45;
+}
+
+.btn-send-message:active {
+  transform: scale(0.98);
+}
