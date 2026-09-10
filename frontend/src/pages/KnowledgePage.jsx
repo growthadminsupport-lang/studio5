@@ -1,1 +1,30 @@
-import ArticleList from "../components/Knowledge/ArticleList"; function KnowledgePage() { return ( <div className="knowledge-page"> <ArticleList /> </div> ); } export default KnowledgePage;
+import { Link } from "react-router-dom";
+
+function KnowledgePage() {
+  const allArticles = [
+    { slug: "understanding-growth-spurts", title: "Understanding Growth Spurts" },
+    { slug: "early-puberty-signs", title: "Early Puberty Signs" },
+    { slug: "nutrition-for-development", title: "Nutrition for Development" },
+    // additional articles...
+  ];
+
+  return (
+    <div className="gt-knowledge-container">
+      <h1>Knowledge & Resources</h1>
+      <div className="gt-articles-grid">
+        {allArticles.map((article) => (
+          <Link
+            key={article.slug}
+            to={`/knowledge/${article.slug}`}
+            state={{ from: "knowledge" }}
+            className="gt-article-card"
+          >
+            <h3>{article.title}</h3>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default KnowledgePage;
