@@ -30,11 +30,19 @@ function App() {
       />
 
 
-      {/* Standalone Auth Pages */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-
+      {/* Standalone Auth Pages (Redirect to dashboard if already logged in) */}
+      <Route
+        path="/login"
+        element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/register"
+        element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+      />
+      <Route
+        path="/forgot-password"
+        element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <ForgotPasswordPage />}
+      />
       {/* Public Pages */}
       <Route element={<MainLayout />}>
         <Route path="/contact" element={<ContactPage />} />
