@@ -7,42 +7,36 @@ import logo from "../../assets/logo_dashboard.png";
 import "./Navbar.css";
 
 function Navbar() {
-  const { user } = useAuth() || {};
+  const { isLoggedIn } = useAuth() || {};
   const navigate = useNavigate();
 
   return (
     <nav className="navbar">
-      {/* Left: Brand Logo */}
-      <div className="navbar-brand">
-        <Link to={user ? "/dashboard" : "/"} className="navbar-logo">
+      <div className="navbar-left">
+        <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo">
           <img src={logo} alt="GrowTH" />
         </Link>
+
+        <div className="navbar-links">
+          {isLoggedIn ? (
+            <>
+              <NavLink to="/dashboard">Dashboard</NavLink>
+              <NavLink to="/growth">Growth</NavLink>
+              <NavLink to="/puberty">Puberty</NavLink>
+              <NavLink to="/bone-age">AI Prediction</NavLink>
+              <span className="navbar-divider" />
+              <NavLink to="/knowledge">Resources</NavLink>
+              <NavLink to="/contact">Contact</NavLink>
+            </>
+          ) : (
+            <>
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Center: Navigation Links */}
-      <div className="navbar-links">
-        {user ? (
-          <>
-            <NavLink to="/dashboard">Dashboard</NavLink>
-            <NavLink to="/growth">Growth</NavLink>
-            <NavLink to="/puberty">Puberty</NavLink>
-            <NavLink to="/bone-age">AI Prediction</NavLink>
-            <span className="navbar-divider" />
-            <NavLink to="/knowledge">Resources</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-          </>
-        ) : (
-          <>
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/about">About</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-          </>
-        )}
-      </div>
-
-      {/* Right: Actions */}
       <div className="navbar-actions">
-        {user ? (
+        {isLoggedIn ? (
           <>
             <ThemeToggle />
             <NotificationBell />

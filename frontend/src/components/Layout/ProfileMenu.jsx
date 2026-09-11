@@ -1,13 +1,26 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  User,
+  Settings,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import "./ProfileMenu.css";
 
 function ProfileMenu() {
-  const { logout } = useAuth();
+  const [open, setOpen] = useState(false);
+
+  const { logout, email } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/"); // Redirect to Home Page on logout
+  const initial = email ? email.charAt(0).toUpperCase() : "U";
+
+  const handleLogout = () => {
+    setOpen(false);
+    logout();
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -48,7 +61,10 @@ function ProfileMenu() {
 
           <div className="profile-dropdown-divider" />
 
-          <button onClick={handleLogout}>Log out</button>
+          <button onClick={handleLogout}>
+            <LogOut size={17} strokeWidth={1.8} />
+            <span>Log out</span>
+          </button>
         </div>
       )}
     </div>

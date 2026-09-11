@@ -12,12 +12,15 @@ function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+    const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
-    console.log("Login attempt:", { email, password, remember });
 
-    login(email, remember);
+    const result = login(email, remember);
+    if (result && !result.success) {
+      setError(result.error);
+      return;
+    }
     navigate("/dashboard", { replace: true });
   };
 

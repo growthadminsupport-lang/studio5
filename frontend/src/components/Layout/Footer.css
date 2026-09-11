@@ -1,59 +1,80 @@
-.gt-footer {
-  background-color: #eaf6f4; /* Matching Login Page background */
-  border-top: 1px solid #d1eae5;
-  padding: 28px 48px;
-  color: #4b5563;
-  font-size: 13px;
+.site-footer {
+  background: #eaf7f0;
+  padding: 24px 20px;
 }
 
-.gt-footer-container {
-  max-width: 1200px;
+.footer-content {
+  max-width: 1100px;
   margin: 0 auto;
+
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Center-aligns right links with left block */
-  gap: 32px;
+  align-items: center;
+
+  gap: 24px;
 }
 
-.gt-footer-brand {
-  max-width: 650px;
+/* Left Section */
+
+.footer-left {
+  text-align: left;
 }
 
-.gt-footer-logo {
+.footer-brand {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #00685f;
   font-size: 16px;
   font-weight: 700;
-  color: #00685f;
-  margin: 0 0 4px 0;
 }
 
-.gt-footer-subtext {
-  margin: 0 0 6px 0;
-  color: #4b5563;
-  font-size: 13px;
-}
-
-.gt-footer-disclaimer {
+.footer-disclaimer {
   margin: 0;
-  color: #8fa0a0;
-  font-size: 12px;
+
+  max-width: 650px;
+
+  color: #6b7280;
+  font-size: 13px;
   line-height: 1.4;
 }
 
-.gt-footer-links {
+/* Right Links */
+
+.footer-right {
   display: flex;
   align-items: center;
-  gap: 24px;
+
+  gap: 20px;
+
   white-space: nowrap;
 }
 
-.gt-footer-links a {
-  color: #4b5563;
+.footer-right a {
+  color: #6b7280;
+  font-size: 14px;
+
   text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
+
   transition: color 0.2s ease;
 }
 
-.gt-footer-links a:hover {
+.footer-right a:hover {
   color: #00685f;
+  text-decoration: underline;
+}
+
+/* Mobile */
+
+@media (max-width: 768px) {
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .footer-right {
+    flex-wrap: wrap;
+  }
 }

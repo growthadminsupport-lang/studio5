@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import "../components/Auth/Auth.css";
 import "./PrivacyNotice.css";
@@ -107,3 +108,4 @@ function TermsOfUsePage() {
 }
 
 export default TermsOfUsePage;
+

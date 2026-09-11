@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   --color-bg: #f4f6fb;
   --color-card: #ffffff;
@@ -14,11 +18,18 @@
 
   --font-family: "Segoe UI", Roboto, sans-serif;
 
-  /* Global sizing */
   --font-size-base: 17px;
   --font-size-small: 14px;
   --font-size-body: 16px;
   --font-size-heading: 32px;
+}
+
+[data-theme="dark"] {
+  --color-bg: #111827;
+  --color-card: #1f2937;
+  --color-text: #f3f4f6;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
 }
 
 * {
@@ -32,10 +43,20 @@ html {
 body {
   margin: 0;
   font-family: var(--font-family);
-  font-size: var(--font-size-base);
+  font-size: 17px;
   line-height: 1.6;
   background-color: var(--color-bg);
   color: var(--color-text);
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
 }
 
 a {

@@ -1,82 +1,88 @@
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 48px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  justify-content: flex-start;
+
+  padding: 10px 24px; /* Reduced vertical padding from 16px */
+  min-height: 64px;   /* Reduced overall height from 118px */
+
+  background: white;
+  border-bottom: 1px solid #cfe4e1;
+
+  gap: 38px;
 }
 
-.navbar-brand {
+.navbar-left {
   display: flex;
   align-items: center;
-  width: 220px; /* Fixed width balance */
+  gap: 30px;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .navbar-logo img {
-  height: 42px;
+  height: 38px; /* Scale logo down from 64px */
   width: auto;
-  display: block;
 }
 
 .navbar-links {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 36px;
-  flex: 1;
+  gap: 26px;
 }
 
 .navbar-links a {
-  text-decoration: none;
-  font-size: 15px;
+  color: var(--color-text-muted);
   font-weight: 500;
-  color: #4b5563;
-  position: relative;
-  padding-bottom: 6px;
-  transition: color 0.2s ease;
+  font-size: 15px;
+  text-decoration: none;
 }
 
-.navbar-links a:hover,
+.navbar-links a:hover {
+  color: #00685f;
+  text-decoration: none;
+}
+
 .navbar-links a.active {
   color: #00685f;
-  font-weight: 600;
+  border-bottom: 2px solid #00685f;
+  padding-bottom: 4px;
 }
 
-.navbar-links a.active::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #00685f;
-  border-radius: 2px;
+.navbar-divider {
+  width: 1px;
+  height: 20px;
+  background: #d1d5db;
+  margin: 0 -4px;
 }
 
 .navbar-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 16px;
-  width: 220px; /* Fixed width balance */
+  gap: 22px;
+  margin-left: auto;
 }
 
-.login-btn-pill {
+.theme-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;  /* Slightly smaller button bounds */
+  height: 32px;
+  padding: 0;
+
   background: transparent;
-  color: #00685f;
-  border: 1.5px solid #00685f;
-  border-radius: 20px;
-  padding: 7px 20px;
-  font-size: 14px;
-  font-weight: 600;
+  border: none;
+
+  color: #004640;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.login-btn-pill:hover {
-  background-color: #eaf6f4;
+.theme-button:hover {
+  color: #00685f;
 }
