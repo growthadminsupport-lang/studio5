@@ -21,7 +21,8 @@ function PrivacyNoticePage() {
   return (
     <div className="auth-page">
       <div className="privacy-card">
-        <h1>Privacy Notice</h1>
+        <h1 className="font-normal text-3xl">Privacy Notice</h1><br></br>
+
         <p>
           GrowTH is a class project (Digital Media Engineering, Khon Kaen
           University) for tracking child growth, puberty development, and
@@ -30,8 +31,8 @@ function PrivacyNoticePage() {
           Personal Data Protection Act (PDPA).
         </p>
 
-        <h2>What we collect</h2>
-        <ul>
+        <h2 className="font-semibold text-3xl">What we collect</h2>
+        <ul className="list-disc pl-5 space-y-1">
           <li>Account: full name, email, phone number, hashed password.</li>
           <li>Child profile: name, sex, date of birth, and your relationship to the child.</li>
           <li>Growth records: height, weight, and the date measured.</li>
@@ -43,7 +44,7 @@ function PrivacyNoticePage() {
           minimization) — nothing is sold or shared with third parties.
         </p>
 
-        <h2>How it's used</h2>
+        <h2 className="font-semibold text-3xl">How it's used</h2>
         <p>
           To calculate growth percentiles/SDS against standard pediatric
           growth references, compile puberty screening summaries, and (once
@@ -51,14 +52,14 @@ function PrivacyNoticePage() {
           your own account. None of these results are a clinical diagnosis.
         </p>
 
-        <h2>How it's stored</h2>
+        <h2 className="font-semibold text-3xl">How it's stored</h2>
         <p>
           Data lives in a PostgreSQL database. Passwords are hashed (never
           stored in plain text). A child's records are only visible to
           accounts linked to that child as a guardian — not to other users.
         </p>
 
-        <h2>Your controls</h2>
+        <h2 className="font-semibold text-3xl">Your controls</h2>
         <p>
           You can edit or delete any growth record, puberty screening, or
           child profile at any time from within the app. You can delete your

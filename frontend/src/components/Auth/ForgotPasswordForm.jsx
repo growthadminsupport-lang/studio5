@@ -1,135 +1,63 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { CheckCircle2 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import logo from "../../assets/logo.png";
 import "./Auth.css";
 
 function ForgotPasswordForm() {
-  const [step, setStep] = useState("request");
   const [email, setEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState("");
-  const [info, setInfo] = useState("");
 
-  const { requestPasswordReset, resetPassword } = useAuth();
-  const navigate = useNavigate();
+  const { requestPasswordReset } = useAuth();
 
-  const handleRequestSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    setError("");
-    setInfo("");
-
-    requestPasswordReset(email);
-
-    setInfo(
-      "If an account exists for this email, a verification code has been sent."
-    );
-
-    setStep("reset");
-  };
-
-  const handleResetSubmit = (e) => {
-    e.preventDefault();
-
     setError("");
 
-    if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+    if (requestPasswordReset) {
+      requestPasswordReset(email);
     }
-
-    if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters.");
-      return;
-    }
-
-    const result = resetPassword(email, newPassword);
-
-    if (!result.success) {
-      setError(result.error);
-      return;
-    }
-
-    navigate("/login", { replace: true });
+    setIsSubmitted(true);
   };
 
   return (
-    <div className="auth-form">
-      <form
-        onSubmit={
-          step === "request"
-            ? handleRequestSubmit
-            : handleResetSubmit
-        }
-        className="auth-form"
-      >
-        <img src={logo} alt="GrowTH" className="auth-logo" />
-
-        <h1>Reset your password</h1>
-
+    <div className="auth-page">
+      <form onSubmit={handleSubmit} className="auth-form">
+        <h1 className="font-bold text-3xl">Reset your password</h1>
         <p className="auth-subtitle">
-          {step === "request"
-            ? "Enter your account email to receive a verification code."
-            : "Enter the new password for your account."}
+          Enter your email and we'll send you a link to reset it.
         </p>
 
         {error && <p className="auth-error">{error}</p>}
 
-        {info && step === "reset" && (
-          <p className="auth-info">{info}</p>
-        )}
-
-        {step === "request" ? (
-          <label>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </label>
-        ) : (
+        {!isSubmitted ? (
           <>
             <label>
               <input
-                type="password"
-                placeholder="New password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                type="email"
+                placeholder="Email *"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                minLength={8}
               />
             </label>
 
-            <label>
-              <input
-                type="password"
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                minLength={8}
-              />
-            </label>
+            <button type="submit">Send reset link</button>
           </>
+        ) : (
+          <div className="auth-success-box">
+            <CheckCircle2 size={20} style={{ flexShrink: 0, marginTop: "2px" }} />
+            <p>
+              If an account exists for that email, we've sent a password reset
+              link to it. Check your inbox (and spam folder) — the link expires
+              in 1 hour.
+            </p>
+          </div>
         )}
-
-        <button type="submit">
-          {step === "request"
-            ? "Send Verification Email"
-            : "Reset Password"}
-        </button>
 
         <div className="auth-links">
           <Link to="/login">Back to login</Link>
-
-          <span>
-            Remembered your password?{" "}
-            <Link to="/login">Log in</Link>
-          </span>
         </div>
       </form>
     </div>

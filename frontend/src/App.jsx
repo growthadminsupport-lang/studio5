@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import MainLayout from "./components/Layout/MainLayout";
 import LoginPage from "./pages/LoginPage";
+import MainLayout from "./components/Layout/MainLayout";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -28,6 +28,12 @@ function App() {
         path="/"
         element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} replace />}
       />
+
+
+      {/* Standalone Auth Pages */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       {/* Public Pages */}
       <Route element={<MainLayout />}>

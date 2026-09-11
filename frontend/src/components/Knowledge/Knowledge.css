@@ -131,6 +131,7 @@
 }
 
 .knowledge-readmore {
+  font-size: small;
   display: inline-block;
   margin-top: 12px;
   color: #00685f;

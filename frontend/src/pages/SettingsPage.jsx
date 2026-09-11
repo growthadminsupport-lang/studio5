@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Camera, CheckCircle2 } from "lucide-react";
-import profileAvatar from "../assets/profileAvator.png";
+import { useAuth } from "../context/AuthContext";
 import "./SettingsPage.css";
 
 function SettingsPage() {
+  const { user } = useAuth() || {};
+  
+  // Safely extract email from auth context with fallback
+  const email = user?.email || localStorage.getItem("userEmail") || "";
+  const initial = email ? email.trim().charAt(0).toUpperCase() : "G";
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [passwordSuccess, setPasswordSuccess] = useState(false);
@@ -33,8 +39,8 @@ function SettingsPage() {
         <div className="settings-card">
           <h2>Profile photo</h2>
           <div className="avatar-wrapper">
-            <div className="photo-avatar">
-              <img src={profileAvatar} alt="Profile" className="avatar-img" />
+            <div className="avatar">
+              <span className="avatar-initial">{initial}</span>
               <button
                 type="button"
                 className="camera-badge"

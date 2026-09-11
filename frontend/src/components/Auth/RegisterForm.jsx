@@ -25,7 +25,7 @@ function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="auth-form">
       <img src={logo} alt="GrowTH" className="auth-logo" />
-      <h1>Create your account</h1>
+      <h1 className="font-semibold text-3xl">Create your account</h1>
       <p className="auth-subtitle">Start tracking your child's growth journey</p>
 
       {error && <p className="auth-error">{error}</p>}

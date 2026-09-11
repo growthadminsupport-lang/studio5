@@ -27,7 +27,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="auth-form">
       <img src={logo} alt="GrowTH" className="auth-logo" />
-      <h1>Welcome back</h1>
+      <h1 className="font-bold text-3xl">Welcome back</h1>
       <p className="auth-subtitle">Log in to track your child's growth</p>
 
       {error && <p className="auth-error">{error}</p>}
