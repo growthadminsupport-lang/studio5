@@ -1,22 +1,207 @@
-/* Desktop / Default Styles */
+/* Page Layout */
 .account-page-container {
-  max-width: 800px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 40px 24px;
+  padding: 40px 20px 80px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Profile Header Section */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+.profile-avatar-large {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background-color: #00685f;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.profile-email {
+  font-size: 15px;
+  color: #5c707d;
+  margin: 0 0 12px 0;
+}
+
+.profile-settings-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #00685f;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.profile-settings-link:hover {
+  opacity: 0.85;
+}
+
+/* Cards Section */
+.account-cards-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.account-card {
+  background: var(--color-card, #ffffff);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
   box-sizing: border-box;
 }
 
-.account-cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+.account-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 20px 0;
 }
 
-/* Mobile-Only Overrides (Under 768px) */
+/* Form & Floating Border Label */
+.account-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  position: relative;
+  width: 100%;
+}
+
+.input-group label {
+  position: absolute;
+  top: -9px;
+  left: 14px;
+  background: var(--color-card, #ffffff);
+  padding: 0 6px;
+  font-size: 12.5px;
+  color: #64748b;
+  font-weight: 500;
+  z-index: 1;
+}
+
+.input-group input {
+  width: 100%;
+  height: 52px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 0 16px;
+  font-size: 16px;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  background: transparent;
+  transition: border-color 0.2s ease;
+}
+
+.input-group input:focus {
+  border-color: #00685f;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  height: 48px;
+  background-color: #00685f;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #00524b;
+}
+
+.btn-outline {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  color: #00685f;
+  border: 1.5px solid #00685f;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-outline:hover {
+  background-color: #f0fdfa;
+}
+
+.btn-danger-outline {
+  width: 100%;
+  height: 48px;
+  background: transparent;
+  color: #dc2626;
+  border: 1.5px solid #dc2626;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-danger-outline:hover {
+  background-color: #fef2f2;
+}
+
+/* Dark Mode Overrides */
+.dark .account-card {
+  background-color: #1e293b;
+  box-shadow: none;
+}
+
+.dark .profile-name,
+.dark .account-card h3,
+.dark .input-group input {
+  color: #f8fafc;
+}
+
+.dark .input-group label {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+.dark .input-group input {
+  border-color: #334155;
+}
+
+/* Mobile Screen Overrides (Under 768px) */
 @media (max-width: 768px) {
   .account-page-container {
-    max-width: 440px;
-    padding: 24px 16px 40px;
+    max-width: 100%;
+    padding: 24px 16px 110px; /* 110px clears mobile bottom navbar */
   }
 
   .account-cards-container {
