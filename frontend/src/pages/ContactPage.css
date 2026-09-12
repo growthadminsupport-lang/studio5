@@ -1,48 +1,45 @@
-/* Page Layout Container */
+/* Container Layout */
 .gt-contact-wrapper {
-  max-width: 760px;
-  margin: 36px auto;
-  padding: 0 20px 60px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
   box-sizing: border-box;
 }
 
 .gt-contact-subtitle {
   font-size: 14px;
   font-weight: 600;
-  color: #00685f;
+  color: #056559;
   display: block;
   margin-bottom: 4px;
 }
 
 .gt-contact-title {
   font-size: 32px;
-  font-weight: 700;
-  color: #0b2524;
-  margin: 0 0 24px 0;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 24px;
 }
 
 .gt-contact-stack {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
-/* Card Styling */
 .gt-contact-card {
   background: #ffffff;
+  border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 28px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
-  box-sizing: border-box;
-  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
-/* Info Rows (Map & Email) */
+/* Info Section Card */
 .gt-info-row {
   display: flex;
-  align-items: flex-start;
   gap: 14px;
+  align-items: flex-start;
   margin-bottom: 20px;
 }
 
@@ -51,29 +48,30 @@
 }
 
 .gt-info-icon {
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .gt-info-content strong {
   display: block;
   font-size: 15px;
   font-weight: 700;
-  color: #111827;
+  color: #0f172a;
   margin-bottom: 4px;
 }
 
 .gt-info-content p {
   margin: 0;
   font-size: 14px;
-  color: #4b5563;
+  color: #475569;
   line-height: 1.5;
 }
 
-/* Form Header */
+/* Form Header Section */
+.gt-form-header {
+  margin-bottom: 24px;
+}
+
 .gt-title-with-icon {
   display: flex;
   align-items: center;
@@ -82,32 +80,28 @@
 }
 
 .gt-title-with-icon h2 {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
-  color: #0d3836;
+  color: #0f172a;
   margin: 0;
 }
 
-.gt-bug-icon {
-  flex-shrink: 0;
-}
-
 .gt-signed-in {
-  font-size: 14px;
-  color: #6b7280;
-  margin: 0 0 20px 0;
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
 }
 
 /* Success Banner */
 .gt-success-banner {
-  background-color: #e8f5f3;
-  border: 1px solid #d0ebe7;
-  border-radius: 20px;
-  padding: 10px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
 }
 
 .gt-banner-text {
@@ -115,7 +109,7 @@
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #00685f;
+  color: #047857;
   font-weight: 500;
 }
 
@@ -126,34 +120,33 @@
   padding: 2px;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
-/* Floating Input Fields */
+/* Floating Label Form Fields */
 .gt-contact-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .gt-float-field {
   position: relative;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .gt-float-field input,
 .gt-float-field textarea {
   width: 100%;
-  padding: 14px 16px;
-  border: 1px solid #9ca3af;
-  border-radius: 14px;
-  font-size: 15px;
-  color: #1f2937;
-  outline: none;
-  background: #ffffff;
+  padding: 22px 14px 8px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #0f172a;
+  background-color: #ffffff;
   box-sizing: border-box;
-  font-family: inherit;
-  transition: border-color 0.2s ease;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .gt-float-field textarea {
@@ -164,52 +157,71 @@
 .gt-float-field label {
   position: absolute;
   left: 14px;
-  top: 18px;
-  background: transparent;
-  padding: 0 4px;
-  font-size: 14px;
-  color: #6b7280;
+  top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
   pointer-events: none;
   transition: all 0.2s ease;
 }
 
-.gt-float-field input:focus ~ label,
-.gt-float-field input:not(:placeholder-shown) ~ label,
-.gt-float-field textarea:focus ~ label,
-.gt-float-field textarea:not(:placeholder-shown) ~ label {
-  top: 0;
-  transform: translateY(-50%) scale(0.85);
-  transform-origin: left top;
-  background: #ffffff;
-  color: #6b7280;
-  font-weight: 500;
+/* Floating behavior when field is empty */
+.gt-float-field input:placeholder-shown + label,
+.gt-float-field textarea:placeholder-shown + label {
+  top: 16px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+/* Floating behavior when active or focused */
+.gt-float-field input:focus + label,
+.gt-float-field textarea:focus + label {
+  top: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #056559;
 }
 
 .gt-float-field input:focus,
 .gt-float-field textarea:focus {
-  border-color: #00685f;
+  border-color: #056559;
+  box-shadow: 0 0 0 3px rgba(5, 101, 89, 0.1);
 }
 
-/* Submit Button */
+/* Button Styling */
 .gt-send-btn {
-  align-self: flex-start;
-  background-color: #005f56;
+  width: 100%;
+  padding: 12px;
+  background-color: #056559;
   color: #ffffff;
-  padding: 12px 28px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 600;
   border: none;
+  border-radius: 9999px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 95, 86, 0.2);
-  transition: background-color 0.2s ease, transform 0.1s ease;
+  transition: background-color 0.2s ease;
   margin-top: 4px;
 }
 
 .gt-send-btn:hover {
-  background-color: #004d45;
+  background-color: #045248;
 }
 
-.gt-send-btn:active {
-  transform: scale(0.98);
+/* Mobile Screen Adjustments */
+@media (max-width: 768px) {
+  .gt-contact-wrapper {
+    max-width: 440px;
+    padding: 24px 16px 40px;
+  }
+
+  .gt-contact-title {
+    font-size: 26px;
+    margin-bottom: 20px;
+  }
+
+  .gt-contact-card {
+    border-radius: 20px;
+    padding: 20px;
+  }
 }

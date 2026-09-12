@@ -7,7 +7,7 @@ import "./Notifications.css";
 function NotificationBell() {
   const [open, setOpen] = useState(false);
 
-  const { notifications, markAsRead, clearAll } = useNotifications();
+  const { notifications, markAsRead } = useNotifications();
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -58,10 +58,6 @@ function NotificationBell() {
             >
               View All
             </Link>
-
-            <button onClick={clearAll}>
-              Clear All
-            </button>
           </div>
         </div>
       )}
@@ -70,4 +66,3 @@ function NotificationBell() {
 }
 
 export default NotificationBell;
-

@@ -84,7 +84,11 @@ function ArticleList() {
                 <h3>{a.title}</h3>
                 <p>{a.desc}</p>
                 <p className="knowledge-citation">Source: reviewed medical references</p>
-                <Link to={`/knowledge/${a.slug}`} className="knowledge-readmore">
+                <Link 
+                  to={`/knowledge/${a.slug}`} 
+                  state={{ from: "/knowledge" }} 
+                  className="knowledge-readmore"
+                >
                   Read More
                 </Link>
               </div>

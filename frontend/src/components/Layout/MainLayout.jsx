@@ -1,15 +1,21 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import BottomNav from "./BottomNav";
+import { useAuth } from "../../context/AuthContext";
+import "./MainLayout.css";
 
 function MainLayout() {
+  const { isLoggedIn } = useAuth() || {};
+
   return (
-    <div className="app-layout">
+    <div className="main-layout">
       <Navbar />
-      <main className="main-content">
-        <Outlet /> {/* Required to render child routes like AboutPage */}
+      <main className="page-content">
+        <Outlet />
       </main>
       <Footer />
+      {isLoggedIn && <BottomNav />}
     </div>
   );
 }

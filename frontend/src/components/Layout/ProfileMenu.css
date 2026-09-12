@@ -13,7 +13,6 @@
   cursor: pointer;
 }
 
-
 .profile-avatar {
   width: 42px; 
   height: 42px; 
@@ -88,4 +87,18 @@
   height: 1px;
   background: var(--color-border);
   margin: 4px;
+}
+
+/* Mobile Screens Only (< 768px) */
+@media (max-width: 768px) {
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .profile-dropdown {
+    right: 0;
+    width: 150px;
+  }
 }

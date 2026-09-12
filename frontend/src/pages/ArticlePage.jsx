@@ -1,5 +1,5 @@
-
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useParams, useLocation } from "react-router-dom";
 import "./ArticlePage.css";
 
 const articles = {
@@ -488,6 +488,17 @@ const articles = {
 
 function ArticlePage() {
   const { slug } = useParams();
+  const location = useLocation();
+
+  // Scroll to the top whenever an article is opened or changed
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
+
+  // Determine back navigation route and label dynamically based on state
+  const fromHome = location.state?.from === "/";
+  const backTarget = fromHome ? "/" : "/knowledge";
+  const backLabel = fromHome ? "← Back to Home" : "← Back to Resources";
 
   const article = articles[slug];
 
@@ -500,8 +511,8 @@ function ArticlePage() {
           <h1>Article Not Found</h1>
           <p>The article you are looking for does not exist.</p>
 
-          <Link to="/knowledge" className="article-back-link">
-            ← Back to Resources
+          <Link to={backTarget} className="article-back-link">
+            {backLabel}
           </Link>
         </div>
       </div>
@@ -543,8 +554,8 @@ function ArticlePage() {
           child's doctor about anything specific to them.
         </p>
 
-        <Link to="/knowledge" className="article-back-link">
-          ← Back to Resources
+        <Link to={backTarget} className="article-back-link">
+          {backLabel}
         </Link>
       </article>
     </div>
@@ -552,4 +563,3 @@ function ArticlePage() {
 }
 
 export default ArticlePage;
-

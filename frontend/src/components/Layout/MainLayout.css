@@ -2,8 +2,16 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .page-content {
   flex: 1;
+}
+
+/* Ensures mobile content is never hidden behind the persistent bottom bar */
+@media (max-width: 768px) {
+  .page-content {
+    padding-bottom: 64px;
+  }
 }

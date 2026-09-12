@@ -50,9 +50,9 @@ function RegisterForm() {
         <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />
         <span>
           I agree to the {" "}
-          <Link to="/terms">terms of use</Link>{" "}
+          <Link to="/terms" state={{ from: "/register" }}>terms of use</Link>{" "}
           and {" "} 
-          <Link to="/privacy-notice"> privacy notice</Link>
+          <Link to="/privacy-notice" state={{ from: "/register" }}>privacy notice</Link>
         </span>
       </label>
 

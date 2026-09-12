@@ -1,16 +1,11 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+// src/components/Auth/ProtectedRoute.jsx
+import React from "react";
+import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-function ProtectedRoute() {
-  const { isLoggedIn } = useAuth();
-  const location = useLocation();
+export default function ProtectedRoute() {
+  const { isLoggedIn } = useAuth() || {};
 
-  if (!isLoggedIn) {
-    // Saves current location in state before redirecting to login
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <Outlet />;
+  // Redirect to Home Page ('/') if unauthenticated
+  return isLoggedIn ? <Outlet /> : <Navigate to="/" replace />;
 }
-
-export default ProtectedRoute;

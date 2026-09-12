@@ -1,27 +1,23 @@
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../components/Auth/Auth.css";
 import "./PrivacyNotice.css";
 
 function PrivacyNoticePage() {
   const navigate = useNavigate();
-  const auth = useAuth();
+  const location = useLocation();
 
-  // Checks for either email or user object from AuthContext
-  const isLoggedIn = Boolean(auth?.email || auth?.user);
+  // Detects if the user navigated specifically from the registration page
+  const isFromRegister = location.state?.from === "/register";
 
   const handleBack = () => {
-    if (isLoggedIn) {
-      navigate(-1); // Returns to previous page in app
-    } else {
-      navigate("/register");
-    }
+    // Navigates back to whichever page opened this (Home or Register)
+    navigate(-1);
   };
 
   return (
     <div className="auth-page">
       <div className="privacy-card">
-        <h1 className="font-normal text-3xl">Privacy Notice</h1><br></br>
+        <h1 className="font-normal text-3xl">Privacy Notice</h1><br />
 
         <p>
           GrowTH is a class project (Digital Media Engineering, Khon Kaen
@@ -69,10 +65,10 @@ function PrivacyNoticePage() {
 
         <button
           type="button"
-          className="privacy-back-link"
+          className="privacy-back-link cursor-pointer"
           onClick={handleBack}
         >
-          ← {isLoggedIn ? "Back" : "Back to registration"}
+          ← {isFromRegister ? "Back to registration" : "Back"}
         </button>
       </div>
     </div>

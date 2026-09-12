@@ -12,48 +12,56 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="navbar-left">
-        <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo">
-          <img src={logo} alt="GrowTH" />
-        </Link>
+      <div className={`w-full flex items-center justify-between ${!isLoggedIn ? "max-w-5xl mx-auto px-0 sm:px-6" : "px-0 sm:px-6"}`}>
+        
+        <div className="navbar-left flex items-center gap-6">
+          <Link to={isLoggedIn ? "/dashboard" : "/"} className="navbar-logo">
+            <img src={logo} alt="GrowTH" className="h-9 w-auto object-contain" />
+          </Link>
 
-        <div className="navbar-links">
+          {/* Hidden on mobile, visible on desktop (md screens and above) */}
+          <div className="navbar-links hidden md:flex items-center gap-5">
+            {isLoggedIn ? (
+              <>
+                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink to="/growth">Growth</NavLink>
+                <NavLink to="/puberty">Puberty</NavLink>
+                <NavLink to="/bone-age">AI Prediction</NavLink>
+                <span className="navbar-divider" />
+                <NavLink to="/knowledge">Resources</NavLink>
+                <NavLink to="/contact">Contact</NavLink>
+              </>
+            ) : (
+              <>
+                <NavLink to="/">Home</NavLink>
+                <NavLink to="/about">About</NavLink>
+                <NavLink to="/contact">Contact</NavLink>
+              </>
+            )}
+          </div>
+        </div>
+
+        <div className="navbar-actions flex items-center gap-3">
           {isLoggedIn ? (
             <>
-              <NavLink to="/dashboard">Dashboard</NavLink>
-              <NavLink to="/growth">Growth</NavLink>
-              <NavLink to="/puberty">Puberty</NavLink>
-              <NavLink to="/bone-age">AI Prediction</NavLink>
-              <span className="navbar-divider" />
-              <NavLink to="/knowledge">Resources</NavLink>
-              <NavLink to="/contact">Contact</NavLink>
+              <ThemeToggle />
+              <NotificationBell />
+              <ProfileMenu />
             </>
           ) : (
             <>
+              <button
+                type="button"
+                className="login-btn-pill"
+                onClick={() => navigate("/login")}
+              >
+                Login / Sign Up
+              </button>
+              <ThemeToggle />
             </>
           )}
         </div>
-      </div>
 
-      <div className="navbar-actions">
-        {isLoggedIn ? (
-          <>
-            <ThemeToggle />
-            <NotificationBell />
-            <ProfileMenu />
-          </>
-        ) : (
-          <>
-            <button
-              type="button"
-              className="login-btn-pill"
-              onClick={() => navigate("/login")}
-            >
-              Login / Sign Up
-            </button>
-            <ThemeToggle />
-          </>
-        )}
       </div>
     </nav>
   );

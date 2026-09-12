@@ -1,3 +1,4 @@
+// src/pages/ProfilePage.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Settings } from "lucide-react";
@@ -5,14 +6,12 @@ import { useAuth } from "../context/AuthContext";
 import "./ProfilePage.css";
 
 function ProfilePage() {
-  const { logout, email } = useAuth();
+  const { logout, email } = useAuth() || {};
   const navigate = useNavigate();
-
   const [fullName, setFullName] = useState("Name XX");
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Logic to save name change
   };
 
   const handleLogout = () => {
@@ -22,7 +21,6 @@ function ProfilePage() {
 
   const handleDeleteAccount = () => {
     if (window.confirm("Are you sure you want to delete your account?")) {
-      // Logic to delete account
       logout();
       navigate("/login", { replace: true });
     }
@@ -44,7 +42,7 @@ function ProfilePage() {
       </div>
 
       <div className="account-cards-container">
-        {/* Account Card */}
+        {/* Account Card (Full-width Input + Save Button) */}
         <div className="account-card">
           <h3>Account</h3>
           <form onSubmit={handleSave}>
@@ -63,14 +61,14 @@ function ProfilePage() {
           </form>
         </div>
 
-        {/* Log out Card */}
-        <div className="account-card card-center">
+        {/* Log Out Card (Full-width Outlined Button) */}
+        <div className="account-card">
           <button type="button" className="btn-outline" onClick={handleLogout}>
             Log out
           </button>
         </div>
 
-        {/* Danger Zone Card */}
+        {/* Danger Zone Card (Full-width Danger Button) */}
         <div className="account-card">
           <h3>Danger zone</h3>
           <button

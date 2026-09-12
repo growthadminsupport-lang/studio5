@@ -73,7 +73,7 @@
   align-items: center;
   justify-content: center;
 
-  width: 32px;  /* Slightly smaller button bounds */
+  width: 32px;
   height: 32px;
   padding: 0;
 
@@ -86,4 +86,52 @@
 
 .theme-button:hover {
   color: #00685f;
+}
+
+.login-btn-pill {
+  padding: 6px 22px;
+  border-radius: 9999px;
+  border: 1px solid #7cc7c4;
+  background-color: #ffffff;
+  color: #056559;
+  font-weight: 700;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.login-btn-pill:hover {
+  background-color: #f0fdfa;
+  border-color: #056559;
+}
+
+/* Mobile Screens Only (< 768px) */
+@media (max-width: 768px) {
+  .navbar {
+    min-height: 60px;
+    padding: 0px 16px;
+    gap: 12px;
+  }
+
+  .navbar-left {
+    gap: 12px;
+  }
+
+  .navbar-logo img {
+    height: 32px !important;
+  }
+
+  .navbar-links {
+    display: none !important;
+  }
+
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .login-btn-pill {
+    padding: 5px 12px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
 }

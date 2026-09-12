@@ -1,80 +1,109 @@
-.site-footer {
-  background: #eaf7f0;
-  padding: 24px 20px;
+.footer-container {
+  background-color: #eefbf7;
+  padding: 32px 40px;
+  box-sizing: border-box;
 }
 
+/* Desktop Layout: Split Left & Right, Centered Vertically */
 .footer-content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  gap: 24px;
+  gap: 32px;
 }
 
-/* Left Section */
-
-.footer-left {
-  text-align: left;
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 650px;
 }
 
 .footer-brand {
-  display: block;
-
-  margin-bottom: 6px;
-
+  font-size: 18px;
+  font-weight: 800;
   color: #00685f;
-  font-size: 16px;
-  font-weight: 700;
+  margin: 0;
 }
 
-.footer-disclaimer {
+.footer-subtitle {
+  font-size: 13.5px;
+  color: #5c707d;
   margin: 0;
-
-  max-width: 650px;
-
-  color: #6b7280;
-  font-size: 13px;
   line-height: 1.4;
 }
 
-/* Right Links */
-
-.footer-right {
-  display: flex;
-  align-items: center;
-
-  gap: 20px;
-
-  white-space: nowrap;
+.footer-disclaimer {
+  font-size: 13px;
+  color: #7a8e99;
+  margin: 0;
+  line-height: 1.4;
 }
 
-.footer-right a {
-  color: #6b7280;
+/* Desktop Horizontal Right Links */
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.footer-links a {
+  color: #5c707d;
   font-size: 14px;
-
+  font-weight: 500;
   text-decoration: none;
-
   transition: color 0.2s ease;
 }
 
-.footer-right a:hover {
+.footer-links a:hover {
   color: #00685f;
-  text-decoration: underline;
 }
 
-/* Mobile */
-
+/* Mobile Screen Overrides (Under 768px) */
 @media (max-width: 768px) {
+  .footer-container {
+    padding: 16px 16px 12px !important; /* Tight bottom padding for Home/Logged-out */
+  }
+
+  /* Extra space ONLY when bottom navigation bar exists */
+  .footer-container.has-bottom-nav {
+    padding-bottom: 90px !important;
+  }
+
   .footer-content {
     flex-direction: column;
     align-items: flex-start;
+    gap: 10px;
+  }
+
+  .footer-info {
+    gap: 4px;
+  }
+
+  .footer-brand {
+    font-size: 15px;
+  }
+
+  .footer-subtitle {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .footer-disclaimer {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+
+  .footer-links {
+    margin-top: 2px;
     gap: 16px;
   }
 
-  .footer-right {
-    flex-wrap: wrap;
+  .footer-links a {
+    font-size: 12px;
+    font-weight: 400;
   }
 }

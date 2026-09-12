@@ -1,27 +1,11 @@
-import { useState } from "react";
 import { X } from "lucide-react";
+import { useNotifications } from "../context/NotificationsContext";
 import profileAvatar from "../assets/profileAvator.png";
 import "./NotificationsPage.css";
 
 function NotificationsPage() {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: "Growth update available",
-      description: "Your child's latest growth data has been updated.",
-      time: "30 Min ago",
-    },
-    {
-      id: 2,
-      title: "Profile updated",
-      description: "Your profile information has been successfully updated.",
-      time: "2 hours ago",
-    },
-  ]);
-
-  const handleDismiss = (id) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
-  };
+  // Read shared notifications and dismissal handler from global context
+  const { notifications, markAsRead } = useNotifications();
 
   return (
     <div className="notifications-page-container">
@@ -36,7 +20,7 @@ function NotificationsPage() {
               <button
                 type="button"
                 className="dismiss-btn"
-                onClick={() => handleDismiss(item.id)}
+                onClick={() => markAsRead(item.id)}
                 aria-label="Dismiss notification"
               >
                 <X size={15} color="#ffffff" strokeWidth={3} />
