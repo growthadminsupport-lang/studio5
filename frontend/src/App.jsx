@@ -1,5 +1,7 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import ChildFormPage from "./pages/ChildFormPage";
+// ...
 
 // Auth & Context
 import { useAuth } from "./context/AuthContext";
@@ -58,6 +60,8 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/children/new" element={<ChildFormPage />} />
+          <Route path="/children/:id/edit" element={<ChildFormPage />} />
         </Route>
       </Route>
 
