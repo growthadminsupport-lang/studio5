@@ -62,6 +62,31 @@
   color: #00685f;
 }
 
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .footer-container {
+  background-color: #0a1f16;
+}
+
+[data-theme="dark"] .footer-brand {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .footer-subtitle {
+  color: #9db3c4;
+}
+
+[data-theme="dark"] .footer-disclaimer {
+  color: #7f95a3;
+}
+
+[data-theme="dark"] .footer-links a {
+  color: #93a4b3;
+}
+
+[data-theme="dark"] .footer-links a:hover {
+  color: #5eead4;
+}
+
 /* Mobile Screen Overrides (Under 768px) */
 @media (max-width: 768px) {
   .footer-container {

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useChartTheme } from '../utils/chartTheme';
 import { Link } from 'react-router-dom';
 import { ArrowLeftRight, Pencil, Baby, Trash2, Check, X } from 'lucide-react';
 import {
@@ -139,16 +140,16 @@ const bmiCurve = buildBmiCurve(BMI_MILESTONES, 2, 20);
 function ConfirmDeleteDialog({ onCancel, onConfirm }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" onClick={onCancel}>
-      <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-base font-bold text-slate-900">Delete measurement?</h3>
-        <p className="mt-1 mb-5 text-sm text-slate-500">
+      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Delete measurement?</h3>
+        <p className="mt-1 mb-5 text-sm text-slate-500 dark:text-slate-400">
           This removes the entry from the growth chart and history.
         </p>
         <div className="flex justify-end gap-2">
           <button
             type="button"
             onClick={onCancel}
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-50"
+            className="rounded-full border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             Cancel
           </button>
@@ -171,27 +172,28 @@ function ConfirmDeleteDialog({ onCancel, onConfirm }) {
 // ============================================================
 
 function HeightWeightChart({ title, unit, curve }) {
+  const chart = useChartTheme();
   return (
-    <div className="mb-6 rounded-2xl bg-white p-5 border border-slate-200 shadow-2xs">
-      <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-      <p className="mt-0.5 text-xs text-slate-500">
+    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+      <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
+      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
         Dashed lines are the 3rd/50th/97th percentile reference curves for the child&apos;s age and sex.
       </p>
 
       <div className="mt-3 h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={curve} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#eef2f1" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
             <XAxis
               dataKey="ageLabel"
               ticks={['0y', '5y', '10y', '15y', '20y']}
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
-              axisLine={{ stroke: '#e2e8f0' }}
+              tick={{ fill: chart.tick, fontSize: 11 }}
+              axisLine={{ stroke: chart.axis }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
-              axisLine={{ stroke: '#e2e8f0' }}
+              tick={{ fill: chart.tick, fontSize: 11 }}
+              axisLine={{ stroke: chart.axis }}
               tickLine={false}
               width={40}
               tickFormatter={(v) => `${Math.round(v)}${unit}`}
@@ -199,43 +201,44 @@ function HeightWeightChart({ title, unit, curve }) {
             <Tooltip
               formatter={(value, name) => [`${Number(value).toFixed(1)}${unit}`, name]}
               labelFormatter={(label) => `Age ${label}`}
-              contentStyle={{ borderRadius: '12px', border: '1px solid #eef2f1', fontSize: '12px' }}
+              contentStyle={chart.tooltipStyle}
             />
 
-            <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill="#dbe4f5" fillOpacity={0.7} />
-            <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill="#c8f0dc" fillOpacity={0.6} />
-            <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill="#fde2c8" fillOpacity={0.6} />
+            <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} />
+            <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} />
+            <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.6)} />
 
             <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3" />
-            <Line type="monotone" dataKey="p50" stroke="#00685f" strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
+            <Line type="monotone" dataKey="p50" stroke={chart.median} strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
             <Line type="monotone" dataKey="p97" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P97" />
 
             {/* The child's own measurements — empty until logged. */}
-            <Line type="monotone" dataKey="value" data={[]} stroke="#056559" strokeWidth={2.5} dot={{ r: 4, fill: '#056559' }} name={title} />
+            <Line type="monotone" dataKey="value" data={[]} stroke={chart.own} strokeWidth={2.5} dot={{ r: 4, fill: chart.own }} name={title} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559]" />{title}</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400" />P3</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f]" />P50 (median)</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400" />P97</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559] dark:bg-teal-400" />{title}</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f] dark:border-teal-300" />P50 (median)</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P97</span>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5]" />Below P3</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc]" />Typical range</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8]" />Above P97</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5] dark:bg-blue-500/50" />Below P3</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc] dark:bg-emerald-500/50" />Typical range</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8] dark:bg-orange-500/50" />Above P97</span>
       </div>
     </div>
   );
 }
 
 function BmiChart({ curve }) {
+  const chart = useChartTheme();
   return (
-    <div className="mb-6 rounded-2xl bg-white p-5 border border-slate-200 shadow-2xs">
-      <h2 className="text-base font-semibold text-slate-900">BMI-for-age</h2>
-      <p className="mt-0.5 text-xs text-slate-500">
+    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+      <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">BMI-for-age</h2>
+      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
         Dashed lines are the 3rd and 50th percentile, the 95th (obesity) and 120% of the 95th (severe
         obesity), for the child&apos;s age and sex.
       </p>
@@ -243,17 +246,17 @@ function BmiChart({ curve }) {
       <div className="mt-3 h-[260px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={curve} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#eef2f1" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
             <XAxis
               dataKey="ageLabel"
               ticks={['2y', '7y', '11y', '16y', '20y']}
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
-              axisLine={{ stroke: '#e2e8f0' }}
+              tick={{ fill: chart.tick, fontSize: 11 }}
+              axisLine={{ stroke: chart.axis }}
               tickLine={false}
             />
             <YAxis
-              tick={{ fill: '#94a3b8', fontSize: 11 }}
-              axisLine={{ stroke: '#e2e8f0' }}
+              tick={{ fill: chart.tick, fontSize: 11 }}
+              axisLine={{ stroke: chart.axis }}
               tickLine={false}
               width={32}
               tickFormatter={(v) => `${Math.round(v)}`}
@@ -261,38 +264,38 @@ function BmiChart({ curve }) {
             <Tooltip
               formatter={(value, name) => [Number(value).toFixed(1), name]}
               labelFormatter={(label) => `Age ${label}`}
-              contentStyle={{ borderRadius: '12px', border: '1px solid #eef2f1', fontSize: '12px' }}
+              contentStyle={chart.tooltipStyle}
             />
 
-            <Area type="monotone" dataKey="underweight" stackId="bands" stroke="none" fill="#dbe4f5" fillOpacity={0.7} />
-            <Area type="monotone" dataKey="healthy" stackId="bands" stroke="none" fill="#c8f0dc" fillOpacity={0.6} />
-            <Area type="monotone" dataKey="overweight" stackId="bands" stroke="none" fill="#fbeec2" fillOpacity={0.7} />
-            <Area type="monotone" dataKey="obesity" stackId="bands" stroke="none" fill="#fde2c8" fillOpacity={0.7} />
-            <Area type="monotone" dataKey="severeBand" stackId="bands" stroke="none" fill="#f9d3d3" fillOpacity={0.6} />
+            <Area type="monotone" dataKey="underweight" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} />
+            <Area type="monotone" dataKey="healthy" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} />
+            <Area type="monotone" dataKey="overweight" stackId="bands" stroke="none" fill={chart.band("#fbeec2")} fillOpacity={chart.opacity(0.7)} />
+            <Area type="monotone" dataKey="obesity" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.7)} />
+            <Area type="monotone" dataKey="severeBand" stackId="bands" stroke="none" fill={chart.band("#f9d3d3")} fillOpacity={chart.opacity(0.6)} />
 
             <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3" />
-            <Line type="monotone" dataKey="p50" stroke="#00685f" strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
+            <Line type="monotone" dataKey="p50" stroke={chart.median} strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
             <Line type="monotone" dataKey="p95" stroke="#c2760c" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P95 (obesity)" />
             <Line type="monotone" dataKey="severe" stroke="#dc2626" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="120% of P95 (severe)" />
 
-            <Line type="monotone" dataKey="value" data={[]} stroke="#056559" strokeWidth={2.5} dot={{ r: 4, fill: '#056559' }} name="BMI-for-age" />
+            <Line type="monotone" dataKey="value" data={[]} stroke={chart.own} strokeWidth={2.5} dot={{ r: 4, fill: chart.own }} name="BMI-for-age" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559]" />BMI-for-age</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400" />P3</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f]" />P50 (median)</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#c2760c]" />P95 (obesity)</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559] dark:bg-teal-400" />BMI-for-age</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f] dark:border-teal-300" />P50 (median)</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#c2760c] dark:border-amber-500" />P95 (obesity)</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-red-500" />120% of P95 (severe)</span>
       </div>
       <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5]" />Underweight</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc]" />Healthy weight</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fbeec2]" />Overweight</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8]" />Obesity</span>
-        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f9d3d3]" />Severe obesity</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5] dark:bg-blue-500/50" />Underweight</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc] dark:bg-emerald-500/50" />Healthy weight</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fbeec2] dark:bg-yellow-500/50" />Overweight</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8] dark:bg-orange-500/50" />Obesity</span>
+        <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f9d3d3] dark:bg-red-500/50" />Severe obesity</span>
       </div>
       <p className="mt-2 text-xs text-slate-400">
         BMI-for-age applies from 2 years. Below that, weight-for-length is the measure clinicians use.
@@ -362,18 +365,18 @@ function GrowthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white p-6 border border-slate-200 shadow-2xs sm:p-8">
+        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
           <Link
             to="/dashboard"
             aria-label="Switch child"
-            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559]"
+            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559] dark:hover:text-teal-300"
           >
             <ArrowLeftRight size={20} />
           </Link>
@@ -382,26 +385,26 @@ function GrowthPage() {
             to={`/children/${child.id}/edit`}
             state={{ child }}
             aria-label="Edit child profile"
-            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] text-white shadow-sm transition hover:bg-[#03443c]"
+            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950 shadow-sm transition hover:bg-[#03443c] dark:hover:bg-teal-300"
           >
             <Pencil size={13} />
           </Link>
 
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#a7ebd9]">
-              <Baby size={34} strokeWidth={1.5} className="text-[#056559]" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#a7ebd9] dark:bg-teal-500/50">
+              <Baby size={34} strokeWidth={1.5} className="text-[#056559] dark:text-teal-300" />
             </div>
 
             <div>
-              <h2 className="text-lg font-bold text-slate-900">{child.name}</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{child.name}</h2>
               <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-full border border-[#bcece0] px-2 py-0.5 text-xs font-medium text-[#056559]">
+                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
                   {child.gender}
                 </span>
-                <span className="rounded-full border border-[#bcece0] px-2 py-0.5 text-xs font-medium text-[#056559]">
+                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
                   {child.ageLabel}
                 </span>
-                <span className="rounded-full border border-[#bcece0] px-2 py-0.5 text-xs font-medium text-[#056559]">
+                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
                   {child.bornLabel}
                 </span>
               </div>
@@ -409,14 +412,14 @@ function GrowthPage() {
           </div>
         </div>
 
-        <h1 className="mb-6 text-xl font-bold text-[#056559]">Growth Tracking</h1>
+        <h1 className="mb-6 text-xl font-bold text-[#056559] dark:text-teal-300">Growth Tracking</h1>
 
         {/* ====================================================
             Log a new measurement
         ==================================================== */}
 
-        <div className="mb-6 rounded-2xl bg-white p-5 border border-slate-200 shadow-2xs">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">Log a new measurement</h2>
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Log a new measurement</h2>
 
           <form onSubmit={handleAdd} className="grid grid-cols-1 gap-3 sm:grid-cols-4 sm:items-end">
             <input
@@ -424,24 +427,24 @@ function GrowthPage() {
               placeholder="Height (cm)"
               value={heightCm}
               onChange={(e) => setHeightCm(e.target.value)}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-[#056559]"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-[#056559] dark:focus:border-teal-400"
             />
             <input
               type="number"
               placeholder="Weight (kg)"
               value={weightKg}
               onChange={(e) => setWeightKg(e.target.value)}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-[#056559]"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-[#056559] dark:focus:border-teal-400"
             />
             <input
               type="date"
               value={measuredAt}
               onChange={(e) => setMeasuredAt(e.target.value)}
-              className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:border-[#056559]"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none focus:border-[#056559] dark:focus:border-teal-400"
             />
             <button
               type="submit"
-              className="rounded-xl bg-[#056559] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#03443c]"
+              className="rounded-xl bg-[#056559] dark:bg-teal-400 px-4 py-2.5 text-sm font-semibold text-white dark:text-slate-950 transition hover:bg-[#03443c] dark:hover:bg-teal-300"
             >
               Add measurement
             </button>
@@ -460,33 +463,33 @@ function GrowthPage() {
             History
         ==================================================== */}
 
-        <div className="rounded-2xl bg-white p-5 border border-slate-200 shadow-2xs">
-          <h2 className="mb-4 text-base font-semibold text-slate-900">History</h2>
+        <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">History</h2>
 
-          <div className="flex flex-col divide-y divide-slate-100">
+          <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
             {history.map((record) =>
               editingId === record.id ? (
                 <div key={record.id} className="flex flex-wrap items-center gap-2 py-3 text-sm">
-                  <span className="w-24 shrink-0 text-slate-500">{formatDate(record.measuredAt)}</span>
+                  <span className="w-24 shrink-0 text-slate-500 dark:text-slate-400">{formatDate(record.measuredAt)}</span>
                   <input
                     type="number"
                     placeholder="Height (cm)"
                     value={editHeight}
                     onChange={(e) => setEditHeight(e.target.value)}
-                    className="w-28 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#056559]"
+                    className="w-28 rounded-lg border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 text-xs outline-none focus:border-[#056559] dark:focus:border-teal-400"
                   />
                   <input
                     type="number"
                     placeholder="Weight (kg)"
                     value={editWeight}
                     onChange={(e) => setEditWeight(e.target.value)}
-                    className="w-28 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs outline-none focus:border-[#056559]"
+                    className="w-28 rounded-lg border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 text-xs outline-none focus:border-[#056559] dark:focus:border-teal-400"
                   />
                   <button
                     type="button"
                     onClick={() => saveEdit(record.id)}
                     aria-label="Save"
-                    className="text-[#056559] hover:text-[#03443c]"
+                    className="text-[#056559] dark:text-teal-300 hover:text-[#03443c] dark:hover:text-teal-200"
                   >
                     <Check size={16} />
                   </button>
@@ -494,18 +497,18 @@ function GrowthPage() {
                     type="button"
                     onClick={() => setEditingId(null)}
                     aria-label="Cancel edit"
-                    className="text-slate-400 hover:text-slate-600"
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
                   >
                     <X size={16} />
                   </button>
                 </div>
               ) : (
                 <div key={record.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3 text-sm">
-                  <span className="text-slate-500">{formatDate(record.measuredAt)}</span>
-                  <span className="text-slate-900">{record.heightCm ? `${record.heightCm} cm` : '—'}</span>
-                  <span className="text-slate-900">{record.weightKg ? `${record.weightKg} kg` : '—'}</span>
+                  <span className="text-slate-500 dark:text-slate-400">{formatDate(record.measuredAt)}</span>
+                  <span className="text-slate-900 dark:text-slate-100">{record.heightCm ? `${record.heightCm} cm` : '—'}</span>
+                  <span className="text-slate-900 dark:text-slate-100">{record.weightKg ? `${record.weightKg} kg` : '—'}</span>
                   <span className="ml-auto flex items-center gap-2">
-                    <button type="button" aria-label="Edit" onClick={() => startEdit(record)} className="text-slate-400 hover:text-[#056559]">
+                    <button type="button" aria-label="Edit" onClick={() => startEdit(record)} className="text-slate-400 hover:text-[#056559] dark:hover:text-teal-300">
                       <Pencil size={14} />
                     </button>
                     <button
@@ -521,7 +524,7 @@ function GrowthPage() {
               ),
             )}
 
-            {history.length === 0 && <p className="py-4 text-sm text-slate-500">No measurements yet.</p>}
+            {history.length === 0 && <p className="py-4 text-sm text-slate-500 dark:text-slate-400">No measurements yet.</p>}
           </div>
         </div>
 

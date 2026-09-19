@@ -38,3 +38,19 @@
     font-weight: 700;
   }
 }
+
+/* ---------------- Dark Mode ---------------- */
+@media (max-width: 768px) {
+  [data-theme="dark"] .bottom-nav {
+    background-color: #0b1324;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  [data-theme="dark"] .bottom-nav a {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .bottom-nav a.active {
+    color: #5eead4;
+  }
+}

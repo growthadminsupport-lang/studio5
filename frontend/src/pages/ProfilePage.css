@@ -176,25 +176,70 @@
   background-color: #fef2f2;
 }
 
-/* Dark Mode Overrides */
-.dark .account-card {
-  background-color: #1e293b;
+/* Dark Mode Overrides (shared palette: slate-950 page, slate-900 cards, teal-300/400 accents) */
+[data-theme="dark"] .account-card {
+  background-color: #0f172a;
+  border: 1px solid #334155;
   box-shadow: none;
 }
 
-.dark .profile-name,
-.dark .account-card h3,
-.dark .input-group input {
-  color: #f8fafc;
+[data-theme="dark"] .profile-avatar-large {
+  background-color: #2dd4bf;
+  color: #022c22;
 }
 
-.dark .input-group label {
-  background: #1e293b;
+[data-theme="dark"] .profile-name,
+[data-theme="dark"] .account-card h3,
+[data-theme="dark"] .input-group input {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .profile-email {
   color: #94a3b8;
 }
 
-.dark .input-group input {
+[data-theme="dark"] .profile-settings-link {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .input-group label {
+  background: #0f172a;
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .input-group input {
   border-color: #334155;
+}
+
+[data-theme="dark"] .input-group input:focus {
+  border-color: #2dd4bf;
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: #2dd4bf;
+  color: #022c22;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  background-color: #5eead4;
+}
+
+[data-theme="dark"] .btn-outline {
+  color: #5eead4;
+  border-color: rgba(45, 212, 191, 0.5);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background-color: rgba(45, 212, 191, 0.1);
+}
+
+[data-theme="dark"] .btn-danger-outline {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+[data-theme="dark"] .btn-danger-outline:hover {
+  background-color: rgba(248, 113, 113, 0.1);
 }
 
 /* Mobile Screen Overrides (Under 768px) */

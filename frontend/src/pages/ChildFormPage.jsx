@@ -19,7 +19,7 @@ const AVATAR_PRESETS = [
 function FloatingLabelField({ label, required, children }) {
   return (
     <div className="relative">
-      <label className="absolute -top-2 left-3 bg-white px-1 text-xs text-slate-500">
+      <label className="absolute -top-2 left-3 bg-white dark:bg-slate-900 px-1 text-xs text-slate-500 dark:text-slate-400">
         {label}
         {required && ' *'}
       </label>
@@ -29,7 +29,7 @@ function FloatingLabelField({ label, required, children }) {
 }
 
 const fieldClasses =
-  'w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-[#056559]';
+  'w-full rounded-xl border-2 border-slate-200 dark:border-slate-700 px-4 py-3 text-sm text-slate-900 dark:text-slate-100 outline-none transition focus:border-[#056559] dark:focus:border-teal-400';
 
 function ChildFormPage() {
   const navigate = useNavigate();
@@ -70,14 +70,15 @@ function ChildFormPage() {
   }
 
   return (
-    <div className="mx-auto mt-10 w-full max-w-md rounded-2xl bg-white p-8 shadow-2xs border border-slate-200">
-      <h1 className="text-xl font-bold text-[#056559]">{isEdit ? 'Edit child' : 'Add your child'}</h1>
-      <p className="mt-1 mb-6 text-sm text-slate-500">
+    <div className="min-h-screen px-4 pb-16 pt-10 dark:bg-slate-950">
+    <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-2xs border border-slate-200 dark:border-slate-700">
+      <h1 className="text-xl font-bold text-[#056559] dark:text-teal-300">{isEdit ? 'Edit child' : 'Add your child'}</h1>
+      <p className="mt-1 mb-6 text-sm text-slate-500 dark:text-slate-400">
         We&apos;ll use this to personalize growth tracking and charts.
       </p>
 
       {isEdit && !existingChild && (
-        <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <p className="mb-6 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
           Opened this page directly, so the form starts blank — go back and use the edit button on the
           child&apos;s profile card instead to load their current details.
         </p>
@@ -85,8 +86,8 @@ function ChildFormPage() {
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div>
-          <p className="mb-1 text-sm font-medium text-slate-900">Choose an avatar</p>
-          <p className="mb-3 text-xs text-slate-500">
+          <p className="mb-1 text-sm font-medium text-slate-900 dark:text-slate-100">Choose an avatar</p>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             For your child&apos;s privacy, profiles use a picked character instead of a real photo.
           </p>
 
@@ -101,7 +102,7 @@ function ChildFormPage() {
                   aria-label={preset.id}
                   aria-pressed={active}
                   className={`flex aspect-square items-center justify-center rounded-full transition ${
-                    active ? 'ring-2 ring-[#056559] ring-offset-2' : 'opacity-80 hover:opacity-100'
+                    active ? 'ring-2 ring-[#056559] dark:ring-teal-400 ring-offset-2 dark:ring-offset-slate-900' : 'opacity-80 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: preset.bg }}
                 >
@@ -141,12 +142,12 @@ function ChildFormPage() {
           />
         </FloatingLabelField>
 
-        <div className="grid grid-cols-2 overflow-hidden rounded-xl border-2 border-slate-200">
+        <div className="grid grid-cols-2 overflow-hidden rounded-xl border-2 border-slate-200 dark:border-slate-700">
           <button
             type="button"
             onClick={() => setSex('FEMALE')}
             className={`py-2.5 text-sm font-semibold transition ${
-              sex === 'FEMALE' ? 'bg-[#eaf6f3] text-[#056559]' : 'bg-white text-slate-500 hover:bg-slate-50'
+              sex === 'FEMALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             Girl
@@ -154,8 +155,8 @@ function ChildFormPage() {
           <button
             type="button"
             onClick={() => setSex('MALE')}
-            className={`border-l-2 border-slate-200 py-2.5 text-sm font-semibold transition ${
-              sex === 'MALE' ? 'bg-[#eaf6f3] text-[#056559]' : 'bg-white text-slate-500 hover:bg-slate-50'
+            className={`border-l-2 border-slate-200 dark:border-slate-700 py-2.5 text-sm font-semibold transition ${
+              sex === 'MALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             Boy
@@ -166,7 +167,7 @@ function ChildFormPage() {
           <select
             value={relation}
             onChange={(e) => setRelation(e.target.value)}
-            className={`${fieldClasses} appearance-none bg-white`}
+            className={`${fieldClasses} appearance-none bg-white dark:bg-slate-900`}
           >
             <option value="PARENT">Parent</option>
             <option value="GUARDIAN">Guardian</option>
@@ -177,11 +178,12 @@ function ChildFormPage() {
         <button
           type="submit"
           disabled={saving}
-          className="mt-1 rounded-xl bg-[#056559] py-3 text-sm font-semibold text-white transition hover:bg-[#03443c] disabled:opacity-60"
+          className="mt-1 rounded-xl bg-[#056559] dark:bg-teal-400 py-3 text-sm font-semibold text-white dark:text-slate-950 transition hover:bg-[#03443c] dark:hover:bg-teal-300 disabled:opacity-60"
         >
           {saving ? 'Saving…' : isEdit ? 'Save changes' : 'Save and continue'}
         </button>
       </form>
+    </div>
     </div>
   );
 }

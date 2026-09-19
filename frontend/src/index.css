@@ -30,6 +30,7 @@
   --color-text: #f3f4f6;
   --color-text-muted: #9ca3af;
   --color-border: #374151;
+  color-scheme: dark; /* dark date pickers, scrollbars, form controls */
 }
 
 * {

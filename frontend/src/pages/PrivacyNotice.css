@@ -94,3 +94,28 @@
   }
 
 }
+
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .privacy-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .privacy-card h1 {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .privacy-card h2 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .privacy-card p,
+[data-theme="dark"] .privacy-card li {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .privacy-back-link,
+[data-theme="dark"] .privacy-back-btn {
+  color: #5eead4;
+}

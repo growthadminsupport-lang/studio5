@@ -22,6 +22,7 @@ function ContactPage() {
   };
 
   return (
+    <div className="gt-contact-page">
     <div className="gt-contact-wrapper">
       <span className="gt-contact-subtitle">Contact</span>
       <h1 className="gt-contact-title">Get in touch</h1>
@@ -31,7 +32,7 @@ function ContactPage() {
         <div className="gt-contact-card">
           <div className="gt-info-row">
             <div className="gt-info-icon">
-              <MapPin size={20} color="#00685f" />
+              <MapPin size={20} className="gt-icon-accent" />
             </div>
             <div className="gt-info-content">
               <strong>Department</strong>
@@ -44,7 +45,7 @@ function ContactPage() {
 
           <div className="gt-info-row">
             <div className="gt-info-icon">
-              <Mail size={20} color="#00685f" />
+              <Mail size={20} className="gt-icon-accent" />
             </div>
             <div className="gt-info-content">
               <strong>Email</strong>
@@ -59,7 +60,7 @@ function ContactPage() {
         <div className="gt-contact-card">
           <div className="gt-form-header">
             <div className="gt-title-with-icon">
-              <Bug size={22} color="#00685f" className="gt-bug-icon" />
+              <Bug size={22} className="gt-icon-accent gt-bug-icon" />
               <h2>Report a bug / contact support</h2>
             </div>
             <p className="gt-signed-in">
@@ -71,7 +72,7 @@ function ContactPage() {
           {showSuccess && (
             <div className="gt-success-banner">
               <div className="gt-banner-text">
-                <CheckCircle2 size={18} color="#00685f" />
+                <CheckCircle2 size={18} className="gt-success-icon" />
                 <span>Thank - your message has been sent.</span>
               </div>
               <button
@@ -80,7 +81,7 @@ function ContactPage() {
                 onClick={() => setShowSuccess(false)}
                 aria-label="Close notification"
               >
-                <X size={16} color="#00685f" />
+                <X size={16} className="gt-success-icon" />
               </button>
             </div>
           )}
@@ -131,6 +132,7 @@ function ContactPage() {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -166,3 +166,49 @@
   }
 }
 
+/* ---------------- Dark Mode (matches the other dark pages) ---------------- */
+[data-theme="dark"] .article-bg {
+  min-height: 100vh;
+  background: #020617; /* slate-950 */
+}
+
+[data-theme="dark"] .article-type,
+[data-theme="dark"] .article-back-link {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .article-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .article-card h1,
+[data-theme="dark"] .article-section h2,
+[data-theme="dark"] .article-sources h2,
+[data-theme="dark"] .article-section-content {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .article-description,
+[data-theme="dark"] .article-sources li,
+[data-theme="dark"] .article-disclaimer {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .article-table th,
+[data-theme="dark"] .article-table td {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .article-table th {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .article-sources {
+  border-top-color: #334155;
+}
+
+[data-theme="dark"] .article-disclaimer {
+  background: #1e293b;
+}

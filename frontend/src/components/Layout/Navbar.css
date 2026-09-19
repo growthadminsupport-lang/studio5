@@ -105,6 +105,51 @@
   border-color: #056559;
 }
 
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .navbar {
+  background: #0b1324;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .navbar-links a {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .navbar-links a:hover {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .navbar-links a.active {
+  color: #5eead4;
+  border-bottom: 3px solid #2dd4bf;
+}
+
+[data-theme="dark"] .navbar-divider {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme="dark"] .theme-button {
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+[data-theme="dark"] .theme-button:hover {
+  color: #5eead4;
+  border-color: rgba(94, 234, 212, 0.4);
+}
+
+[data-theme="dark"] .login-btn-pill {
+  background-color: transparent;
+  border: 1px solid rgba(45, 212, 191, 0.5);
+  color: #5eead4;
+}
+
+[data-theme="dark"] .login-btn-pill:hover {
+  background-color: rgba(45, 212, 191, 0.08);
+  border-color: #5eead4;
+}
+
 /* Mobile Screens Only (< 768px) */
 @media (max-width: 768px) {
   .navbar {

@@ -114,3 +114,43 @@
     right: -10px;
   }
 }
+
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .bell-button {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .notification-dropdown {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .empty-state {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .notification-dropdown .notification-card {
+  background: #1e293b;
+}
+
+[data-theme="dark"] .notification-text h4 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .notification-text p {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .notification-dropdown .notification-time,
+[data-theme="dark"] .notification-close {
+  color: #64748b;
+}
+
+[data-theme="dark"] .dropdown-actions {
+  border-top-color: #334155;
+}
+
+[data-theme="dark"] .dropdown-actions a {
+  color: #5eead4;
+}

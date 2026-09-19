@@ -15,3 +15,13 @@
     padding-bottom: 64px;
   }
 }
+
+/* Dark mode: one shared page background (slate-950, same as Home) */
+[data-theme="dark"] .page-content {
+  background-color: #020617;
+}
+
+/* Privacy / Terms reuse .auth-page, which has its own darker backdrop */
+[data-theme="dark"] .page-content .auth-page {
+  background: transparent;
+}

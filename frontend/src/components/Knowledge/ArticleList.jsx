@@ -77,7 +77,7 @@ function ArticleList() {
           return (
             <div key={a.id} className="knowledge-card">
               <div className={`knowledge-icon-tile ${a.color}`}>
-                <IconComponent size={44} color="#00685f" strokeWidth={1.75} />
+                <IconComponent size={44} color="currentColor" strokeWidth={1.75} />
               </div>
               <div className="knowledge-card-body">
                 <span className="knowledge-label">{a.label}</span>

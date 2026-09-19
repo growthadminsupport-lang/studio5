@@ -4,6 +4,14 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  position: relative;
+}
+
+.auth-theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
 }
 
 .auth-form {
@@ -20,8 +28,16 @@
 }
 
 .auth-logo {
-  width: 90px;
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
   margin: 0 auto 8px;
+  mix-blend-mode: darken;
+}
+
+/* Dark mode: the card is #0f172a, so a dark logo background disappears */
+[data-theme="dark"] .auth-logo {
+  mix-blend-mode: lighten;
 }
 
 .auth-form h1 {
@@ -140,6 +156,111 @@
   display: flex;
   gap: 10px;
   align-items: flex-start;
+}
+
+/* ---------------- Dark Mode (shared palette with the rest of the app) ---------------- */
+[data-theme="dark"] .auth-page {
+  background: #020617; /* slate-950, same as every other dark page */
+}
+
+[data-theme="dark"] .auth-form {
+  background: #0f172a; /* slate-900 */
+  border: 1px solid #334155; /* slate-700 */
+  box-shadow: none;
+}
+
+[data-theme="dark"] .auth-form h1 {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .auth-subtitle {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .auth-form label {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .auth-form input[type="text"],
+[data-theme="dark"] .auth-form input[type="email"],
+[data-theme="dark"] .auth-form input[type="password"],
+[data-theme="dark"] .auth-form input[type="tel"] {
+  background-color: #0f172a;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .auth-form input::placeholder {
+  color: #64748b;
+}
+
+[data-theme="dark"] .auth-form input:focus {
+  border-color: #2dd4bf;
+  box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.12);
+}
+
+[data-theme="dark"] .auth-form button[type="submit"] {
+  background: #2dd4bf;
+  color: #022c22;
+}
+
+[data-theme="dark"] .auth-form button[type="submit"]:hover:not(:disabled) {
+  background: #5eead4;
+}
+
+[data-theme="dark"] .forgot-link-inline,
+[data-theme="dark"] .auth-links a {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .auth-links {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .auth-error {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+
+[data-theme="dark"] .auth-success-box {
+  background: rgba(45, 212, 191, 0.08);
+  color: #5eead4;
+}
+
+[data-theme="dark"] .auth-theme-toggle .theme-button {
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  width: 36px;
+  height: 36px;
+}
+
+[data-theme="dark"] .auth-theme-toggle .theme-button:hover {
+  color: #5eead4;
+  border-color: rgba(94, 234, 212, 0.4);
+}
+
+.auth-theme-toggle .theme-button {
+  color: #004640;
+  border: 1px solid rgba(0, 70, 64, 0.15);
+  border-radius: 9999px;
+  width: 36px;
+  height: 36px;
+}
+
+.auth-theme-toggle .theme-button:hover {
+  color: #00685f;
+  border-color: rgba(0, 104, 95, 0.3);
+}
+
+[data-theme="dark"] .checkbox-row a {
+  color: #5eead4;              /* bright teal, same as "Log in" */
+  font-weight: 600;
+}
+
+[data-theme="dark"] .checkbox-row a:hover {
+  color: #99f6e4;              /* even brighter on hover */
+  text-decoration: underline;
 }
 
 

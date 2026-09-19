@@ -112,3 +112,34 @@
   white-space: nowrap;
   text-align: center;
 }
+
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .notifications-title {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .no-notifications-text {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .notifications-list .notification-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .dismiss-btn {
+  border-color: #020617;
+}
+
+[data-theme="dark"] .notification-card-title {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .notification-card-desc {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .notifications-list .notification-time {
+  color: #64748b;
+}

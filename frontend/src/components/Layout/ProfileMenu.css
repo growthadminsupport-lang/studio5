@@ -102,3 +102,34 @@
     width: 150px;
   }
 }
+
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .profile-avatar {
+  background: #2dd4bf;
+  color: #022c22;
+}
+
+[data-theme="dark"] .profile-arrow {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .profile-dropdown {
+  background: #0f172a;
+  border-color: #334155;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .profile-dropdown a,
+[data-theme="dark"] .profile-dropdown button {
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .profile-dropdown a:hover,
+[data-theme="dark"] .profile-dropdown button:hover {
+  background: rgba(45, 212, 191, 0.1);
+  color: #5eead4;
+}
+
+[data-theme="dark"] .profile-dropdown-divider {
+  background: #334155;
+}

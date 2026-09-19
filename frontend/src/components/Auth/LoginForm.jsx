@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import logo from "../../assets/logo.png";
+import logoLightVideo from "../../assets/logo_motion_white.mp4";
+import logoDarkVideo from "../../assets/logo_motion_black.mp4";
+import { useTheme } from "../../context/ThemeContext";
 import "./Auth.css";
 
 function LoginForm() {
+  const { theme } = useTheme();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
@@ -26,7 +29,17 @@ function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      <img src={logo} alt="GrowTH" className="auth-logo" />
+      <video
+        key={theme}
+        src={theme === "dark" ? logoDarkVideo : logoLightVideo}
+    
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-label="GrowTH logo"
+        className="auth-logo"
+      />
       <h1 className="font-bold text-3xl">Welcome back</h1>
       <p className="auth-subtitle">Log in to track your child's growth</p>
 

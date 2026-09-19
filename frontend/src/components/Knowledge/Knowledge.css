@@ -82,6 +82,7 @@
 }
 
 .knowledge-icon-tile {
+  color: #00685f; /* icon uses currentColor */
   height: 150px;
   display: flex;
   align-items: center;
@@ -152,4 +153,81 @@
   .knowledge-section {
     padding: 35px 20px 50px;
   }
+}
+
+/* ---------------- Dark Mode (matches the other dark pages) ---------------- */
+[data-theme="dark"] .knowledge-page {
+  min-height: 100vh;
+  background: #020617; /* slate-950 */
+}
+
+[data-theme="dark"] .knowledge-heading {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .knowledge-search {
+  background: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .knowledge-search::placeholder {
+  color: #64748b;
+}
+
+[data-theme="dark"] .knowledge-search:focus {
+  border-color: #2dd4bf;
+}
+
+[data-theme="dark"] .knowledge-filters button {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .knowledge-filters button:hover {
+  background: #334155;
+}
+
+[data-theme="dark"] .knowledge-filters button.active {
+  background: #2dd4bf;
+  color: #020617;
+}
+
+[data-theme="dark"] .knowledge-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .knowledge-icon-tile {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .knowledge-icon-tile.teal {
+  background: rgba(20, 184, 166, 0.1);
+}
+
+[data-theme="dark"] .knowledge-icon-tile.mint {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+[data-theme="dark"] .knowledge-icon-tile.cream {
+  background: rgba(245, 158, 11, 0.1);
+}
+
+[data-theme="dark"] .knowledge-label,
+[data-theme="dark"] .knowledge-readmore {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .knowledge-card h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .knowledge-card p {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .knowledge-citation {
+  color: #64748b;
 }

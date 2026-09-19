@@ -208,6 +208,104 @@
   background-color: #045248;
 }
 
+.gt-icon-accent {
+  color: #00685f;
+}
+
+.gt-success-icon {
+  color: #047857;
+}
+
+/* ---------------- Dark Mode ---------------- */
+[data-theme="dark"] .gt-contact-subtitle {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .gt-contact-title {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .gt-contact-page {
+  min-height: 100vh;
+  background: #020617; /* slate-950, same as the other dark pages */
+}
+
+[data-theme="dark"] .gt-contact-card {
+  background: #0f172a; /* slate-900 */
+  border: 1px solid #334155; /* slate-700 */
+  box-shadow: none;
+}
+
+[data-theme="dark"] .gt-info-content strong {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .gt-info-content p {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .gt-icon-accent {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .gt-title-with-icon h2 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .gt-signed-in {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .gt-success-banner {
+  background-color: rgba(45, 212, 191, 0.08);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+[data-theme="dark"] .gt-banner-text {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .gt-success-icon {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .gt-float-field input,
+[data-theme="dark"] .gt-float-field textarea {
+  background-color: #0b1324;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .gt-float-field input:placeholder-shown + label,
+[data-theme="dark"] .gt-float-field textarea:placeholder-shown + label {
+  color: #64748b;
+}
+
+[data-theme="dark"] .gt-float-field label {
+  color: #94a3b8;
+  background: transparent;
+}
+
+[data-theme="dark"] .gt-float-field input:focus + label,
+[data-theme="dark"] .gt-float-field textarea:focus + label {
+  color: #5eead4;
+}
+
+[data-theme="dark"] .gt-float-field input:focus,
+[data-theme="dark"] .gt-float-field textarea:focus {
+  border-color: #5eead4;
+  box-shadow: 0 0 0 3px rgba(94, 234, 212, 0.12);
+}
+
+[data-theme="dark"] .gt-send-btn {
+  background-color: #2dd4bf;
+  color: #022c22;
+}
+
+[data-theme="dark"] .gt-send-btn:hover {
+  background-color: #5eead4;
+}
+
 /* Mobile Screen Adjustments */
 @media (max-width: 768px) {
   .gt-contact-wrapper {

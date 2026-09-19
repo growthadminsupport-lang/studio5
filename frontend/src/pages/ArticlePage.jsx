@@ -504,6 +504,7 @@ function ArticlePage() {
 
   if (!article) {
     return (
+      <div className="article-bg">
       <div className="article-page">
         <div className="article-type">Article</div>
 
@@ -516,10 +517,12 @@ function ArticlePage() {
           </Link>
         </div>
       </div>
+      </div>
     );
   }
 
   return (
+    <div className="article-bg">
     <div className="article-page">
       {/* This stays OUTSIDE the white box */}
       <div className="article-type">{article.type}</div>
@@ -558,6 +561,7 @@ function ArticlePage() {
           {backLabel}
         </Link>
       </article>
+    </div>
     </div>
   );
 }

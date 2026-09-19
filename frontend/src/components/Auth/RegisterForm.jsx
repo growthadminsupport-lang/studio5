@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../assets/logo.png";
+import { useTheme } from "../../context/ThemeContext";
+import logoDarkVideo from "../../assets/logo_motion_black.mp4";   // your dark video
+import logoLightVideo from "../../assets/logo_motion_white.mp4"; // your light video
 import "./Auth.css";
 
 function RegisterForm() {
+  const { theme } = useTheme();
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +27,17 @@ function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">
-      <img src={logo} alt="GrowTH" className="auth-logo" />
+      <video
+        key={theme}
+        src={theme === "dark" ? logoDarkVideo : logoLightVideo}
+      
+        autoPlay
+        loop
+        muted
+        playsInline
+        aria-label="GrowTH logo"
+        className="auth-logo"
+      />
       <h1 className="font-semibold text-3xl">Create your account</h1>
       <p className="auth-subtitle">Start tracking your child's growth journey</p>
 
