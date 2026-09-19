@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
-import logoDarkVideo from "../../assets/logo_motion_black.mp4";   // your dark video
-import logoLightVideo from "../../assets/logo_motion_white.mp4"; // your light video
+import logoDarkVideo from "../../assets/logo_motion_black_small.mp4";
+import logoLightVideo from "../../assets/logo_motion_white_small.mp4";
+import posterDark from "../../assets/poster_dark.webp";
+import posterLight from "../../assets/poster_light.webp";
 import "./Auth.css";
 
 function RegisterForm() {
@@ -30,7 +32,8 @@ function RegisterForm() {
       <video
         key={theme}
         src={theme === "dark" ? logoDarkVideo : logoLightVideo}
-      
+        poster={theme === "dark" ? posterDark : posterLight}
+        preload="auto"
         autoPlay
         loop
         muted
