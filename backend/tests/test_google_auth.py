@@ -16,6 +16,7 @@ os.environ["SMTP_HOST"] = ""
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 import google_oauth as oauth
 import routes_auth as routes
 
@@ -25,7 +26,7 @@ class GoogleTokenTests(unittest.IsolatedAsyncioTestCase):
     def setUpClass(cls):
         cls.key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
 
-    async def verify(self, changes=None, missing=(), key=None):
+    async def verify(self, changes=None, missing=(), key=None, max_age_seconds=None):
         claims = dict(sub="google-subject", email="parent@gmail.com", email_verified=True,
                       iss="https://accounts.google.com", aud=os.environ["GOOGLE_CLIENT_IDS"],
                       iat=int(time.time()), exp=int(time.time()) + 300, name=" Parent ")
@@ -34,7 +35,13 @@ class GoogleTokenTests(unittest.IsolatedAsyncioTestCase):
             claims.pop(field, None)
         token = jwt.encode(claims, key or self.key, algorithm="RS256", headers={"kid": "test"})
         with patch.object(oauth, "_find_key", AsyncMock(return_value=self.key.public_key())):
-            return await oauth.verify_google_id_token(token)
+            return await oauth.verify_google_id_token(token, max_age_seconds=max_age_seconds)
+
+    async def test_link_token_must_be_recent(self):
+        await self.verify(max_age_seconds=300)
+        with self.assertRaises(HTTPException) as caught:
+            await self.verify({"iat": int(time.time()) - 301}, max_age_seconds=300)
+        self.assertEqual(caught.exception.status_code, 401)
 
     async def test_valid_issuers_and_authority(self):
         for issuer in ("https://accounts.google.com", "accounts.google.com"):
@@ -92,6 +99,7 @@ class GoogleRouteTests(unittest.IsolatedAsyncioTestCase):
         self.db = MagicMock()
         self.db.execute = AsyncMock()
         self.db.flush = AsyncMock()
+        self.db.commit = AsyncMock()
         self.profile = oauth.GoogleProfile("subject", "parent@gmail.com", "Parent", None, True)
         self.user = SimpleNamespace(id="user-id", email="parent@gmail.com", full_name="Parent",
                                     password_hash="old-password", password_changed_at=None)
@@ -118,6 +126,7 @@ class GoogleRouteTests(unittest.IsolatedAsyncioTestCase):
         self.rows(None)
         await self.call()
         self.assertIsNone(self.db.add.call_args.args[0].password_hash)
+        self.assertIsNotNone(self.db.add.call_args.args[0].email_verified_at)
         self.assertTrue(self.mocks["_finish_google_login"].call_args.kwargs["is_new_account"])
         self.db.add.reset_mock()
         self.rows(None)
@@ -126,13 +135,16 @@ class GoogleRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(caught.exception.status_code, 400)
         self.db.add.assert_not_called()
 
-    async def test_link_clears_old_credentials(self):
-        self.rows(self.user, None)
-        await self.call()
-        self.assertIsNone(self.user.password_hash)
-        self.mocks["revoke_all_sessions"].assert_awaited_once_with(self.db, self.user.id)
-        self.mocks["void_pending_password_resets"].assert_awaited_once_with(self.db, self.user.id)
-        self.assertTrue(self.mocks["_finish_google_login"].call_args.kwargs["password_cleared"])
+    async def test_email_match_requires_explicit_link_without_changing_password(self):
+        self.rows(self.user)
+        with self.assertRaises(HTTPException) as caught:
+            await self.call()
+        self.assertEqual(caught.exception.status_code, 409)
+        self.assertEqual(caught.exception.detail["code"], "LINK_REQUIRED")
+        self.assertEqual(self.user.password_hash, "old-password")
+        self.mocks["revoke_all_sessions"].assert_not_awaited()
+        self.mocks["_link_google"].assert_not_awaited()
+        self.mocks["_finish_google_login"].assert_not_awaited()
 
     async def test_third_party_email_cannot_link(self):
         self.mocks["verify_google_id_token"].return_value = oauth.GoogleProfile(
@@ -140,10 +152,17 @@ class GoogleRouteTests(unittest.IsolatedAsyncioTestCase):
         self.rows(self.user)
         with self.assertRaises(HTTPException) as caught:
             await self.call()
-        self.assertEqual(caught.exception.status_code, 403)
+        self.assertEqual(caught.exception.status_code, 409)
         self.assertEqual(self.user.password_hash, "old-password")
         self.mocks["_link_google"].assert_not_awaited()
         self.mocks["_finish_google_login"].assert_not_awaited()
+
+    async def test_new_external_google_email_is_not_marked_authoritative(self):
+        self.mocks["verify_google_id_token"].return_value = oauth.GoogleProfile(
+            "subject", "parent@example.com", "Parent", None, False)
+        self.rows(None)
+        await self.call()
+        self.assertIsNone(self.db.add.call_args.args[0].email_verified_at)
 
     async def test_existing_subject_signs_in_without_relink(self):
         identity = SimpleNamespace(user_id=self.user.id, email="old@example.com")
@@ -155,11 +174,92 @@ class GoogleRouteTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.mocks["_finish_google_login"].call_args.kwargs["is_new_account"])
 
     async def test_other_subject_conflict(self):
-        self.rows(self.user, SimpleNamespace(subject="another-subject"))
+        self.rows(self.user)
         with self.assertRaises(HTTPException) as caught:
             await self.call()
         self.assertEqual(caught.exception.status_code, 409)
         self.mocks["_link_google"].assert_not_awaited()
+
+    async def test_explicit_link_preserves_password_and_data_owner(self):
+        self.user.email_verified_at = None
+        self.db.execute.side_effect = [
+            MagicMock(scalar_one=MagicMock(return_value=self.user)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=None)),
+        ]
+        with patch.object(routes, "verify_password", AsyncMock(return_value=True)):
+            result = await routes.google_link(
+                routes.GoogleLinkRequest(id_token="test", current_password="old-password"),
+                self.user, self.db,
+            )
+        self.assertIn("still works", result.message)
+        self.assertEqual(self.user.password_hash, "old-password")
+        self.assertIsNotNone(self.user.email_verified_at)
+        self.mocks["_link_google"].assert_awaited_once_with(self.db, self.user, self.profile)
+        self.mocks["verify_google_id_token"].assert_awaited_once_with("test", max_age_seconds=300)
+        self.db.commit.assert_awaited_once()
+
+    async def test_explicit_link_rejects_wrong_password(self):
+        with patch.object(routes, "verify_password", AsyncMock(return_value=False)):
+            with self.assertRaises(HTTPException) as caught:
+                await routes.google_link(
+                    routes.GoogleLinkRequest(id_token="test", current_password="wrong"),
+                    self.user, self.db,
+                )
+        self.assertEqual(caught.exception.status_code, 401)
+        self.mocks["verify_google_id_token"].assert_not_awaited()
+        self.mocks["_link_google"].assert_not_awaited()
+
+    async def test_explicit_link_rejects_mismatched_google_email(self):
+        self.mocks["verify_google_id_token"].return_value = oauth.GoogleProfile(
+            "subject", "other@gmail.com", "Other", None, True
+        )
+        with patch.object(routes, "verify_password", AsyncMock(return_value=True)):
+            with self.assertRaises(HTTPException) as caught:
+                await routes.google_link(
+                    routes.GoogleLinkRequest(id_token="test", current_password="old-password"),
+                    self.user, self.db,
+                )
+        self.assertEqual(caught.exception.status_code, 403)
+        self.mocks["_link_google"].assert_not_awaited()
+
+    async def test_explicit_link_rejects_already_linked_subject(self):
+        self.db.execute.return_value = MagicMock(scalar_one=MagicMock(return_value=self.user))
+        self.mocks["find_identity"].return_value = SimpleNamespace(user_id="different-user")
+        with patch.object(routes, "verify_password", AsyncMock(return_value=True)):
+            with self.assertRaises(HTTPException) as caught:
+                await routes.google_link(
+                    routes.GoogleLinkRequest(id_token="test", current_password="old-password"),
+                    self.user, self.db,
+                )
+        self.assertEqual(caught.exception.status_code, 409)
+        self.mocks["_link_google"].assert_not_awaited()
+
+    async def test_explicit_link_rejects_second_google_subject_for_same_user(self):
+        self.db.execute.side_effect = [
+            MagicMock(scalar_one=MagicMock(return_value=self.user)),
+            MagicMock(scalar_one_or_none=MagicMock(return_value=SimpleNamespace(subject="other"))),
+        ]
+        with patch.object(routes, "verify_password", AsyncMock(return_value=True)):
+            with self.assertRaises(HTTPException) as caught:
+                await routes.google_link(
+                    routes.GoogleLinkRequest(id_token="test", current_password="old-password"),
+                    self.user, self.db,
+                )
+        self.assertEqual(caught.exception.status_code, 409)
+        self.mocks["_link_google"].assert_not_awaited()
+
+
+class ConcurrentLinkTests(unittest.IsolatedAsyncioTestCase):
+    async def test_unique_constraint_race_returns_conflict(self):
+        db = MagicMock()
+        db.rollback = AsyncMock()
+        profile = oauth.GoogleProfile("subject", "parent@gmail.com", "Parent", None, True)
+        collision = IntegrityError("INSERT usr_identities", {}, Exception("unique violation"))
+        with patch.object(routes, "link_identity", AsyncMock(side_effect=collision)):
+            with self.assertRaises(HTTPException) as caught:
+                await routes._link_google(db, SimpleNamespace(id="user-id"), profile)
+        self.assertEqual(caught.exception.status_code, 409)
+        db.rollback.assert_awaited_once()
 
 
 if __name__ == "__main__":

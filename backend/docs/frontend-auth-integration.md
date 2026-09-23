@@ -1,201 +1,56 @@
 # Frontend authentication guide
 
-Updated 2026-09-22. See [the API guide](frontend-api.md) for setup and all endpoint paths. Request schemas are generated at `/docs` and `/openapi.json`.
+Updated 2026-09-23. The React implementation is in `frontend/src/context/AuthContext.jsx`, `frontend/src/lib/api.js`, and the authentication pages. OpenAPI schemas are available at `/docs` and `/openapi.json` when the API runs.
 
 ## Configuration
 
-Frontend (Vite example):
+Frontend `.env`:
 
 ```dotenv
-VITE_API_BASE_URL=http://127.0.0.1:8000
+VITE_API_URL=http://127.0.0.1:8000
 VITE_GOOGLE_CLIENT_ID=<web-client-id>.apps.googleusercontent.com
 ```
 
-Backend:
+Backend `.env`:
 
 ```dotenv
-CORS_ORIGINS=http://localhost:3000,http://localhost:5173
+APP_ENV=development
+CORS_ORIGINS=http://localhost:5173
 APP_BASE_URL=http://localhost:5173
-GOOGLE_CLIENT_IDS=<web-client-id>.apps.googleusercontent.com
+GOOGLE_CLIENT_IDS=<same-web-client-id>.apps.googleusercontent.com
 ```
 
-Google must authorize the actual frontend origin. Backend and frontend must use matching client IDs. A client ID is public; no Google Client Secret is required for this ID-token verification flow. Never expose backend secrets in frontend environment variables.
+Google must authorize the exact frontend origin. The frontend client ID is public; never expose backend secrets there. `APP_BASE_URL` must serve `/verify-email?token=...` and `/reset-password?token=...`. For production, set `APP_ENV=production`, configure SMTP, and test delivery. Backend startup rejects production configuration without SMTP, but configuration alone does not prove delivery.
 
-The local demo currently has its public Web client ID in `tests/growth_demo.js`. If using a different Google project, update that value and the backend allowlist together. The production frontend should read its own public configuration.
+## Registration and verification
 
-## Token contract
+`POST /api/auth/register` accepts `full_name`, `email`, `password`, `terms_accepted`, and optional `phone_number`. It returns `202` with a generic message and no session. Duplicate email produces the same response and leaves the existing account intact. A new account has `email_verification_required=true` and cannot use password login, refresh, or protected APIs until verified.
 
-Registration (`201`), login (`200`), and refresh (`200`) return:
+The verification email contains a single-use token valid for 24 hours. The page sends `POST /api/auth/email/verify` with `{ "token": "...", "password": "<password chosen at registration>" }`. A matching token and password mark the email verified; the user then logs in. `POST /api/auth/email/verification/resend` accepts `{ "email": "..." }`, returns a generic message, and limits issuance per pending account.
 
-```ts
-type TokenPair = {
-  access_token: string;
-  refresh_token: string;
-  token_type: "bearer";
-  expires_in: number; // currently 900 seconds
-};
-```
+Existing accounts are not locked by this rollout. They retain `email_verified_at=null` until there is proof of email ownership.
+Changing an account email clears its verified marker. The existing email-change endpoint does not itself verify the replacement address; the product should add a dedicated pending-email-change flow before treating a changed address as verified.
 
-Use the GrowTH access token as `Authorization: Bearer <access_token>`. It expires after 15 minutes. Refresh tokens expire after 30 days and rotate on every successful refresh.
+## Password login and sessions
 
-The demo keeps tokens in memory/sessionStorage. Production browser session storage remains a design task; HttpOnly cookies would require backend and CSRF changes. The current endpoints expect tokens in JSON or the Bearer header.
+`POST /api/auth/login` accepts `{ "email": "...", "password": "..." }` and returns an access and refresh token pair. Pending accounts receive `403` with `code=EMAIL_VERIFICATION_REQUIRED` after a correct password. `GET /api/auth/me` includes `has_password`, `providers`, `email_verified`, and `verification_required`.
 
-Always check `response.ok` before saving tokens. Never log token responses. Fetch `GET /api/auth/me` to load the account rather than treating decoded JWT claims as the account API.
+Access tokens last 15 minutes. Refresh tokens last 30 days and rotate on `POST /api/auth/refresh`. The React client keeps the access token in memory and the refresh token in session storage, or local storage with Remember me. It shares a refresh promise among requests and uses a session generation check so a late refresh response does not restore a logged-out session. `POST /api/auth/logout` receives the refresh token. Already-issued access tokens can remain valid until expiry.
 
-## Registration and password login
+## Google sign-in and linking
 
-`POST /api/auth/register`:
+The React button obtains a Google Identity Services ID token and sends it to `POST /api/auth/google` as `id_token`. A known Google subject signs in to its linked user. An unknown subject with a new email creates a Google account after terms consent. An unknown subject whose email matches an existing website account receives `409` with `detail.code=LINK_REQUIRED`; that request changes no password, session, identity, or child data.
 
-```json
-{
-  "full_name": "Example Parent",
-  "email": "parent@example.com",
-  "password": "a-strong-passphrase",
-  "phone_number": null,
-  "terms_accepted": true
-}
-```
+The user must log in with the website password, open Settings, enter that password, and select the Google account with the same email. Settings sends `POST /api/auth/google/link` with `{ "current_password": "...", "id_token": "..." }` under the website Bearer session. The backend checks the password and a verified Google token issued within five minutes, rejects an email mismatch or duplicate identity, and links in one database transaction. Website password login continues to work. Google sign-in then resolves by the stable Google subject.
 
-Populate `terms_accepted` from the user's actual consent. Registration currently has no email verification step and immediately returns a token pair. Names are trimmed; blank names are rejected. The backend validates password policy and duplicate email addresses.
+The `linked` and `password_cleared` response fields remain for older clients. The new sign-in and link paths do not clear passwords or return `password_cleared=true`.
 
-`POST /api/auth/login`:
+## Recovery of an account with a cleared password
 
-```json
-{
-  "email": "parent@example.com",
-  "password": "a-strong-passphrase"
-}
-```
+An account affected before this change can still sign in with its existing Google link. Its Settings page points to Forgot password. `POST /api/auth/password/forgot` sends a single-use reset link to the account email and gives a generic response. The React `/reset-password?token=...` page calls `POST /api/auth/password/reset` with a new password. Reset revokes old refresh sessions but preserves the Google identity and child data. The user can then sign in with either method.
 
-After success, save the pair and call `GET /api/auth/me`. Its response includes `id`, `full_name`, `email`, `phone_number`, `created_at`, `has_password`, and `providers`.
+## Rollout and end-to-end check
 
-## Google Sign-In
+Apply the Google migration if needed, then `migrations/2026-09-23_email_verification.sql`, before running the new API. Do not rerun `growth_schema.sql` over a populated database. Configure the frontend and SMTP, and confirm that a real recipient receives verification and reset messages with reachable pages.
 
-Load the Google Identity Services script before initializing the button:
-
-```html
-<div id="google-button"></div>
-<label>
-  <input id="google-consent" type="checkbox">
-  I accept the terms and privacy policy when creating a new account.
-</label>
-<p id="google-error" role="alert"></p>
-```
-
-Example using `request` from [the API guide](frontend-api.md) and a frontend session manager's `saveTokens` function:
-
-```js
-const script = document.createElement("script");
-script.src = "https://accounts.google.com/gsi/client";
-script.async = true;
-script.onerror = () => {
-  document.getElementById("google-error").textContent = "Unable to load Google Sign-In.";
-};
-script.onload = () => {
-  google.accounts.id.initialize({
-    client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-    ux_mode: "popup",
-    auto_select: false,
-    callback: async ({ credential }) => {
-      try {
-        const result = await request("/api/auth/google", {
-          method: "POST",
-          body: {
-            id_token: credential,
-            terms_accepted: document.getElementById("google-consent").checked,
-          },
-        });
-        saveTokens(result);
-        // Handle account flags below, load /api/auth/me, then show the dashboard.
-      } catch (error) {
-        document.getElementById("google-error").textContent = error.message;
-      }
-    },
-  });
-  google.accounts.id.renderButton(document.getElementById("google-button"), {
-    theme: "outline",
-    size: "large",
-    text: "continue_with",
-  });
-};
-document.head.appendChild(script);
-```
-
-Send `response.credential` to `/api/auth/google` as `id_token`. Use the resulting GrowTH access token for all other endpoints. New accounts require consent; existing accounts do not need to accept again.
-
-Google responses extend the token pair:
-
-| Field | Frontend behavior |
-| --- | --- |
-| `is_new_account: true` | Offer to create the first child profile. |
-| `linked: true` | Explain that Google was linked to the existing account. |
-| `password_cleared: true` | Explain that the old password was removed and offer password setup. |
-| All flags false | Continue as a returning user. |
-
-Automatic linking to an existing email account requires an authoritative Gmail/verified hosted-domain identity. Third-party email identities that are not eligible receive `403` and should follow the backend's error message. An already-linked Google subject can still sign in.
-
-Linking an eligible existing password account clears its old password and revokes sessions/reset links to address account pre-hijacking. Test that case only with disposable accounts.
-
-Google client configuration and applicable test-user access must be correct. The button has rendered locally and verification tests pass; a successful real Google account sign-in and database linking flow are still pending end-to-end verification.
-
-## Refresh lifecycle
-
-`POST /api/auth/refresh`:
-
-```json
-{ "refresh_token": "<current-refresh-token>" }
-```
-
-Replace **both** stored tokens with the returned pair.
-
-For protected requests that receive `401`:
-
-1. Remember which access token was used for the failed request.
-2. If another request has already replaced that token, retry once with the current token.
-3. Otherwise share one in-flight refresh promise across concurrent requests.
-4. Save the new pair and retry the original request once.
-5. If refresh or the retried request confirms invalid authentication, clear local session state and return to login.
-
-Do not apply this mechanism to login, registration, Google sign-in, or refresh itself. Do not refresh repeatedly. Prevent a pending refresh from restoring a session after logout or after a different account logs in; the demo uses a session generation counter.
-
-Reusing a rotated refresh token can revoke its session family. A network failure during refresh can leave its outcome uncertain, so do not blindly resend the same refresh token. Coordinate multiple browser tabs if they share a refresh token.
-
-The existing implementation in [tests/growth_demo.js](../tests/growth_demo.js) illustrates request coordination for the local demo.
-
-## Logout
-
-`POST /api/auth/logout` accepts the current refresh token and returns `204` with no JSON body:
-
-```json
-{ "refresh_token": "<current-refresh-token>" }
-```
-
-On success, clear all local tokens and user/child state. If choosing to clear local state after a network failure, tell the user that server-side revocation was not confirmed; do not report a successful server logout.
-
-`POST /api/auth/logout-all` requires a Bearer access token and returns a message. Both logout endpoints revoke refresh sessions. Already-issued access tokens can remain usable for up to 15 minutes; logout-all does not immediately invalidate those JWTs.
-
-`GET /api/auth/sessions` lists active refresh sessions. Its `current` field is currently always false, so do not use it to label the current device.
-
-## Password and email flows
-
-| Endpoint | JSON body | Auth |
-| --- | --- | --- |
-| `POST /api/auth/password/forgot` | `{ "email": "..." }` | None |
-| `POST /api/auth/password/reset` | `{ "token": "...", "new_password": "..." }` | Reset token |
-| `POST /api/auth/password/change` | `{ "current_password": "...", "new_password": "..." }` | Bearer |
-| `POST /api/auth/email/change` | `{ "current_password": "...", "new_email": "..." }` | Bearer |
-
-A Google-only account can omit `current_password` when setting its first password. Accounts with passwords must supply it. Follow the response and return to login after credential changes invalidate sessions.
-
-The frontend needs a `/reset-password?token=...` page matching backend `APP_BASE_URL`. Forgot-password returns a generic message, not a reset token. When SMTP is not configured, reset links appear in private development logs; real email delivery has not been verified.
-
-## Integration checks
-
-- Confirm exact CORS and Google JavaScript origins.
-- Exercise email registration/login and `/api/auth/me`.
-- Complete real Google login and repeat it to confirm the same user identity.
-- Verify consent is based on the checkbox, not a hardcoded true value.
-- Test parallel expired requests with a single coordinated refresh.
-- Test logout while refresh is pending and failed logout messaging.
-- Never commit/log tokens, passwords, private keys, or `.env`.
-- Confirm HTTPS, session transport, SMTP, and rate limiting before public deployment.
+Against a disposable database and a real Google test account, check: pending registration cannot log in; verification needs the original password and cannot be reused; website login works before and after linking; wrong password and mismatched Google email fail; Google sign-in first returns `LINK_REQUIRED` and later reaches the same user and child records; duplicate and concurrent link attempts yield conflict rather than another identity; an account with a previously cleared password regains website login through reset while Google login and child records remain intact.

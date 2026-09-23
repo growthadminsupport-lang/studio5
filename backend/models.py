@@ -61,6 +61,9 @@ class User(Base):
     phone_number: Mapped[str | None] = mapped_column(String(30), nullable=True)
     terms_accepted: Mapped[bool] = mapped_column(Boolean, default=False)
     terms_accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    email_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    # Migration exempts existing accounts; new password registrations set this to True.
+    email_verification_required: Mapped[bool] = mapped_column(Boolean, default=False)
 
     password_changed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
@@ -143,6 +146,19 @@ class PasswordReset(Base):
     user_id: Mapped[uuid.UUID] = mapped_column(
         "usr_id", UUID(as_uuid=True),
         ForeignKey("usr_accounts.usr_id", ondelete="CASCADE"),
+    )
+    token_hash: Mapped[str] = mapped_column(String(255), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    used_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class EmailVerification(Base):
+    __tablename__ = "usr_email_verifications"
+
+    id: Mapped[uuid.UUID] = mapped_column("ver_id", UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        "usr_id", UUID(as_uuid=True), ForeignKey("usr_accounts.usr_id", ondelete="CASCADE")
     )
     token_hash: Mapped[str] = mapped_column(String(255), unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

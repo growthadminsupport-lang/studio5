@@ -1,119 +1,72 @@
 import { useState } from "react";
-import { Camera, CheckCircle2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { authedRequest } from "../lib/api";
+import GoogleButton from "../components/Auth/GoogleButton";
 import "./SettingsPage.css";
 
 function SettingsPage() {
-  const { user } = useAuth() || {};
-  
-  // Safely extract email from auth context with fallback
-  const email = user?.email || localStorage.getItem("userEmail") || "";
-  const initial = email ? email.trim().charAt(0).toUpperCase() : "G";
-
+  const { user, logout, linkGoogle } = useAuth();
+  const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [linkPassword, setLinkPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  const isValidNewPassword = (pw) => {
-    return pw.length >= 8 && /[a-zA-Z]/.test(pw) && /[0-9]/.test(pw);
-  };
+  async function handleUpdatePassword(event) {
+    event.preventDefault(); setError(''); setBusy(true);
+    try {
+      await authedRequest('/api/auth/password/change', {
+        method: 'POST', body: { current_password: currentPassword, new_password: newPassword },
+      });
+      await logout();
+      navigate('/login', { replace: true });
+    } catch (reason) { setError(reason.message); }
+    finally { setBusy(false); }
+  }
 
-  const showNewPwError = newPassword.length > 0 && !isValidNewPassword(newPassword);
-  const isFormValid = currentPassword.trim().length > 0 && isValidNewPassword(newPassword);
+  async function handleLinkGoogle(credential) {
+    setError(''); setMessage(''); setBusy(true);
+    try {
+      await linkGoogle(credential, linkPassword);
+      setLinkPassword('');
+      setMessage('Google is linked. Your website password still works.');
+    } catch (reason) { setError(reason.message); }
+    finally { setBusy(false); }
+  }
 
-  const handleUpdatePassword = (e) => {
-    e.preventDefault();
-    if (!isFormValid) return;
-
-    setPasswordSuccess(true);
-    setCurrentPassword("");
-    setNewPassword("");
-  };
-
-  return (
-    <div className="settings-page-container">
-      <h1 className="settings-title">Settings</h1>
-
-      <div className="settings-cards-container">
-        {/* Profile Photo Card */}
-        <div className="settings-card">
-          <h2>Profile photo</h2>
-          <div className="avatar-wrapper">
-            <div className="avatar">
-              <span className="avatar-initial">{initial}</span>
-              <button
-                type="button"
-                className="camera-badge"
-                aria-label="Upload photo"
-              >
-                <Camera size={14} color="#ffffff" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Change Password Card */}
-        <div className="settings-card">
-          <h2>Change password</h2>
-
-          {passwordSuccess && (
-            <div className="success-alert">
-              <CheckCircle2 size={22} className="success-icon" />
-              <span>Password updated.</span>
-            </div>
-          )}
-
-          <form onSubmit={handleUpdatePassword}>
-            <div className="float-field">
-              <input
-                id="currentPassword"
-                type="password"
-                placeholder=" "
-                value={currentPassword}
-                onChange={(e) => {
-                  setCurrentPassword(e.target.value);
-                  setPasswordSuccess(false);
-                }}
-              />
-              <label htmlFor="currentPassword">Current password</label>
-            </div>
-
-            <div className={`float-field ${showNewPwError ? "error" : ""}`}>
-              <input
-                id="newPassword"
-                type="password"
-                placeholder=" "
-                value={newPassword}
-                onChange={(e) => {
-                  setNewPassword(e.target.value);
-                  setPasswordSuccess(false);
-                }}
-              />
-              <label htmlFor="newPassword">New password</label>
-            </div>
-
-            {showNewPwError ? (
-              <p className="error-message">
-                Password must be at least 8 characters and include a letter and a number
-              </p>
-            ) : (
-              <p className="input-hint">
-                At least 8 characters, with a letter and a number
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className="btn-update-password"
-              disabled={!isFormValid}
-            >
-              Update password
-            </button>
-          </form>
-        </div>
-      </div>
+  return <div className="settings-page-container">
+    <h1 className="settings-title">Settings</h1>
+    {error && <p role="alert" className="auth-error">{error}</p>}
+    {message && <p role="status" className="success-alert">{message}</p>}
+    <div className="settings-cards-container">
+      <section className="settings-card">
+        <h2>Account</h2>
+        <p>{user?.email}</p>
+        <p>Google: {user?.providers?.includes('google') ? 'Linked' : 'Not linked'}</p>
+        {user?.verification_required && !user?.email_verified && <p>Email verification is required.</p>}
+      </section>
+      {!user?.providers?.includes('google') && user?.has_password && <section className="settings-card">
+        <h2>Link Google</h2>
+        <p>Enter your current website password, then choose the Google account with the same email.</p>
+        <div className="float-field"><input type="password" aria-label="Website password for linking" placeholder="Current website password"
+          value={linkPassword} onChange={(e) => setLinkPassword(e.target.value)} /></div>
+        <GoogleButton onCredential={handleLinkGoogle} disabled={!linkPassword || busy} />
+      </section>}
+      <section className="settings-card">
+        <h2>{user?.has_password ? 'Change password' : 'Set a website password'}</h2>
+        {user?.has_password ? <form onSubmit={handleUpdatePassword}>
+          <div className="float-field"><input type="password" aria-label="Current password" placeholder="Current password"
+            value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required /></div>
+          <div className="float-field"><input type="password" aria-label="New password" placeholder="New password"
+            value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required /></div>
+          <button type="submit" className="btn-update-password" disabled={busy}>Update password</button>
+        </form> : <p>Use <Link to="/forgot-password">password setup by email</Link>. This also restores website login for accounts whose old password was cleared. Your Google link and data stay in place.</p>}
+      </section>
     </div>
-  );
+  </div>;
 }
 
 export default SettingsPage;

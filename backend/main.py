@@ -24,7 +24,7 @@ from sqlalchemy import text
 from config import DEFAULT_CORS_ORIGINS, parse_cors_origins
 from database import engine
 from google_oauth import GOOGLE_ENABLED
-from mailer import SMTP_ENABLED
+from mailer import APP_ENV, SMTP_ENABLED
 from routes_auth import router as auth_router
 from routes_children import router as children_router
 from routes_growth import router as growth_router
@@ -37,13 +37,17 @@ logger = logging.getLogger("growth.startup")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ประกาศตอนสตาร์ทว่าฟีเจอร์ที่ขึ้นกับค่าตั้งเปิดอยู่หรือไม่
-    # สองอย่างนี้ "ไม่ตั้งก็รันได้" จึงเงียบมากเวลาลืมตั้ง อาการที่ผู้ใช้เห็นคือ
+    # Google ไม่ตั้งก็รันได้ แต่ production ต้องตั้ง SMTP ไม่เช่นนั้นอีเมลยืนยัน
+    # และรีเซ็ตรหัสผ่านจะส่งไม่ได้ อาการที่ผู้ใช้เห็นคือ
     # "อีเมลไม่มา" กับ "กดปุ่ม Google แล้วไม่เข้า" โดยไม่มี error ให้ดูเลย
     # บรรทัดนี้คือที่แรกที่คนไล่ปัญหาจะเห็นว่าต้นเหตุอยู่ที่ค่าตั้ง
     #
     # ใช้ warning ไม่ใช่ info เพราะ uvicorn ตั้ง handler ให้เฉพาะ logger ของตัวเอง
     # ส่วน logger อื่นตกไปที่ lastResort ของ Python ซึ่งพิมพ์เฉพาะ WARNING ขึ้นไป
     # ถ้าใช้ info บรรทัดนี้จะไม่โผล่เลย (mailer.py ใช้ warning ด้วยเหตุผลเดียวกัน)
+    if APP_ENV == "production" and not SMTP_ENABLED:
+        raise RuntimeError("Production registration requires working SMTP email configuration")
+
     logger.warning(
         "เข้าสู่ระบบด้วย Google: %s · ส่งอีเมลจริง: %s",
         "เปิด" if GOOGLE_ENABLED else "ปิด (ไม่ได้ตั้ง GOOGLE_CLIENT_IDS)",

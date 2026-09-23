@@ -200,7 +200,7 @@ function errText(data) {
   if (!data) return "ไม่มีรายละเอียด";
   if (typeof data === "string") return data;
   if (Array.isArray(data.detail)) return data.detail.map(d => (d.loc || []).slice(1).join(".") + ": " + d.msg).join("\n");
-  return data.detail || JSON.stringify(data);
+  return typeof data.detail === "object" ? data.detail.message || JSON.stringify(data.detail) : data.detail || JSON.stringify(data);
 }
 
 function renderWho(me) {
@@ -230,7 +230,7 @@ async function register() {
   const r = await call("POST", "/api/auth/register", {
     full_name: $("rg_name").value, email: $("rg_email").value, password: $("rg_pw").value, terms_accepted: $("rg_terms").checked,
   });
-  if (r.status === 201) { store.set(r.data); show("rg_status", "ok", "สมัครสำเร็จ และเข้าสู่ระบบให้แล้ว"); $("li_email").value = $("rg_email").value; me(); }
+  if (r.status === 202) { show("rg_status", "ok", "ตรวจอีเมลแล้วเปิดลิงก์ยืนยัน พร้อมกรอกรหัสผ่านที่ใช้สมัคร"); $("li_email").value = $("rg_email").value; }
   else show("rg_status", "err", `${r.status}: ${errText(r.data)}`);
 }
 
@@ -327,9 +327,8 @@ async function onGoogle(resp) {
   const r = await call("POST", "/api/auth/google", { id_token: resp.credential, terms_accepted: $("g_terms").checked });
   if (r.status === 200) {
     store.set(r.data);
-    let what = r.data.is_new_account ? "สมัครบัญชีใหม่ให้แล้ว" : r.data.linked ? "ผูก Google เข้ากับบัญชีเดิมแล้ว" : "เข้าสู่ระบบสำเร็จ";
-    if (r.data.password_cleared) what += "\n⚠ รหัสผ่านเดิมของบัญชีนี้ถูกล้างทิ้งเพื่อความปลอดภัย (กัน pre-hijacking) — ตั้งใหม่ได้ที่ /password/change โดยไม่ต้องกรอกรหัสเดิม";
-    show("g_status", r.data.password_cleared ? "warn" : "ok", what); me();
+    const what = r.data.is_new_account ? "สมัครบัญชีใหม่ให้แล้ว" : "เข้าสู่ระบบสำเร็จ";
+    show("g_status", "ok", what); me();
   } else show("g_status", "err", `${r.status}: ${errText(r.data)}`);
 }
 

@@ -1,4 +1,3 @@
-import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import ChildFormPage from "./pages/ChildFormPage";
 // ...
@@ -16,6 +15,9 @@ import AboutPage from "./pages/AboutPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import VerifyEmailPage from "./pages/VerifyEmailPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
+import ResendVerificationPage from "./pages/ResendVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import GrowthPage from "./pages/GrowthPage";
 import PubertyPage from "./pages/PubertyPage";
@@ -30,7 +32,9 @@ import TermsOfUsePage from "./pages/TermsOfUsePage";
 import ContactPage from "./pages/ContactPage";
 
 function App() {
-  const { isLoggedIn } = useAuth() || {};
+  const { isLoggedIn, loading } = useAuth() || {};
+
+  if (loading) return <div role="status" className="auth-page">Restoring your session…</div>;
 
   return (
     <Routes>
@@ -38,6 +42,9 @@ function App() {
       <Route path="/login" element={isLoggedIn ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/verify-email" element={<VerifyEmailPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/resend-verification" element={<ResendVerificationPage />} />
 
       {/* Public Pages with Navigation Header/Footer */}
       <Route element={<MainLayout />}>

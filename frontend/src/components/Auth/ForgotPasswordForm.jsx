@@ -11,14 +11,16 @@ function ForgotPasswordForm() {
 
   const { requestPasswordReset } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (requestPasswordReset) {
-      requestPasswordReset(email);
+    try {
+      await requestPasswordReset(email);
+      setIsSubmitted(true);
+    } catch (reason) {
+      setError(reason.message);
     }
-    setIsSubmitted(true);
   };
 
   return (

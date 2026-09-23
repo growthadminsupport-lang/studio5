@@ -158,7 +158,7 @@ async def _find_key(kid: str):
     return _match_kid(jwks, kid)
 
 
-async def verify_google_id_token(id_token: str) -> GoogleProfile:
+async def verify_google_id_token(id_token: str, max_age_seconds: int | None = None) -> GoogleProfile:
     """
     ตรวจ ID token จาก Google แล้วคืนข้อมูลผู้ใช้ ถ้าใช้ไม่ได้ให้โยน HTTPException
 
@@ -197,6 +197,13 @@ async def verify_google_id_token(id_token: str) -> GoogleProfile:
     except jwt.InvalidTokenError as exc:
         logger.warning("ID token ไม่ผ่านการตรวจ: %s", exc)
         raise INVALID_TOKEN from None
+
+    # Linking is a credential change, so a token captured earlier must not be
+    # accepted merely because it has not reached Google's normal expiry yet.
+    if max_age_seconds is not None:
+        issued_at = payload.get("iat")
+        if not isinstance(issued_at, (int, float)) or not 0 <= time.time() - issued_at <= max_age_seconds:
+            raise INVALID_TOKEN
 
     subject = payload.get("sub")
     if not isinstance(subject, str) or not subject.strip() or len(subject) > 255:

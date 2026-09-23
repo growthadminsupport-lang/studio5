@@ -1,5 +1,7 @@
 # Google Auth verification — 2026-09-22
 
+Historical record. The automatic link and password-clearing behavior described below was removed on 2026-09-23. Current behavior is documented in `../docs/frontend-auth-integration.md`: an email match returns `LINK_REQUIRED`, and linking requires the website password plus a recent Google token. Do not use the old instructions below to test linking.
+
 Backend verification completed:
 
 - Google enabled; one configured client ID. No configuration values copied here.

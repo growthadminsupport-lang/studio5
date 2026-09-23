@@ -22,6 +22,8 @@ services:
     envVars:
       - key: PYTHON_VERSION
         value: "3.13.14"
+      - key: APP_ENV
+        value: production
 
       # Render วาง reverse proxy ไว้หน้าแอป ทุก request ที่มาถึง uvicorn จึงมี IP ต้นทาง
       # เป็น IP ของ proxy เหมือนกันหมด — IP จริงของผู้ใช้อยู่ใน header X-Forwarded-For
@@ -56,8 +58,8 @@ services:
       - key: GOOGLE_CLIENT_IDS
         sync: false
 
-      # ---- ส่งอีเมล (ไม่ตั้งก็ deploy ได้ แต่ปุ่มลืมรหัสผ่านจะใช้ไม่ได้) ----
-      # ตั้ง SMTP_HOST เมื่อไหร่ ต้องตั้ง MAIL_FROM ด้วย ไม่งั้นเซิร์ฟเวอร์ไม่สตาร์ท
+      # ---- ส่งอีเมล (production ต้องตั้งก่อนเซิร์ฟเวอร์จะสตาร์ท) ----
+      # ตั้ง SMTP_HOST และ MAIL_FROM พร้อมกัน แล้วทดสอบการส่งถึงกล่องจริง
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT

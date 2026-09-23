@@ -82,6 +82,8 @@ CREATE TABLE usr_accounts (
     phone_number VARCHAR(30),
     terms_accepted BOOLEAN NOT NULL DEFAULT false,
     terms_accepted_at TIMESTAMPTZ,
+    email_verified_at TIMESTAMPTZ,
+    email_verification_required BOOLEAN NOT NULL DEFAULT false,
 
     -- ใช้ตัดสิทธิ์ access token ที่ออกก่อนหน้าการเปลี่ยนรหัสผ่าน
     -- JWT เพิกถอนกลางคันไม่ได้ แต่ถ้าฝัง timestamp นี้ไว้ใน token แล้วเทียบกับ
@@ -160,12 +162,22 @@ CREATE TABLE usr_identities (
 );
 CREATE INDEX idx_usr_identities_usr_id ON usr_identities(usr_id);
 
+-- New password registrations require email proof. Existing rows are exempt in the migration.
+CREATE TABLE usr_email_verifications (
+    ver_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    usr_id UUID NOT NULL REFERENCES usr_accounts(usr_id) ON DELETE CASCADE,
+    token_hash VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at TIMESTAMPTZ NOT NULL,
+    used_at TIMESTAMPTZ
+);
+CREATE INDEX idx_usr_email_verifications_usr_id ON usr_email_verifications(usr_id);
+
 -- 4. usr_password_resets — โทเคนตั้งรหัสผ่านใหม่ ใช้ได้ครั้งเดียว
 --    เก็บแค่ hash เหมือน refresh token — ฐานข้อมูลรั่วก็เอาไปใช้ต่อไม่ได้
 --
---    ชื่อเดิม usr_auth_tokens มีคอลัมน์ purpose ไว้แยกระหว่างโทเคนยืนยันอีเมล
---    กับโทเคนตั้งรหัสใหม่ พอเลิกบังคับยืนยันอีเมลก็เหลือค่าเดียว คอลัมน์นั้น
---    จึงไม่มีความหมายอีกต่อไป ตัดทิ้งพร้อมเปลี่ยนชื่อตารางให้ตรงกับสิ่งที่มันเก็บจริง
+--    โทเคนรีเซ็ตรหัสผ่านแยกจาก usr_email_verifications เพื่อให้แต่ละขั้นตอน
+--    มีอายุและเงื่อนไขการใช้ต่างกันโดยไม่ปะปนกัน
 CREATE TABLE usr_password_resets (
     rst_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     usr_id UUID NOT NULL REFERENCES usr_accounts(usr_id) ON DELETE CASCADE,

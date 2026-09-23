@@ -16,12 +16,16 @@ Run these in separate terminals:
 .\venv\Scripts\python.exe -m http.server 3000 --bind 127.0.0.1 --directory tests
 ```
 
+For website registration, also run the React frontend on `http://localhost:5173`
+and set backend `APP_BASE_URL=http://localhost:5173`. Verification and reset links
+open React pages; the local demo itself is retained for API experimentation.
+
 Use `localhost:3000` in the browser because that is the API's default allowed
 CORS origin. A visit via `127.0.0.1:3000` redirects to `localhost:3000`.
 
 ## Features
 
-- Register without an email verification step, then sign in immediately.
+- Register, then verify the email link and registration password on the React verification page before signing in.
 - Sign in with Google through Google Identity Services and the backend
   `POST /api/auth/google` endpoint. New Google accounts must accept the terms checkbox.
 - Log in/out; automatically refresh expired access tokens.

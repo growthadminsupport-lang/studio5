@@ -1,6 +1,6 @@
 # Frontend API handoff
 
-Updated 2026-09-22. This guide covers the implemented backend; the production frontend is maintained by a separate team.
+Updated 2026-09-23. This guide covers the implemented FastAPI backend and React frontend in `studio5`.
 
 ## Connection
 
@@ -16,7 +16,7 @@ A teammate's browser cannot reach this computer using their own `localhost`. Run
 For Vite:
 
 ```dotenv
-VITE_API_BASE_URL=http://127.0.0.1:8000
+VITE_API_URL=http://127.0.0.1:8000
 VITE_GOOGLE_CLIENT_ID=<web-client-id>.apps.googleusercontent.com
 ```
 
@@ -30,9 +30,12 @@ All paths are relative to the API base. JSON request bodies use `Content-Type: a
 | --- | --- | --- | --- |
 | GET | `/` | None | 200 service info |
 | GET | `/health` | None | 200 database health |
-| POST | `/api/auth/register` | None | 201 token pair |
+| POST | `/api/auth/register` | None | 202 generic message; verification email sent for new accounts |
+| POST | `/api/auth/email/verify` | Email token and registration password | 200 message |
+| POST | `/api/auth/email/verification/resend` | Email in body | 200 generic message |
 | POST | `/api/auth/login` | None | 200 token pair |
 | POST | `/api/auth/google` | Google ID token in body | 200 token pair and account flags |
+| POST | `/api/auth/google/link` | GrowTH Bearer token, website password, Google ID token | 200 message |
 | POST | `/api/auth/refresh` | Refresh token in body | 200 new token pair |
 | POST | `/api/auth/logout` | Refresh token in body | 204, no body |
 | POST | `/api/auth/logout-all` | GrowTH Bearer token | 200 message |
@@ -57,7 +60,7 @@ There are no public AI inference, image upload, screening, admin, or article end
 This helper checks HTTP failures and handles empty 204 responses. It intentionally does not log credentials or tokens.
 
 ```js
-const API = import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "");
+const API = import.meta.env.VITE_API_URL.replace(/\/$/, "");
 
 export async function request(path, { method = "GET", body, accessToken } = {}) {
   const headers = { Accept: "application/json" };

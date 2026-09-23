@@ -1,8 +1,11 @@
 """
 Endpoint การยืนยันตัวตน
 
-    POST /api/auth/register              สมัครสมาชิกด้วยอีเมล + รหัสผ่าน แล้วเข้าสู่ระบบให้เลย
+    POST /api/auth/register              สมัครสมาชิก รอยืนยันอีเมล
+    POST /api/auth/email/verify          ยืนยันอีเมลด้วยลิงก์และรหัสผ่าน
+    POST /api/auth/email/verification/resend  ส่งลิงก์ยืนยันอีกครั้ง
     POST /api/auth/google                สมัคร/เข้าสู่ระบบด้วย Google (endpoint เดียวทำทั้งสองอย่าง)
+    POST /api/auth/google/link           ผูก Google หลังพิสูจน์รหัสผ่านและ Google
     POST /api/auth/login                 เข้าสู่ระบบด้วยอีเมล + รหัสผ่าน
     POST /api/auth/refresh               ขอ access token ใหม่
     POST /api/auth/logout                ออกจากระบบอุปกรณ์นี้
@@ -16,8 +19,8 @@ Endpoint การยืนยันตัวตน
 
 สองทางเข้า บัญชีเดียว
 ─────────────────────
-ผู้ใช้เข้าระบบได้สองทาง: อีเมล+รหัสผ่าน หรือ Google และทั้งสองทางชี้ไปที่
-usr_accounts แถวเดียวกันเมื่ออีเมลตรงกัน — ไม่แยกเป็นสองบัญชี
+ผู้ใช้เข้าระบบได้สองทาง: อีเมล+รหัสผ่าน หรือ Google ทั้งสองทางจะชี้ไปที่
+usr_accounts แถวเดียวกันหลังเจ้าของพิสูจน์ทั้งสองช่องทางและผูกบัญชีแล้ว
 
 ผลคือบัญชีหนึ่งมีได้ 3 สถานะ
   รหัสผ่านอย่างเดียว   password_hash มีค่า · ไม่มีแถวใน usr_identities
@@ -27,18 +30,9 @@ usr_accounts แถวเดียวกันเมื่ออีเมลต�
 **password_hash เป็น NULL ได้** ทุกจุดที่แตะรหัสผ่านจึงต้องคิดเผื่อกรณีนี้เสมอ
 — ดู verify_password() ใน auth.py ที่รับ None แล้วตอบ False พร้อมเผาเวลาให้เท่ากัน
 
-ไม่มีการยืนยันอีเมล
-───────────────────
-สมัครเสร็จเข้าใช้งานได้ทันที ไม่ต้องรอกดลิงก์ในอีเมล — TOR ไม่ได้กำหนดไว้
-และการบังคับยืนยันทำให้ระบบใช้ไม่ได้เลยถ้าอีเมลส่งไม่ออก
-
-ผลที่ตามมาสองข้อที่ต้องรับไว้:
-  - /register บอกตรง ๆ ว่าอีเมลซ้ำหรือไม่ (409) เพราะผู้ใช้ต้องรู้ว่าเข้าระบบ
-    ต่อได้ไหม จึงยอมเปิดเผยว่าอีเมลไหนมีบัญชีอยู่ ซึ่งแอปส่วนใหญ่ก็ทำแบบนี้
-  - พิมพ์อีเมลผิดตอนสมัครแล้วจะกู้บัญชีไม่ได้ จึงต้องมี /email/change ไว้แก้
-
-(ผูกบัญชีอัตโนมัติได้เฉพาะ Gmail หรือ Google Workspace ที่มี hd และยืนยันอีเมลแล้ว
-อีเมลภายนอกต้องยืนยันเพิ่มเติม ดู google_oauth.py)
+บัญชีที่สมัครใหม่ด้วยรหัสผ่านต้องยืนยันอีเมลและรหัสผ่านก่อนใช้งาน
+บัญชีเดิมไม่ถูกล็อกระหว่างย้ายระบบ และไม่ถูกระบุว่าอีเมลยืนยันแล้วโดยไม่มีหลักฐาน
+อีเมลตรงกันอย่างเดียวไม่เพียงพอที่จะผูก Google
 
 หลักที่ยึดตลอดทั้งไฟล์
 ──────────────────────
@@ -53,12 +47,12 @@ usr_accounts แถวเดียวกันเมื่ออีเมลต�
 4. ส่งอีเมลไม่สำเร็จ ห้ามทำให้คำขอที่สำเร็จไปแล้วกลายเป็น error
    (mailer กลืน error ให้เองแล้ว — ดูเหตุผลในหัวไฟล์ mailer.py)
 """
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -94,8 +88,8 @@ from google_oauth import (
     GoogleProfile,
     verify_google_id_token,
 )
-from models import Identity, Session as SessionModel, User
-from security import PasswordPolicyError, hash_token, validate_password
+from models import EmailVerification, Identity, Session as SessionModel, User
+from security import PasswordPolicyError, generate_token, hash_token, validate_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -155,6 +149,16 @@ class GoogleRequest(BaseModel):
     terms_accepted: bool = False
 
 
+class GoogleLinkRequest(BaseModel):
+    id_token: str = Field(min_length=1, max_length=4096)
+    current_password: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(min_length=1, max_length=512)
+    password: str
+
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
@@ -198,15 +202,12 @@ class GoogleTokenPair(TokenPair):
     """
     เหมือน TokenPair แต่บอกด้วยว่าเกิดอะไรขึ้นฝั่งบัญชี
 
-    frontend ใช้ตัดสินว่าจะพาไปหน้าไหนต่อ — คนที่เพิ่งสมัคร (is_new_account)
-    ควรไปหน้าเพิ่มโปรไฟล์เด็ก ส่วนคนที่เพิ่งถูกผูกบัญชี (linked) ควรเห็นข้อความ
-    ว่า Google ถูกผูกกับบัญชีเดิมของเขาแล้ว ไม่ใช่ถูกสร้างบัญชีใหม่
+    is_new_account ใช้แยกผู้ใช้ที่เพิ่งสมัครจากผู้ใช้เดิม
+    linked และ password_cleared คงไว้เพื่อความเข้ากันได้กับ client เก่า
     """
 
     is_new_account: bool
     linked: bool = False
-    # true = ผูกกับบัญชีเดิมที่มีรหัสผ่านอยู่ และรหัสนั้นถูกล้างทิ้งเพื่อความปลอดภัย
-    # (ดูเหตุผลใน google_sign_in เส้นทางที่ 2) frontend ควรพาไปหน้าตั้งรหัสผ่านใหม่
     password_cleared: bool = False
 
 
@@ -224,6 +225,8 @@ class MeReply(BaseModel):
     # และจะให้เปลี่ยนอีเมลได้ไหม (บัญชีที่ยังไม่มีรหัสผ่านเปลี่ยนไม่ได้)
     has_password: bool
     providers: list[str]
+    email_verified: bool
+    verification_required: bool
 
 
 class SessionReply(BaseModel):
@@ -239,20 +242,33 @@ class SessionReply(BaseModel):
 # สมัครสมาชิกด้วยอีเมล + รหัสผ่าน
 # ------------------------------------------------------------
 
-@router.post("/register", response_model=TokenPair, status_code=status.HTTP_201_CREATED)
+REGISTRATION_REPLY = "หากสมัครได้ เราได้ส่งลิงก์ยืนยันอีเมลแล้ว กรุณาตรวจกล่องจดหมาย"
+
+
+async def _issue_email_verification(db: AsyncSession, user: User) -> str:
+    raw = generate_token()
+    db.add(EmailVerification(
+        user_id=user.id,
+        token_hash=hash_token(raw),
+        expires_at=_now() + timedelta(hours=24),
+    ))
+    await db.flush()
+    return raw
+
+
+@router.post("/register", response_model=MessageReply, status_code=status.HTTP_202_ACCEPTED)
 async def register(data: RegisterRequest, request: Request, db: Db):
     """
-    สร้างบัญชีแล้วเข้าสู่ระบบให้เลย ไม่ต้องพิมพ์รหัสผ่านซ้ำอีกรอบ
-
-    ตอบ 409 ถ้าอีเมลซ้ำ — ยอมเปิดเผยว่าอีเมลไหนมีบัญชีอยู่ เพราะเมื่อไม่มีขั้นตอน
-    ยืนยันอีเมลแล้ว ผู้ใช้ต้องรู้ทันทีว่าสมัครผ่านหรือไม่ ถึงจะรู้ว่าควรกดเข้าสู่ระบบ
-    หรือกดลืมรหัสผ่านต่อ
-
-    409 นี้ครอบบัญชีที่สมัครไว้ด้วย Google ด้วย ข้อความจึงบอกทางออกทั้งสองแบบ
-    ไม่งั้นคนที่เคยกดปุ่ม Google ไว้จะงงว่าทำไมอีเมลตัวเองซ้ำทั้งที่ไม่เคยสมัคร
+    สร้างบัญชีที่ยังไม่อนุญาตให้เข้าสู่ระบบและส่งลิงก์ยืนยันทางอีเมล
+    ตอบข้อความกลางเหมือนกันเมื่ออีเมลซ้ำ เพื่อไม่เปิดเผยว่ามีบัญชีอยู่แล้ว
     """
     if not data.terms_accepted:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, TERMS_REQUIRED)
+
+    await enforce_ip_rate_limit(db, request)
+
+    if mailer.APP_ENV == "production" and not mailer.SMTP_ENABLED:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "ยังไม่ได้ตั้งค่าระบบส่งอีเมลยืนยัน")
 
     # ตรวจซ้ำอีกรอบโดยเอาอีเมลกับชื่อมาประกอบ กันตั้งรหัสเป็นข้อมูลตัวเอง
     try:
@@ -267,29 +283,60 @@ async def register(data: RegisterRequest, request: Request, db: Db):
         password_hash=await hash_password(data.password),
         terms_accepted=True,
         terms_accepted_at=_now(),
+        email_verification_required=True,
     )
     db.add(user)
 
     try:
         await db.flush()
     except IntegrityError:
-        # ปล่อยให้ UNIQUE constraint เป็นคนตัดสินแทนการ SELECT เช็คก่อน
-        # เพราะถ้าเช็คก่อนแล้วค่อย INSERT สองคำขอที่เข้ามาพร้อมกันจะผ่านด่านเช็ค
-        # ไปได้ทั้งคู่ แล้วตัวที่สองจะระเบิดเป็น 500 ตอน INSERT อยู่ดี
         await db.rollback()
-        raise HTTPException(
-            status.HTTP_409_CONFLICT,
-            f"{EMAIL_TAKEN} ให้เข้าสู่ระบบด้วยรหัสผ่าน หรือถ้าเคยสมัครด้วย Google "
-            "ให้กดปุ่มเข้าสู่ระบบด้วย Google แทน",
-        ) from None
+        return MessageReply(message=REGISTRATION_REPLY)
 
-    refresh_raw, _ = await issue_refresh_token(db, user, request)
+    token = await _issue_email_verification(db, user)
     await db.commit()
+    await mailer.send_email_verification(user.email, user.full_name, token)
+    return MessageReply(message=REGISTRATION_REPLY)
 
-    return TokenPair(
-        access_token=create_access_token(user),
-        refresh_token=refresh_raw,
-    )
+
+@router.post("/email/verification/resend", response_model=MessageReply)
+async def resend_email_verification(data: EmailRequest, request: Request, db: Db):
+    await enforce_ip_rate_limit(db, request)
+    user = (await db.execute(select(User).where(User.email == data.email))).scalar_one_or_none()
+    if user and user.email_verification_required and user.email_verified_at is None:
+        sent_last_hour = (await db.execute(
+            select(func.count()).select_from(EmailVerification).where(
+                EmailVerification.user_id == user.id,
+                EmailVerification.created_at > _now() - timedelta(hours=1),
+            )
+        )).scalar_one()
+        if sent_last_hour < 3 and (mailer.SMTP_ENABLED or mailer.APP_ENV != "production"):
+            token = await _issue_email_verification(db, user)
+            await db.commit()
+            await mailer.send_email_verification(user.email, user.full_name, token)
+    return MessageReply(message=REGISTRATION_REPLY)
+
+
+@router.post("/email/verify", response_model=MessageReply)
+async def verify_email(data: VerifyEmailRequest, request: Request, db: Db):
+    await enforce_ip_rate_limit(db, request)
+    record = (await db.execute(
+        select(EmailVerification)
+        .where(EmailVerification.token_hash == hash_token(data.token))
+        .with_for_update()
+    )).scalar_one_or_none()
+    if record is None or record.used_at is not None or record.expires_at <= _now():
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ลิงก์ยืนยันอีเมลไม่ถูกต้องหรือหมดอายุ")
+    user = (await db.execute(select(User).where(User.id == record.user_id).with_for_update())).scalar_one()
+    if user.email_verified_at is not None:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ลิงก์ยืนยันอีเมลถูกใช้ไปแล้ว")
+    if not await verify_password(data.password, user.password_hash):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "รหัสผ่านไม่ถูกต้อง")
+    if user.email_verified_at is None:
+        user.email_verified_at = _now()
+    record.used_at = _now()
+    await db.commit()
+    return MessageReply(message="ยืนยันอีเมลแล้ว กรุณาเข้าสู่ระบบ")
 
 
 # ------------------------------------------------------------
@@ -306,17 +353,11 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
     คนที่มีบัญชีอยู่แล้วแต่ไปกดปุ่มสมัครจะโดนปฏิเสธทั้งที่ควรเข้าระบบได้เลย
     ซึ่งเป็นความหงุดหงิดที่ไม่มีเหตุผลรองรับ
 
-    สามเส้นทางที่เป็นไปได้ (ตอบ 200 ทั้งหมด ต่างกันที่ธงใน response)
+    สามเส้นทางที่เป็นไปได้
       1. เคยผูกไว้แล้ว          → เข้าสู่ระบบ
-      2. ยังไม่ผูก แต่อีเมลตรงกับบัญชีที่มีอยู่ → ผูกเข้ากับบัญชีนั้น (linked=true)
-                                 และ **ล้างรหัสผ่านเดิมทิ้ง** (password_cleared=true)
+      2. ยังไม่ผูก แต่อีเมลตรงกับบัญชีที่มีอยู่ → 409 LINK_REQUIRED
       3. ไม่เคยมีมาก่อน         → สร้างบัญชีใหม่ (is_new_account=true)
-
-    เส้นทางที่ 2 คือจุดที่ต้องระวังที่สุด มีสองด้านที่ต้องกันพร้อมกัน:
-      - ต้องมี email_verified และ Google เป็นผู้ดูแลอีเมล (Gmail หรือมี hd)
-        อีเมลภายนอกอาจเปลี่ยนเจ้าของหลัง Google ยืนยันครั้งแรก จึงห้ามผูกอัตโนมัติ
-      - ฝั่งบัญชีเดิมในระบบเราถูกคนร้ายสร้างดักไว้ก่อน (pre-hijacking) → กันด้วยการ
-        ล้าง credential เดิมทิ้งทั้งหมดตอนผูก ดูคอมเมนต์ในโค้ดเส้นทางที่ 2
+    การผูกต้องใช้ /google/link พร้อมรหัสผ่านเว็บและ Google ID token ที่ออกใหม่
     """
     if not GOOGLE_ENABLED:
         raise UNCONFIGURED
@@ -344,65 +385,17 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
         identity.email = profile.email
         return await _finish_google_login(db, user, request, is_new_account=False)
 
-    # ---- เส้นทางที่ 2: อีเมลตรงกับบัญชีที่มีอยู่ → ผูกเข้าด้วยกัน ----
+    # ---- เส้นทางที่ 2: อีเมลตรงกับบัญชีที่มีอยู่ → ขอให้พิสูจน์ทั้งสองทาง ----
     existing = (
         await db.execute(select(User).where(User.email == profile.email))
     ).scalar_one_or_none()
 
     if existing is not None:
-        if not profile.email_authoritative:
-            raise HTTPException(
-                status.HTTP_403_FORBIDDEN,
-                "ไม่สามารถผูกบัญชีจากอีเมลนี้อัตโนมัติได้ กรุณาเข้าสู่ระบบด้วยรหัสผ่าน "
-                "หรือใช้ลืมรหัสผ่านเพื่อยืนยันผ่านอีเมล",
-            )
-        # บัญชีนี้ผูก Google ไว้แล้วกับ subject อื่น — เกิดได้ถ้าเจ้าของเปลี่ยนอีเมลของ
-        # บัญชีในระบบเราไปเป็นอีเมลของบัญชี Google อีกใบ ต้องตอบให้ชัดว่าติดอะไร
-        # ไม่ใช่ปล่อยให้ชน UNIQUE (usr_id, provider) แล้วได้ 409 "ลองใหม่" ตลอดกาล
-        already = (
-            await db.execute(
-                select(Identity).where(
-                    Identity.user_id == existing.id, Identity.provider == PROVIDER_GOOGLE
-                )
-            )
-        ).scalar_one_or_none()
-        if already is not None:
-            raise HTTPException(
-                status.HTTP_409_CONFLICT,
-                "อีเมลนี้ผูกกับบัญชี Google อีกใบไว้แล้ว กรุณาเข้าสู่ระบบด้วยบัญชี Google ใบเดิม "
-                "หรือเข้าด้วยรหัสผ่านแล้วเปลี่ยนอีเมลก่อน",
-            )
-
-        # ---- จุดสำคัญด้านความปลอดภัย: credential เดิมของบัญชีนี้ **เชื่อไม่ได้** ----
-        # ระบบไม่ยืนยันอีเมลตอน /register ใครก็สมัคร victim@gmail.com ด้วยรหัสของตัวเองได้
-        # ก่อน แล้วรอให้เจ้าของอีเมลตัวจริงมากดปุ่ม Google — ถ้าเราแค่ผูกเฉย ๆ เจ้าของจะ
-        # ถูกพาเข้าบัญชีที่คนร้ายสร้าง และคนร้ายยังเข้าด้วยรหัสผ่านของเขาได้ตลอดไป
-        # (account pre-hijacking)
-        #
-        # Google ยืนยันแล้วว่าคนที่กดตอนนี้เป็นเจ้าของกล่องจดหมายจริง ส่วนรหัสผ่านที่ตั้งไว้
-        # ก่อนหน้านั้นพิสูจน์อะไรไม่ได้เลย จึงต้องล้างทิ้งทั้งหมด: รหัสผ่าน, ทุกเซสชัน,
-        # ลิงก์รีเซ็ตที่ค้าง แล้วบอกให้เจ้าของตั้งรหัสใหม่เองผ่าน /password/change
-        # ถ้าเจ้าของตัวจริงเป็นคนตั้งรหัสนั้นเอง เขาก็แค่ตั้งใหม่ — เสียเวลานิดเดียว
-        # แต่ถ้าเป็นคนร้ายตั้ง นี่คือจุดเดียวที่ตัดเขาออกจากบัญชีได้
-        credentials_cleared = existing.password_hash is not None
-        if credentials_cleared:
-            existing.password_hash = None
-            existing.password_changed_at = _now()   # ตัด access token เก่าทุกใบทันที
-            await revoke_all_sessions(db, existing.id)
-            await void_pending_password_resets(db, existing.id)
-
-        await _link_google(db, existing, profile)
-        result = await _finish_google_login(
-            db, existing, request,
-            is_new_account=False, linked=True, password_cleared=credentials_cleared,
+        # An email match alone is insufficient to merge website and Google credentials.
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            {"code": "LINK_REQUIRED", "message": "Log in with your website password, then link Google in Settings."},
         )
-        # แจ้งเจ้าของบัญชีว่ามีอีกทางหนึ่งที่เข้าบัญชีเขาได้เพิ่มขึ้นมา
-        # และถ้ารหัสผ่านถูกล้าง ต้องบอกด้วยว่าทำไม ไม่งั้นเข้าครั้งหน้าด้วยรหัสไม่ได้แล้วงง
-        await mailer.send_google_linked_notice(
-            existing.email, existing.full_name, password_cleared=credentials_cleared
-        )
-        return result
-
     # ---- เส้นทางที่ 3: สมัครใหม่ ----
     if not data.terms_accepted:
         # ต้องกันไว้ตรงนี้ เพราะการยอมรับเงื่อนไขต้องมีหลักฐานเวลาที่ยอมรับ
@@ -418,6 +411,7 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
         email=profile.email,
         # ไม่มีรหัสผ่าน — ตั้งทีหลังได้เองผ่าน /password/forgot หรือ /password/change
         password_hash=None,
+        email_verified_at=_now() if profile.email_authoritative else None,
         terms_accepted=True,
         terms_accepted_at=_now(),
     )
@@ -435,6 +429,33 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
 
     await _link_google(db, user, profile)
     return await _finish_google_login(db, user, request, is_new_account=True)
+
+
+@router.post("/google/link", response_model=MessageReply)
+async def google_link(data: GoogleLinkRequest, user: CurrentUser, db: Db):
+    # The current password is step-up proof. A stolen access token cannot attach Google.
+    if user.password_hash is None or not await verify_password(data.current_password, user.password_hash):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid password")
+    profile = await verify_google_id_token(data.id_token, max_age_seconds=300)
+    if profile.email.casefold() != user.email.casefold():
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Google email must match this account")
+
+    locked_user = (await db.execute(select(User).where(User.id == user.id).with_for_update())).scalar_one()
+    if locked_user.password_hash is None or not await verify_password(data.current_password, locked_user.password_hash):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid password")
+    if await find_identity(db, PROVIDER_GOOGLE, profile.subject):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Google identity is already linked")
+    already = (await db.execute(select(Identity).where(
+        Identity.user_id == user.id, Identity.provider == PROVIDER_GOOGLE
+    ))).scalar_one_or_none()
+    if already is not None:
+        raise HTTPException(status.HTTP_409_CONFLICT, "This account already has a Google identity")
+    await _link_google(db, locked_user, profile)
+    if profile.email_authoritative and locked_user.email_verified_at is None:
+        locked_user.email_verified_at = _now()
+    await db.commit()
+    await mailer.send_google_linked_notice(locked_user.email, locked_user.full_name)
+    return MessageReply(message="Google linked. Your website password still works.")
 
 
 # สองคำขอที่เข้ามาพร้อมกันด้วยบัญชี Google เดียวกันจะผูกซ้ำแล้วชน UNIQUE
@@ -462,7 +483,7 @@ async def _finish_google_login(
     password_cleared: bool = False,
 ) -> GoogleTokenPair:
     """
-    ส่วนท้ายที่เหมือนกันทั้งสามเส้นทางของ /google — ออก token แล้ว commit
+    ส่วนท้ายของเส้นทางเข้าสู่ระบบและสมัครใหม่ด้วย Google — ออก token แล้ว commit
 
     ล้างตัวนับรหัสผิดและปลดล็อกบัญชีให้ด้วย เพราะการล็อกมีไว้กันคนเดารหัสผ่าน
     ส่วนคนที่ผ่าน Google มาได้พิสูจน์ตัวตนแล้วด้วยวิธีที่แข็งแรงกว่ารหัสผ่าน
@@ -527,6 +548,12 @@ async def login(data: LoginRequest, request: Request, db: Db):
         await record_login_attempt(db, str(data.email), request, succeeded=False)
         await db.commit()
         raise invalid
+
+    if user.email_verification_required and user.email_verified_at is None:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN,
+            {"code": "EMAIL_VERIFICATION_REQUIRED", "message": "Verify your email before signing in."},
+        )
 
     clear_failed_attempts(user)
     refresh_raw, _ = await issue_refresh_token(db, user, request)
@@ -627,6 +654,8 @@ async def me(user: CurrentUser, db: Db):
         created_at=user.created_at,
         has_password=user.password_hash is not None,
         providers=await list_providers(db, user.id),
+        email_verified=user.email_verified_at is not None,
+        verification_required=user.email_verification_required,
     )
 
 
@@ -639,9 +668,8 @@ async def change_email(data: ChangeEmailRequest, user: CurrentUser, db: Db):
     """
     เปลี่ยนอีเมลของบัญชีตัวเอง
 
-    จำเป็นต้องมีเพราะระบบไม่บังคับยืนยันอีเมล ถ้าพิมพ์อีเมลผิดตอนสมัครแล้วไม่มี
-    ทางแก้ ผู้ใช้จะกู้บัญชีไม่ได้ตลอดไป — ลิงก์ลืมรหัสผ่านจะวิ่งไปเข้ากล่องจดหมาย
-    ที่ไม่มีอยู่จริง
+    บัญชีเดิมยังต้องมีทางแก้อีเมลที่สะกดผิด บัญชีที่สมัครใหม่และยังไม่ยืนยัน
+    จะเข้า endpoint นี้ไม่ได้ เพราะต้องยืนยันอีเมลก่อนเข้าพื้นที่ที่ต้องล็อกอิน
     """
     if user.password_hash is None:
         # บัญชีที่มีแต่ Google ไม่มีรหัสผ่านให้ยืนยัน จะปล่อยให้เปลี่ยนอีเมลโดยไม่ต้อง
@@ -662,6 +690,10 @@ async def change_email(data: ChangeEmailRequest, user: CurrentUser, db: Db):
 
     old_email = user.email
     user.email = data.new_email
+    # Verification belongs to the previous address, not this new one.
+    user.email_verified_at = None
+    # This legacy flow is not a new registration; keep its access policy unchanged.
+    user.email_verification_required = False
 
     try:
         await db.flush()
@@ -732,6 +764,14 @@ async def reset_password(data: ResetPasswordRequest, db: Db):
 
     user.password_hash = await hash_password(data.new_password)
     user.password_changed_at = _now()
+    if user.email_verified_at is None:
+        user.email_verified_at = _now()
+    if user.email_verification_required:
+        rows = (await db.execute(select(EmailVerification).where(
+            EmailVerification.user_id == user.id, EmailVerification.used_at.is_(None)
+        ))).scalars().all()
+        for row in rows:
+            row.used_at = _now()
     clear_failed_attempts(user)
 
     # คนที่ขอรีเซ็ตมักเพราะสงสัยว่าบัญชีโดนเข้าถึง จึงต้องตัดทุกอุปกรณ์ทิ้ง

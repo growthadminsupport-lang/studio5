@@ -192,6 +192,9 @@ async def get_current_user(
     if user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ไม่พบบัญชีผู้ใช้")
 
+    if user.email_verification_required and user.email_verified_at is None:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "กรุณายืนยันอีเมลก่อนใช้งาน")
+
     # token ที่ออกก่อนการเปลี่ยนรหัสผ่านครั้งล่าสุดถือว่าใช้ไม่ได้แล้ว
     if payload.get("pwd") != int(user.password_changed_at.timestamp()):
         raise HTTPException(
@@ -294,6 +297,9 @@ async def consume_refresh_token(
     ).scalar_one_or_none()
     if user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ไม่พบบัญชีผู้ใช้")
+
+    if user.email_verification_required and user.email_verified_at is None:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "กรุณายืนยันอีเมลก่อนใช้งาน")
 
     return user, session
 

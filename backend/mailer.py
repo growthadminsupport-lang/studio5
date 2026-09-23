@@ -47,16 +47,19 @@ logger = logging.getLogger("growth.mailer")
 # ที่อยู่ของหน้าเว็บฝั่ง frontend ที่จะรับโทเคนไปตั้งรหัสผ่านใหม่ — ต้องชี้ไปที่
 # "หน้าเว็บ" ไม่ใช่ที่ API เพราะคนกดลิงก์นี้คือผู้ใช้ในกล่องจดหมาย
 APP_BASE_URL = os.environ.get("APP_BASE_URL", "http://localhost:3000")
+APP_ENV = os.environ.get("APP_ENV", "development")
 
 SERVICE_NAME = "GrowTH"
 
 # path ของหน้าเว็บที่รับโทเคน ถ้าฝั่ง frontend ใช้ path อื่นให้แก้ตรงนี้จุดเดียว
 RESET_PASSWORD_PATH = "/reset-password"
+VERIFY_EMAIL_PATH = "/verify-email"
 
 # ประกอบลิงก์ทิ้งหนึ่งครั้งตั้งแต่ตอน import เพื่อให้ APP_BASE_URL ที่ผิดรูปแบบ
 # ระเบิดตอนเซิร์ฟเวอร์สตาร์ท ไม่ใช่ตอนผู้ใช้คนแรกกดลืมรหัสผ่าน — ซึ่งจะกลายเป็น
 # 500 จาก endpoint ที่ต้องตอบข้อความกลาง ๆ เสมอ
 build_frontend_link(APP_BASE_URL, RESET_PASSWORD_PATH, token="startup-check")
+build_frontend_link(APP_BASE_URL, VERIFY_EMAIL_PATH, token="startup-check")
 
 # ตรวจค่าตั้งตั้งแต่ตอน import — ตั้งผิดจะรู้ตอนเซิร์ฟเวอร์สตาร์ท
 # ไม่ใช่ตอนผู้ใช้จริงกดลืมรหัสผ่านแล้วอีเมลไม่มา
@@ -186,6 +189,17 @@ async def send_password_reset_email(to_email: str, full_name: str, token: str) -
     )
 
 
+async def send_email_verification(to_email: str, full_name: str, token: str) -> bool:
+    link = build_frontend_link(APP_BASE_URL, VERIFY_EMAIL_PATH, token=token)
+    return await _deliver(
+        to_email,
+        f"ยืนยันอีเมล — {SERVICE_NAME}",
+        f"สวัสดีคุณ{full_name}\n\nเปิดลิงก์นี้แล้วกรอกรหัสผ่านที่ใช้สมัครเพื่อยืนยันอีเมล:\n"
+        f"{link}\n\nลิงก์ใช้ได้ 24 ชั่วโมงและใช้ได้ครั้งเดียว\n"
+        "ถ้าคุณไม่ได้สมัคร โปรดละเว้นอีเมลนี้",
+    )
+
+
 async def send_password_setup_email(to_email: str, full_name: str, token: str) -> bool:
     """
     เหมือน send_password_reset_email แต่สำหรับบัญชีที่สมัครผ่าน Google
@@ -241,39 +255,20 @@ async def send_email_changed_notice(old_email: str, full_name: str, new_email: s
     )
 
 
-async def send_google_linked_notice(
-    to_email: str, full_name: str, password_cleared: bool = False
-) -> bool:
+async def send_google_linked_notice(to_email: str, full_name: str) -> bool:
     """
     แจ้งเตือนหลังบัญชี Google ถูกผูกเข้ากับบัญชีที่มีอยู่แล้ว
 
-    การผูกอัตโนมัติทำได้เพราะ Google ยืนยันอีเมลนั้นให้แล้ว (ดู google_oauth.py)
-    แต่เจ้าของบัญชีควรได้รู้ว่ามีอีกทางหนึ่งที่เข้าบัญชีเขาได้เพิ่มขึ้นมา
-    ถ้าวันหนึ่งอีเมลของเขาที่ Google ถูกยึด นี่จะเป็นร่องรอยแรกที่เขาเห็น
-
-    password_cleared=True เมื่อบัญชีเดิมมีรหัสผ่านอยู่และถูกล้างทิ้งตอนผูก (กัน
-    pre-hijacking — ดู routes_auth.py เส้นทางที่ 2) ข้อความต้องต่างกัน เพราะครั้งหน้า
-    เขาเข้าด้วยรหัสเดิมไม่ได้แล้ว ถ้าไม่บอกจะนึกว่าระบบพัง
+    เจ้าของได้รู้ว่ามีอีกทางหนึ่งที่เข้าบัญชีเขาได้เพิ่มขึ้นมา
+    การผูกต้องยืนยันรหัสผ่านเว็บไซต์และ Google ID token ก่อนเสมอ
     """
-    if password_cleared:
-        body = (
-            f"สวัสดีคุณ{full_name}\n\n"
-            f"บัญชี Google ของคุณถูกผูกกับบัญชี {SERVICE_NAME} ที่ใช้อีเมลนี้แล้ว\n\n"
-            f"เพื่อความปลอดภัย รหัสผ่านที่เคยตั้งไว้กับบัญชีนี้ถูกยกเลิก และอุปกรณ์ทั้งหมดถูก\n"
-            f"ให้ออกจากระบบ — เพราะระบบไม่สามารถยืนยันได้ว่ารหัสผ่านนั้นเป็นของคุณจริง\n"
-            f"(บัญชีนี้สมัครด้วยอีเมลโดยไม่ได้ยืนยันอีเมลมาก่อน)\n\n"
-            f"ตอนนี้เข้าสู่ระบบได้ด้วยปุ่ม \"เข้าสู่ระบบด้วย Google\"\n"
-            f"ถ้าต้องการใช้รหัสผ่านด้วย ให้ตั้งใหม่ได้ที่หน้าตั้งค่าบัญชีหลังเข้าสู่ระบบ\n\n"
-            f"ถ้าคุณไม่เคยสมัครบัญชีนี้ด้วยรหัสผ่านมาก่อน แปลว่ามีคนอื่นสมัครด้วยอีเมลของคุณไว้\n"
-            f"ระบบตัดเขาออกให้แล้ว แต่กรุณาตรวจข้อมูลในบัญชีและติดต่อทีมงานถ้าพบสิ่งผิดปกติ"
-        )
-    else:
-        body = (
-            f"สวัสดีคุณ{full_name}\n\n"
-            f"ตอนนี้บัญชีของคุณเข้าสู่ระบบด้วยปุ่ม \"เข้าสู่ระบบด้วย Google\" ได้แล้ว\n\n"
-            f"ถ้าคุณเป็นคนทำเอง ไม่ต้องทำอะไรต่อ\n"
-            f"ถ้าไม่ใช่ ให้ติดต่อทีมงานทันที"
-        )
+    body = (
+        f"สวัสดีคุณ{full_name}\n\n"
+        f"ตอนนี้บัญชีของคุณเข้าสู่ระบบด้วยปุ่ม \"เข้าสู่ระบบด้วย Google\" ได้แล้ว\n"
+        f"รหัสผ่านเว็บไซต์เดิมยังใช้ได้ตามปกติ\n\n"
+        f"ถ้าคุณเป็นคนทำเอง ไม่ต้องทำอะไรต่อ\n"
+        f"ถ้าไม่ใช่ ให้เปลี่ยนรหัสผ่านและติดต่อทีมงานทันที"
+    )
     return await _deliver(
         to_email, f"บัญชี Google ถูกผูกกับบัญชีของคุณแล้ว — {SERVICE_NAME}", body
     )

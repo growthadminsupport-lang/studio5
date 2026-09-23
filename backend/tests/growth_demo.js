@@ -63,6 +63,7 @@
     if (!response.ok) {
       let text = "ระบบขัดข้องชั่วคราว กรุณาลองใหม่";
       if (response.status < 500 && typeof data?.detail === "string") text = data.detail;
+      else if (response.status < 500 && typeof data?.detail?.message === "string") text = data.detail.message;
       else if (response.status === 422 && Array.isArray(data?.detail)) text = data.detail.map(item => item.msg).join("\n");
       throw new ApiError(text, response.status);
     }
@@ -205,14 +206,9 @@
         },
       });
       state.epoch++; saveSession(next); await enterDashboard();
-      if (next.password_cleared) {
-        toast("ผูก Google แล้ว กรุณาตั้งรหัสผ่านใหม่เพื่อใช้เข้าสู่ระบบได้ทั้งสองทาง");
-        openPasswordSettings();
-      } else if (next.is_new_account) {
+      if (next.is_new_account) {
         toast("สร้างบัญชีด้วย Google แล้ว ตั้งรหัสผ่านเพิ่มได้หากต้องการเข้าทั้งสองทาง");
         if (!state.user?.has_password) openPasswordSettings();
-      } else if (next.linked) {
-        toast("ผูก Google กับบัญชีเดิมและเข้าสู่ระบบแล้ว");
       } else {
         toast("เข้าสู่ระบบด้วย Google สำเร็จ");
       }
@@ -316,8 +312,13 @@
         }
         throw error;
       }
-      state.epoch++; saveSession(next); await enterDashboard();
-      toast(registering ? "สร้างบัญชีแล้ว เริ่มเพิ่มประวัติเด็กได้เลย" : "เข้าสู่ระบบสำเร็จ");
+      if (registering) {
+        setMode("login");
+        message("auth-error", "ตรวจอีเมลเพื่อยืนยันบัญชี แล้วกรอกรหัสผ่านที่ใช้สมัครในหน้าลิงก์ยืนยัน หากไม่มีอีเมล ให้ใช้หน้าลืมรหัสผ่านของเว็บหลัก");
+      } else {
+        state.epoch++; saveSession(next); await enterDashboard();
+        toast("เข้าสู่ระบบสำเร็จ");
+      }
     });
   });
   $("load-demo").addEventListener("click", async () => {

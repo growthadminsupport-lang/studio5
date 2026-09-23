@@ -1,85 +1,86 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { authedRequest, clearSession, publicRequest, refreshAccess, saveSession, storedRefreshToken } from '../lib/api';
 
 const AuthContext = createContext(null);
-
-function getInitialAuthState() {
-
-  const remembered = localStorage.getItem("growth_logged_in") === "true";
-
-  const sessionOnly = sessionStorage.getItem("growth_logged_in") === "true";
-
-  return remembered || sessionOnly;
-
-}
+let bootstrapPromise = null;
 
 export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(getInitialAuthState());
-
-  const [email, setEmail] = useState(
-
-    localStorage.getItem("growth_user_email") ||
-
-      sessionStorage.getItem("growth_user_email") ||
-
-      ""
-
-  );
-
-  const login = (userEmail, remember) => {
-
-    if (remember) {
-
-      localStorage.setItem("growth_logged_in", "true");
-
-      localStorage.setItem("growth_user_email", userEmail);
-      sessionStorage.removeItem("growth_logged_in");
-      sessionStorage.removeItem("growth_user_email");
-    } else {
-
-      sessionStorage.setItem("growth_logged_in", "true");
-
-      sessionStorage.setItem("growth_user_email", userEmail);
-      localStorage.removeItem("growth_logged_in");
-      localStorage.removeItem("growth_user_email");
+  useEffect(() => {
+    let active = true;
+    if (!bootstrapPromise) {
+      bootstrapPromise = (async () => {
+        if (!storedRefreshToken()) return null;
+        await refreshAccess();
+        return authedRequest('/api/auth/me');
+      })().catch(() => { clearSession(); return null; }).finally(() => { bootstrapPromise = null; });
     }
+    bootstrapPromise.then((profile) => {
+      if (active) { setUser(profile); setLoading(false); }
+    });
+    return () => { active = false; };
+  }, []);
 
-    setEmail(userEmail);
+  async function acceptTokens(tokens, remember = false) {
+    saveSession(tokens, remember);
+    try {
+      const profile = await authedRequest('/api/auth/me');
+      setUser(profile);
+      return tokens;
+    } catch (error) {
+      clearSession();
+      setUser(null);
+      throw error;
+    }
+  }
 
-    setIsLoggedIn(true);
+  async function login(email, password, remember = false) {
+    const tokens = await publicRequest('/api/auth/login', { email, password });
+    return acceptTokens(tokens, remember);
+  }
 
-  };
+  async function loginWithGoogle(idToken, termsAccepted = false, remember = false) {
+    const tokens = await publicRequest('/api/auth/google', { id_token: idToken, terms_accepted: termsAccepted });
+    return acceptTokens(tokens, remember);
+  }
 
-  const logout = () => {
+  async function register(form) {
+    return publicRequest('/api/auth/register', {
+      full_name: form.name, email: form.email, phone_number: form.phone || null,
+      password: form.password, terms_accepted: form.acceptedTerms,
+    });
+  }
 
-    localStorage.removeItem("growth_logged_in");
+  async function logout() {
+    const refreshToken = storedRefreshToken();
+    clearSession();
+    setUser(null);
+    if (refreshToken) {
+      await publicRequest('/api/auth/logout', { refresh_token: refreshToken }).catch(() => null);
+    }
+  }
 
-    localStorage.removeItem("growth_user_email");
+  async function linkGoogle(idToken, currentPassword) {
+    const result = await authedRequest('/api/auth/google/link', {
+      method: 'POST', body: { id_token: idToken, current_password: currentPassword },
+    });
+    setUser(await authedRequest('/api/auth/me'));
+    return result;
+  }
 
-    sessionStorage.removeItem("growth_logged_in");
-
-    sessionStorage.removeItem("growth_user_email");
-
-    setEmail("");
-
-    setIsLoggedIn(false);
-
-  };
-
-  return (
-
-    <AuthContext.Provider value={{ isLoggedIn, email, login, logout }}>
-
-      {children}
-
-    </AuthContext.Provider>
-
-  );
-
+  return <AuthContext.Provider value={{
+    user, email: user?.email || '', isLoggedIn: Boolean(user), loading,
+    login, loginWithGoogle, register, logout, linkGoogle,
+    requestPasswordReset: (email) => publicRequest('/api/auth/password/forgot', { email }),
+    resetPassword: (token, newPassword) => publicRequest('/api/auth/password/reset', { token, new_password: newPassword }),
+    verifyEmail: (token, password) => publicRequest('/api/auth/email/verify', { token, password }),
+    resendVerification: (email) => publicRequest('/api/auth/email/verification/resend', { email }),
+  }}>{children}</AuthContext.Provider>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
-
   return useContext(AuthContext);
-
 }
