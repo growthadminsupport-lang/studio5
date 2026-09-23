@@ -1,0 +1,74 @@
+# Blueprint สำหรับ deploy ขึ้น Render — https://render.com/docs/blueprint-spec
+#
+# วิธีใช้
+#   1. push โปรเจกต์ขึ้น GitHub (ตรวจก่อนว่า .env ไม่ติดไปด้วย)
+#   2. ที่ Render กด New > Blueprint แล้วเลือก repo นี้ Render จะอ่านไฟล์นี้เอง
+#   3. กรอกค่าที่ตั้ง sync: false ไว้ในหน้า Environment (Render ไม่เก็บค่าพวกนี้ใน git)
+#   4. รัน growth_schema.sql แล้วตามด้วย admin_schema.sql กับฐานข้อมูลจริงหนึ่งครั้ง
+#
+# หมายเหตุแผนฟรี: เซิร์ฟเวอร์จะถูกพักหลังไม่มี request 15 นาที request แรกหลังตื่น
+# จะช้าราว 30-50 วินาที ถ้าจะให้ผู้ใช้จริงลองต้องขยับไปแผนเสียเงิน
+
+services:
+  - type: web
+    name: growth-api
+    runtime: python
+    region: singapore
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # ต้อง bind 0.0.0.0 และใช้ $PORT ที่ Render กำหนดมา จะ hardcode 8000 ไม่ได้
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.14"
+
+      # Render วาง reverse proxy ไว้หน้าแอป ทุก request ที่มาถึง uvicorn จึงมี IP ต้นทาง
+      # เป็น IP ของ proxy เหมือนกันหมด — IP จริงของผู้ใช้อยู่ใน header X-Forwarded-For
+      # uvicorn อ่าน header นั้นให้ก็ต่อเมื่อเชื่อ IP ของ proxy (ค่าเริ่มต้นเชื่อแค่ 127.0.0.1)
+      # ถ้าไม่ตั้ง การจำกัดอัตราต่อ IP ใน auth.py จะนับทุกคนเป็น IP เดียว: ผู้ใช้กรอกรหัสผิด
+      # รวมกัน 20 ครั้งใน 15 นาที = /login และ /google ถูกล็อก **ทั้งเว็บ** และ
+      # usr_sessions.ip_address จะบันทึก IP ของ proxy แทน IP ผู้ใช้ทุกแถว
+      # ใช้ "*" ได้เพราะแอปรับ request ได้จาก proxy ของ Render ทางเดียว ไม่มีทางเข้าอื่น
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+
+      # connection string ของฐานข้อมูล — ใส่ค่าจาก Neon/Supabase ในหน้า Environment
+      - key: DATABASE_URL
+        sync: false
+
+      # Render สุ่มค่าให้ตอนสร้างครั้งแรกแล้วเก็บไว้ถาวร
+      # ระวัง: ถ้ากดสร้างใหม่ ผู้ใช้ทุกคนจะหลุดจากระบบทันที
+      - key: JWT_SECRET
+        generateValue: true
+
+      # โดเมนของ frontend คั่นด้วยจุลภาค เช่น https://growth.vercel.app
+      - key: CORS_ORIGINS
+        sync: false
+
+      # URL ของหน้าเว็บที่ใช้ประกอบลิงก์ในอีเมล ไม่ใช่ URL ของ API
+      - key: APP_BASE_URL
+        sync: false
+
+      # ---- เข้าสู่ระบบด้วย Google (ไม่ตั้งก็ deploy ได้ ปุ่มจะใช้ไม่ได้เฉย ๆ) ----
+      # client id จาก Google Cloud Console คั่นด้วยจุลภาคถ้ามีหลายค่า
+      # ใส่ client id เท่านั้น ไม่ต้องใช้ client secret
+      - key: GOOGLE_CLIENT_IDS
+        sync: false
+
+      # ---- ส่งอีเมล (ไม่ตั้งก็ deploy ได้ แต่ปุ่มลืมรหัสผ่านจะใช้ไม่ได้) ----
+      # ตั้ง SMTP_HOST เมื่อไหร่ ต้องตั้ง MAIL_FROM ด้วย ไม่งั้นเซิร์ฟเวอร์ไม่สตาร์ท
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_SECURITY
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: MAIL_FROM_NAME
+        sync: false

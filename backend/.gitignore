@@ -1,0 +1,33 @@
+# ความลับ — ห้ามหลุดขึ้น git เด็ดขาด (.env.example เป็นไฟล์ตัวอย่าง ไม่มีค่าจริง จึง commit ได้)
+.env
+.env.*
+.env.local
+.env.*.local
+!.env.example
+
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+.vscode/
+.idea/
+.DS_Store
+*.log
+
+# บัญชีจำลองเฉพาะเครื่องสำหรับหน้า tests/growth_demo.html
+tests/demo_login.local.json
+
+# Local uploads, database exports, and credentials
+/storage/
+/uploads/
+*.dump
+*.backup
+*.pem
+*.key
+credentials*.json
+client_secret*.json
+
+# Optional frontend tooling
+node_modules/
+dist/

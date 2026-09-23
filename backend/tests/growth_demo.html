@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>GrowTH — ทุกก้าวของการเติบโต</title>
+  <link rel="stylesheet" href="growth_demo.css?v=password-setup-1">
+  <script src="growth_demo.js?v=password-setup-1" defer></script>
+</head>
+<body>
+  <div id="boot" class="boot" role="status">กำลังเปิด GrowTH…</div>
+  <section id="auth-view" class="auth-layout" hidden>
+    <aside class="story">
+      <a class="brand" href="growth_demo.html"><span class="brand-icon" aria-hidden="true">↗</span>Grow<span>TH</span><small>GROW TOGETHER</small></a>
+      <div class="story-copy"><span class="eyebrow">SMALL STEPS. BEAUTIFUL GROWTH.</span><h1>ทุกก้าวเล็ก ๆ<br>มีความหมายเสมอ<span class="dot">.</span></h1><p>เก็บเรื่องราวการเติบโตของลูก<br>ตั้งแต่วันแรก และในทุกวันที่เติบโตไปด้วยกัน</p></div>
+      <div class="growth-art" aria-hidden="true"><div class="art-ring"></div><div class="plant plant-a"><i></i><i></i><i></i><i></i></div><div class="plant plant-b"><i></i><i></i><i></i><i></i></div><div class="art-label">a little taller,<br>a little stronger.</div><div class="art-note"><span>↗</span> เติบโตไปด้วยกัน</div><div class="art-ground"></div></div>
+      <p class="story-footer">พื้นที่เล็ก ๆ สำหรับเรื่องราวสำคัญของครอบครัว</p>
+    </aside>
+    <main class="auth-main">
+      <span class="environment"><span class="status-dot"></span> เวอร์ชันทดลองบนเครื่อง</span>
+      <div class="auth-box">
+        <div class="auth-tabs" aria-label="เลือกเข้าสู่ระบบหรือสมัครสมาชิก"><button id="login-tab" type="button" class="active" aria-pressed="true">เข้าสู่ระบบ</button><button id="register-tab" type="button" aria-pressed="false">สมัครสมาชิก</button></div>
+        <h2 id="auth-title">ยินดีต้อนรับกลับมา</h2><p id="auth-subtitle" class="muted">มาดูการเติบโตของคนสำคัญไปด้วยกัน</p>
+        <form id="auth-form">
+          <div id="name-field" hidden><label for="full-name">ชื่อผู้ปกครอง</label><input id="full-name" name="full_name" type="text" autocomplete="name" maxlength="150" placeholder="ชื่อและนามสกุล"></div>
+          <label for="email">อีเมล</label><input id="email" name="email" type="email" autocomplete="username" maxlength="255" placeholder="you@example.com" required>
+          <label for="password">รหัสผ่าน</label><div class="password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" required><button id="toggle-password" type="button" aria-label="แสดงรหัสผ่าน">แสดง</button></div>
+          <p id="login-password-hint" class="field-hint">บัญชีที่สมัครด้วย Google ต้องเข้า Google หนึ่งครั้ง แล้วกด “ตั้งรหัสผ่าน” ก่อนใช้ช่องนี้</p>
+          <div id="register-fields" hidden><p class="field-hint">อย่างน้อย 8 ตัวอักษร ไม่ใช้ชื่อ อีเมล หรือรหัสที่เดาง่าย</p><label for="confirm-password">ยืนยันรหัสผ่าน</label><input id="confirm-password" type="password" autocomplete="new-password"><label class="check"><input id="consent" type="checkbox"> ยินยอมให้บันทึกข้อมูลที่กรอกเพื่อทดลองใช้งานบนเครื่องนี้</label><p class="field-hint">สมัครแล้วเข้าใช้งานได้ทันที ยังไม่ต้องยืนยันอีเมล</p></div>
+          <p id="auth-error" class="message error" role="alert" hidden></p>
+          <button id="auth-submit" type="submit" class="button primary wide">เข้าสู่ระบบ <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="auth-divider" aria-hidden="true"><span>หรือ</span></div>
+        <section id="google-auth" class="google-auth" aria-labelledby="google-auth-label">
+          <h3 id="google-auth-label" class="sr-only">เข้าสู่ระบบด้วย Google</h3>
+          <div id="google-button" class="google-button"><button type="button" class="google-placeholder" disabled><span aria-hidden="true">G</span> ดำเนินการต่อด้วย Google</button></div>
+          <label class="check google-consent"><input id="google-consent" type="checkbox"> หากเป็นบัญชีใหม่ ฉันยอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว</label>
+          <p id="google-error" class="message error" role="alert" hidden></p>
+          <p class="field-hint google-hint">ขณะทดสอบ ใช้ได้เฉพาะบัญชีที่เพิ่มไว้ใน Google Test users</p>
+        </section>
+        <p class="local-note">ข้อมูลบัญชีและประวัติเด็กบันทึกไว้บนเครื่องนี้</p>
+        <details class="demo-details"><summary>ลองใช้งานด้วยบัญชีตัวอย่าง</summary><p class="muted">โหลดข้อมูลจำลองที่เตรียมไว้ แล้วกดเข้าสู่ระบบ</p><button id="load-demo" type="button" class="button secondary wide">กรอกบัญชีตัวอย่าง</button></details>
+      </div>
+      <footer class="auth-footer">GrowTH <span>ดูแลวันนี้ เพื่อการเติบโตในวันข้างหน้า</span></footer>
+    </main>
+  </section>
+  <section id="dashboard" hidden>
+    <header class="topbar"><a class="brand compact" href="growth_demo.html"><span class="brand-icon" aria-hidden="true">↗</span>Grow<span>TH</span></a><span class="nav-current">ประวัติเด็ก</span><div class="account"><span id="account-name"></span><button id="password-settings" class="button text-button" type="button">ตั้งรหัสผ่าน</button><button id="logout" class="button text-button" type="button">ออกจากระบบ ↗</button></div></header>
+    <main class="dashboard-main">
+      <div class="page-heading"><div><span class="eyebrow">YOUR FAMILY, GROWING TOGETHER</span><h1>การเติบโตของลูก</h1><p class="muted">บันทึกทุกก้าวสำคัญ และกลับมาดูได้ทุกเมื่อ</p></div><button id="add-child" class="button primary" type="button"><span aria-hidden="true">＋</span> เพิ่มประวัติเด็ก</button></div>
+      <div class="overview"><span class="overview-icon" aria-hidden="true">♡</span><div><strong id="family-count">ครอบครัวของคุณ</strong><p>ประวัติที่คุณสร้างจะเห็นได้เฉพาะบัญชีของคุณ</p></div><span class="environment"><span class="status-dot"></span> บันทึกบนเครื่อง</span></div>
+      <p id="dashboard-error" class="message error" role="alert" hidden></p>
+      <div class="workspace"><aside class="children-panel"><div class="section-heading"><h2>เด็กในความดูแล</h2><button id="reload-children" class="text-button" type="button">รีเฟรช</button></div><div id="children-list" class="children-list" aria-label="รายชื่อเด็ก"></div></aside><section id="child-detail" class="detail-panel" aria-live="polite"></section></div>
+      <footer class="dashboard-footer">GrowTH · ทุกก้าวของการเติบโต <span>เวอร์ชันทดลอง · ข้อมูลเก็บในเครื่องนี้</span></footer>
+    </main>
+  </section>
+  <dialog id="child-dialog" aria-labelledby="child-dialog-title">
+    <form id="child-form"><div class="dialog-heading"><div><span class="eyebrow">CHILD PROFILE</span><h2 id="child-dialog-title">เพิ่มประวัติเด็ก</h2></div><button type="button" class="close-button" data-close="child-dialog" aria-label="ปิด">×</button></div><p class="muted">เริ่มต้นด้วยข้อมูลพื้นฐานของคนสำคัญ</p><label for="child-name">ชื่อเด็ก / ชื่อเล่น</label><input id="child-name" type="text" maxlength="150" autocomplete="off" placeholder="เช่น น้องต้นกล้า" required><label for="child-sex">เพศที่ใช้เทียบเกณฑ์การเติบโต</label><select id="child-sex" required><option value="" disabled selected>เลือกเพศ</option><option value="male">ชาย</option><option value="female">หญิง</option></select><label for="child-dob">วันเกิด</label><input id="child-dob" type="date" required><p class="field-hint">กรอกปี ค.ศ. ในช่องวันที่ เช่น 2020</p><p id="edit-notice" class="message notice" hidden>การแก้เพศหรือวันเกิดจะไม่คำนวณผลวัดเก่าใหม่ กรุณาตรวจข้อมูลให้ถูกต้อง</p><p id="child-error" class="message error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="button secondary" data-close="child-dialog">ยกเลิก</button><button type="submit" class="button primary">บันทึกประวัติ</button></div></form>
+  </dialog>
+  <dialog id="growth-dialog" aria-labelledby="growth-title">
+    <form id="growth-form"><div class="dialog-heading"><div><span class="eyebrow">A NEW MILESTONE</span><h2 id="growth-title">บันทึกการเติบโต</h2></div><button type="button" class="close-button" data-close="growth-dialog" aria-label="ปิด">×</button></div><p id="growth-child-name" class="muted"></p><label for="measurement-date">วันที่วัด</label><input id="measurement-date" type="date" required><div class="form-columns"><div><label for="height-cm">ส่วนสูง (ซม.)</label><input id="height-cm" type="number" min="20" max="250" step="0.01" placeholder="110.5" required></div><div><label for="weight-kg">น้ำหนัก (กก.)</label><input id="weight-kg" type="number" min="0.3" max="300" step="0.01" placeholder="18.2" required></div></div><p class="field-hint">บันทึกได้วันละหนึ่งรายการต่อเด็กหนึ่งคน</p><p id="growth-error" class="message error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="button secondary" data-close="growth-dialog">ยกเลิก</button><button type="submit" class="button primary">บันทึกผลวัด</button></div></form>
+  </dialog>
+  <dialog id="password-dialog" aria-labelledby="password-dialog-title">
+    <form id="password-form">
+      <div class="dialog-heading"><div><span class="eyebrow">ACCOUNT SECURITY</span><h2 id="password-dialog-title">ตั้งรหัสผ่าน</h2></div><button type="button" class="close-button" data-close="password-dialog" aria-label="ปิด">×</button></div>
+      <p id="password-dialog-description" class="muted">ตั้งรหัสผ่านเพื่อให้บัญชีนี้เข้าสู่ระบบได้ทั้ง Google และอีเมล</p>
+      <div id="current-password-field" hidden><label for="account-current-password">รหัสผ่านปัจจุบัน</label><input id="account-current-password" type="password" autocomplete="current-password"></div>
+      <label for="account-new-password">รหัสผ่านใหม่</label><input id="account-new-password" type="password" autocomplete="new-password" minlength="8" required>
+      <p class="field-hint">อย่างน้อย 8 ตัวอักษร ไม่ใช้ชื่อ อีเมล หรือรหัสที่เดาง่าย</p>
+      <label for="account-confirm-password">ยืนยันรหัสผ่านใหม่</label><input id="account-confirm-password" type="password" autocomplete="new-password" minlength="8" required>
+      <p id="password-error" class="message error" role="alert" hidden></p>
+      <div class="dialog-actions"><button type="button" class="button secondary" data-close="password-dialog">ยกเลิก</button><button id="password-save" type="submit" class="button primary">ตั้งรหัสผ่าน</button></div>
+    </form>
+  </dialog>
+  <dialog id="delete-dialog" aria-labelledby="delete-title"><form id="delete-form"><div class="dialog-heading"><h2 id="delete-title">ลบประวัติเด็ก?</h2><button type="button" class="close-button" data-close="delete-dialog" aria-label="ปิด">×</button></div><p id="delete-description"></p><p class="message notice">ประวัติเด็กและผลวัดทั้งหมดจะถูกลบถาวร</p><p id="delete-error" class="message error" role="alert" hidden></p><div class="dialog-actions"><button type="button" class="button secondary" data-close="delete-dialog">เก็บประวัติไว้</button><button type="submit" class="button danger">ยืนยันลบประวัติ</button></div></form></dialog>
+  <div id="toast" role="status" class="toast" hidden></div>
+</body>
+</html>

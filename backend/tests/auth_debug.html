@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GrowTH — ทดสอบเข้าสู่ระบบ</title>
+<!--
+  หน้าทดสอบระบบสมาชิกแบบง่าย ๆ ใช้แทน Swagger UI
+  ไม่ใช่หน้าจริงของแอป — เป็นแค่ปุ่มยิง API ให้เห็นผลลัพธ์ตรง ๆ
+
+  วิธีเปิด (ห้ามดับเบิลคลิกเปิดจากไฟล์ตรง ๆ เพราะ origin จะเป็น null แล้วโดน CORS บล็อก)
+    1. สตาร์ท API ก่อน:   venv\Scripts\python.exe -m uvicorn main:app --reload
+    2. เสิร์ฟหน้านี้ที่พอร์ต 3000 (พอร์ตที่ CORS อนุญาตไว้แล้ว):
+         venv\Scripts\python.exe -m http.server 3000 --directory tests
+    3. เปิด http://localhost:3000/auth_debug.html
+-->
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #fff; --ink: #1c1e21; --muted: #666; --line: #e1e4e8;
+    --brand: #2563eb; --brand-ink: #fff; --ok: #15803d; --err: #b91c1c; --warn: #b45309;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 system-ui, "Segoe UI", Tahoma, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .card h2 { font-size: 16px; margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+  .card h2 .tag { font-size: 11px; font-weight: normal; color: var(--muted);
+                  border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; font-family: monospace; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 8px 0 3px; }
+  input[type=text], input[type=email], input[type=password] {
+    width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 7px; font: inherit; }
+  input:focus { outline: 2px solid var(--brand); outline-offset: -1px; border-color: transparent; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  button { padding: 9px 16px; border: 1px solid var(--line); border-radius: 7px; background: #fff;
+           font: inherit; cursor: pointer; }
+  button.primary { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+  button:disabled { opacity: .5; cursor: default; }
+  .check { display: flex; align-items: center; gap: 6px; font-size: 14px; margin-top: 10px; }
+  .status { font-size: 13px; padding: 8px 10px; border-radius: 7px; margin-top: 10px; display: none; white-space: pre-wrap; }
+  .status.ok  { display: block; background: #ecfdf5; color: var(--ok); }
+  .status.err { display: block; background: #fef2f2; color: var(--err); }
+  .status.warn{ display: block; background: #fffbeb; color: var(--warn); }
+  .who { background: #f0f4ff; border: 1px solid #c7d2fe; border-radius: 8px; padding: 10px 12px;
+         font-size: 14px; margin-bottom: 14px; }
+  .who.out { background: #fafafa; border-color: var(--line); color: var(--muted); }
+  .who code { font-family: monospace; font-size: 12px; }
+  pre.log { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 14px;
+            font: 12.5px/1.45 ui-monospace, Consolas, monospace; height: 420px; overflow: auto; margin: 0; }
+  .log .t { color: #94a3b8; }
+  .log .m { color: #7dd3fc; font-weight: bold; }
+  .log .ok { color: #86efac; }
+  .log .err { color: #fca5a5; }
+  .hint { font-size: 12.5px; color: var(--muted); margin-top: 8px; }
+  .full { grid-column: 1 / -1; }
+  #gbtn { margin-top: 10px; min-height: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GrowTH — ทดสอบเข้าสู่ระบบ</h1>
+  <p class="sub">หน้านี้ยิง API ตรง ๆ ให้เห็นผลลัพธ์ ไม่ใช่หน้าจริงของแอป · ผลทุกคำขอโชว์ในกล่องดำด้านล่าง</p>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="row" style="margin:0">
+      <label style="margin:0">API</label>
+      <input type="text" id="api" value="http://127.0.0.1:8000" style="max-width:320px">
+      <button onclick="health()">ตรวจ /health</button>
+      <span id="healthOut" class="hint"></span>
+    </div>
+  </div>
+
+  <div id="who" class="who out">ยังไม่ได้เข้าสู่ระบบ</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>เข้าสู่ระบบ <span class="tag">POST /api/auth/login</span></h2>
+      <label>อีเมล</label>
+      <input type="email" id="li_email" placeholder="somchai@example.com" autocomplete="username">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="li_pw" autocomplete="current-password">
+      <div class="row">
+        <button class="primary" onclick="login()">เข้าสู่ระบบ</button>
+        <button onclick="loadDemoAccount()">โหลดบัญชีทดสอบ</button>
+        <button onclick="forgot()">ลืมรหัสผ่าน</button>
+      </div>
+      <div id="li_status" class="status"></div>
+      <div class="hint">ปุ่ม “โหลดบัญชีทดสอบ” อ่านข้อมูลจาก <code>tests/demo_login.local.json</code> และกรอกให้ทั้งช่องสมัครกับเข้าสู่ระบบ ไฟล์นี้ถูกกันออกจาก Git แล้ว</div>
+      <div class="hint">ลืมรหัสผ่าน: ลิงก์จะไปโผล่ใน <b>console ของ uvicorn</b> (ยังไม่ได้ตั้ง SMTP) คัดลอก token มาใส่ในกล่อง "ตั้งรหัสผ่านใหม่" ด้านล่าง</div>
+    </div>
+
+    <div class="card">
+      <h2>สมัครสมาชิก <span class="tag">POST /api/auth/register</span></h2>
+      <label>ชื่อ-นามสกุล</label>
+      <input type="text" id="rg_name" placeholder="สมชาย ใจดี">
+      <label>อีเมล</label>
+      <input type="email" id="rg_email" placeholder="somchai@example.com" autocomplete="off">
+      <label>รหัสผ่าน (อย่างน้อย 8 ตัว ห้ามเป็นรหัสที่เดาง่าย)</label>
+      <input type="password" id="rg_pw" autocomplete="new-password">
+      <label class="check"><input type="checkbox" id="rg_terms"> ยอมรับเงื่อนไขการใช้งาน</label>
+      <div class="row">
+        <button class="primary" onclick="register()">สมัคร</button>
+        <button onclick="fillRandom()">สุ่มข้อมูลทดสอบ</button>
+      </div>
+      <div id="rg_status" class="status"></div>
+    </div>
+
+    <div class="card">
+      <h2>เข้าสู่ระบบด้วย Google <span class="tag">POST /api/auth/google</span></h2>
+      <label>Google Client ID (จาก Google Cloud Console)</label>
+      <input type="text" id="g_cid" placeholder="1234567890-xxxx.apps.googleusercontent.com">
+      <label class="check"><input type="checkbox" id="g_terms" checked> ยอมรับเงื่อนไข (ใช้ตอนเป็นการสมัครใหม่)</label>
+      <div class="row"><button onclick="loadGoogle()">โหลดปุ่ม Google</button></div>
+      <div id="gbtn"></div>
+      <div id="g_status" class="status"></div>
+      <div class="hint">ต้องใส่ Client ID เดียวกับ <code>GOOGLE_CLIENT_IDS</code> ใน <code>.env</code> และต้องเพิ่ม <code>http://localhost:3000</code> ใน Authorized JavaScript origins ของ Google ด้วย ไม่งั้นปุ่มไม่ขึ้น</div>
+    </div>
+
+    <div class="card">
+      <h2>บัญชี <span class="tag">GET /api/auth/me</span></h2>
+      <div class="row" style="margin-top:0">
+        <button onclick="me()">ดูข้อมูลบัญชี</button>
+        <button onclick="refresh()">ต่ออายุ token</button>
+        <button onclick="sessions()">ดูอุปกรณ์</button>
+        <button onclick="logout()">ออกจากระบบ</button>
+        <button onclick="logoutAll()">ออกทุกอุปกรณ์</button>
+      </div>
+      <div id="me_status" class="status"></div>
+
+      <h2 style="margin-top:18px">ตั้งรหัสผ่านใหม่ <span class="tag">POST /api/auth/password/reset</span></h2>
+      <label>token จากลิงก์ในอีเมล (หรือใน console)</label>
+      <input type="text" id="rs_token" placeholder="p6pC6685UUfg-Xt8...">
+      <label>รหัสผ่านใหม่</label>
+      <input type="password" id="rs_pw" autocomplete="new-password">
+      <div class="row"><button onclick="resetPw()">ตั้งรหัสผ่านใหม่</button></div>
+      <div id="rs_status" class="status"></div>
+    </div>
+
+    <div class="card full">
+      <h2>ผลลัพธ์ทุกคำขอ <button onclick="clearLog()" style="margin-left:auto;font-size:12px;padding:4px 10px">ล้าง</button></h2>
+      <pre class="log" id="log"></pre>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ------------------------------------------------------------
+// เก็บ token ใน localStorage เฉพาะเพื่อความสะดวกตอนทดสอบ — ของจริงต้องคิดใหม่
+// ------------------------------------------------------------
+const store = {
+  get access()  { return localStorage.getItem("gt_access")  || ""; },
+  get refresh() { return localStorage.getItem("gt_refresh") || ""; },
+  set(pair) { localStorage.setItem("gt_access", pair.access_token); localStorage.setItem("gt_refresh", pair.refresh_token); },
+  clear()   { localStorage.removeItem("gt_access"); localStorage.removeItem("gt_refresh"); },
+};
+
+const $ = id => document.getElementById(id);
+const api = () => $("api").value.replace(/\/$/, "");
+
+function esc(s) { return String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+function log(method, path, status, body, ms) {
+  const cls = status >= 200 && status < 300 ? "ok" : "err";
+  const t = new Date().toLocaleTimeString("th-TH");
+  const text = typeof body === "string" ? body : JSON.stringify(body, null, 2);
+  $("log").innerHTML =
+    `<span class="t">${t}</span>  <span class="m">${method}</span> ${esc(path)}  ` +
+    `<span class="${cls}">→ ${status}</span> <span class="t">(${ms} ms)</span>\n${esc(text)}\n\n` + $("log").innerHTML;
+}
+function clearLog() { $("log").innerHTML = ""; }
+
+function show(id, kind, msg) { const el = $(id); el.className = "status " + kind; el.textContent = msg; }
+
+// ยิง API แล้วคืน {status, data} — ไม่โยน error เพื่อให้แต่ละปุ่มตัดสินเอง
+async function call(method, path, body, auth = false) {
+  const headers = { "Content-Type": "application/json" };
+  if (auth) headers["Authorization"] = "Bearer " + store.access;
+  const t0 = performance.now();
+  let status = 0, data;
+  try {
+    const res = await fetch(api() + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
+    status = res.status;
+    const text = await res.text();
+    try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+  } catch (e) {
+    data = "ต่อ API ไม่ได้: " + e.message + "\n(uvicorn รันอยู่ไหม? เปิดหน้านี้ผ่าน http://localhost:3000 ไม่ใช่ file:// ใช่ไหม?)";
+  }
+  log(method, path, status, data, Math.round(performance.now() - t0));
+  return { status, data };
+}
+
+// ข้อความ error ของ FastAPI อยู่ใน detail — ถ้าเป็น 422 จาก pydantic จะเป็น list
+function errText(data) {
+  if (!data) return "ไม่มีรายละเอียด";
+  if (typeof data === "string") return data;
+  if (Array.isArray(data.detail)) return data.detail.map(d => (d.loc || []).slice(1).join(".") + ": " + d.msg).join("\n");
+  return data.detail || JSON.stringify(data);
+}
+
+function renderWho(me) {
+  const el = $("who");
+  if (!me) { el.className = "who out"; el.textContent = store.access ? "มี token อยู่ แต่ยังไม่ได้ดึงข้อมูลบัญชี — กด \"ดูข้อมูลบัญชี\"" : "ยังไม่ได้เข้าสู่ระบบ"; return; }
+  el.className = "who";
+  el.innerHTML = `เข้าสู่ระบบเป็น <b>${esc(me.full_name)}</b> &lt;${esc(me.email)}&gt; · ` +
+    `มีรหัสผ่าน: <b>${me.has_password ? "มี" : "ไม่มี (บัญชี Google)"}</b> · ` +
+    `ผูกกับ: <b>${me.providers.length ? me.providers.join(", ") : "—"}</b> · <code>id ${esc(me.id)}</code>`;
+}
+
+// ------------------------------------------------------------
+// ปุ่มต่าง ๆ
+// ------------------------------------------------------------
+async function health() {
+  const r = await call("GET", "/health");
+  $("healthOut").textContent = r.status === 200 ? `✓ postgres ${r.data.postgres} · ${r.data.tables} ตาราง` : `✗ ${r.status}`;
+}
+
+async function login() {
+  const r = await call("POST", "/api/auth/login", { email: $("li_email").value, password: $("li_pw").value });
+  if (r.status === 200) { store.set(r.data); show("li_status", "ok", "เข้าสู่ระบบสำเร็จ · access token อายุ " + r.data.expires_in + " วินาที"); me(); }
+  else show("li_status", "err", `${r.status}: ${errText(r.data)}`);
+}
+
+async function register() {
+  const r = await call("POST", "/api/auth/register", {
+    full_name: $("rg_name").value, email: $("rg_email").value, password: $("rg_pw").value, terms_accepted: $("rg_terms").checked,
+  });
+  if (r.status === 201) { store.set(r.data); show("rg_status", "ok", "สมัครสำเร็จ และเข้าสู่ระบบให้แล้ว"); $("li_email").value = $("rg_email").value; me(); }
+  else show("rg_status", "err", `${r.status}: ${errText(r.data)}`);
+}
+
+function fillRandom() {
+  const n = Math.floor(Math.random() * 90000 + 10000);
+  $("rg_name").value = "ทดสอบ คนที่" + n;
+  $("rg_email").value = `test${n}@example.com`;
+  $("rg_pw").value = "ParentPhrase2026";
+  $("rg_terms").checked = true;
+}
+
+async function loadDemoAccount() {
+  try {
+    const res = await fetch("demo_login.local.json", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const demo = await res.json();
+    $("li_email").value = demo.email || "";
+    $("li_pw").value = demo.password || "";
+    $("rg_name").value = demo.full_name || "";
+    $("rg_email").value = demo.email || "";
+    $("rg_pw").value = demo.password || "";
+    $("rg_terms").checked = demo.terms_accepted === true;
+    show("li_status", "ok", "โหลดบัญชีทดสอบแล้ว · ถ้ายังไม่เคยสร้างให้กด ‘สมัคร’ ก่อน จากนั้นใช้ปุ่ม ‘เข้าสู่ระบบ’ ได้");
+  } catch (e) {
+    show("li_status", "err", "อ่าน demo_login.local.json ไม่ได้: " + e.message + "\nคัดลอก demo_login.example.json แล้วตั้งชื่อเป็น demo_login.local.json ก่อน");
+  }
+}
+
+async function forgot() {
+  const email = $("li_email").value;
+  if (!email) return show("li_status", "warn", "ใส่อีเมลในช่องด้านบนก่อน");
+  const r = await call("POST", "/api/auth/password/forgot", { email });
+  show("li_status", r.status === 200 ? "ok" : "err", r.status === 200 ? r.data.message + "\n→ ดูลิงก์ใน console ของ uvicorn" : errText(r.data));
+}
+
+async function resetPw() {
+  const r = await call("POST", "/api/auth/password/reset", { token: $("rs_token").value.trim(), new_password: $("rs_pw").value });
+  if (r.status === 200) { store.clear(); renderWho(null); show("rs_status", "ok", r.data.message); }
+  else show("rs_status", "err", `${r.status}: ${errText(r.data)}`);
+}
+
+async function me() {
+  if (!store.access) return show("me_status", "warn", "ยังไม่มี token — เข้าสู่ระบบก่อน");
+  const r = await call("GET", "/api/auth/me", null, true);
+  if (r.status === 200) { renderWho(r.data); show("me_status", "ok", JSON.stringify(r.data, null, 2)); }
+  else { renderWho(null); show("me_status", "err", `${r.status}: ${errText(r.data)}`); }
+}
+
+async function refresh() {
+  if (!store.refresh) return show("me_status", "warn", "ไม่มี refresh token");
+  const r = await call("POST", "/api/auth/refresh", { refresh_token: store.refresh });
+  if (r.status === 200) { store.set(r.data); show("me_status", "ok", "ได้ token คู่ใหม่แล้ว (ใบเก่าใช้ไม่ได้ทันที)"); }
+  else { show("me_status", "err", `${r.status}: ${errText(r.data)}`); }
+}
+
+async function sessions() {
+  const r = await call("GET", "/api/auth/sessions", null, true);
+  show("me_status", r.status === 200 ? "ok" : "err", r.status === 200 ? `${r.data.length} อุปกรณ์:\n` + r.data.map(s => `• ${s.ip_address || "?"} · ${(s.user_agent || "").slice(0, 60)}`).join("\n") : errText(r.data));
+}
+
+async function logout() {
+  if (store.refresh) await call("POST", "/api/auth/logout", { refresh_token: store.refresh });
+  store.clear(); renderWho(null); show("me_status", "ok", "ออกจากระบบแล้ว (อุปกรณ์นี้)");
+}
+
+async function logoutAll() {
+  const r = await call("POST", "/api/auth/logout-all", null, true);
+  store.clear(); renderWho(null);
+  show("me_status", r.status === 200 ? "ok" : "err", r.status === 200 ? r.data.message : errText(r.data));
+}
+
+// ------------------------------------------------------------
+// Google — โหลดสคริปต์ Google Identity Services แล้ววาดปุ่มของ Google
+// credential ที่ได้ใน callback คือ ID token ที่ backend ต้องการ
+// ------------------------------------------------------------
+function loadGoogle() {
+  const cid = $("g_cid").value.trim();
+  if (!cid) return show("g_status", "warn", "ใส่ Client ID ก่อน");
+  localStorage.setItem("gt_cid", cid);
+  const init = () => {
+    google.accounts.id.initialize({ client_id: cid, callback: onGoogle, ux_mode: "popup" });
+    $("gbtn").innerHTML = "";
+    google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", text: "continue_with", locale: "th" });
+    show("g_status", "ok", "ปุ่มพร้อมแล้ว — กดปุ่ม Google ด้านบน");
+  };
+  if (window.google?.accounts) return init();
+  const s = document.createElement("script");
+  s.src = "https://accounts.google.com/gsi/client"; s.async = true; s.onload = init;
+  s.onerror = () => show("g_status", "err", "โหลดสคริปต์ของ Google ไม่ได้ (เน็ต?)");
+  document.head.appendChild(s);
+}
+
+async function onGoogle(resp) {
+  const r = await call("POST", "/api/auth/google", { id_token: resp.credential, terms_accepted: $("g_terms").checked });
+  if (r.status === 200) {
+    store.set(r.data);
+    let what = r.data.is_new_account ? "สมัครบัญชีใหม่ให้แล้ว" : r.data.linked ? "ผูก Google เข้ากับบัญชีเดิมแล้ว" : "เข้าสู่ระบบสำเร็จ";
+    if (r.data.password_cleared) what += "\n⚠ รหัสผ่านเดิมของบัญชีนี้ถูกล้างทิ้งเพื่อความปลอดภัย (กัน pre-hijacking) — ตั้งใหม่ได้ที่ /password/change โดยไม่ต้องกรอกรหัสเดิม";
+    show("g_status", r.data.password_cleared ? "warn" : "ok", what); me();
+  } else show("g_status", "err", `${r.status}: ${errText(r.data)}`);
+}
+
+// ------------------------------------------------------------
+$("g_cid").value = localStorage.getItem("gt_cid") || "";
+renderWho(null);
+if (store.access) me();
+health();
+</script>
+</body>
+</html>

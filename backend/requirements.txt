@@ -1,0 +1,26 @@
+# ติดตั้งด้วย:  venv\Scripts\pip install -r requirements.txt
+#
+# ตรึงเวอร์ชันไว้ทุกตัวเพื่อให้เครื่อง dev กับเครื่อง host ได้ของชุดเดียวกัน
+# ระบุเฉพาะ dependency ที่โปรเจกต์เรียกใช้ตรง ๆ ส่วนที่เป็นของแถม (starlette,
+# pydantic-core, greenlet, dnspython ฯลฯ) pip ดึงตามให้เอง
+
+fastapi==0.141.1
+uvicorn[standard]==0.52.1
+sqlalchemy[asyncio]==2.0.51
+asyncpg==0.31.0
+pydantic[email]==2.13.4
+python-dotenv==1.2.2
+
+# ความปลอดภัย — bcrypt เรียกใช้ตรงจาก auth.py
+# ห้ามใส่ passlib กลับเข้ามา: passlib 1.7.4 อ่าน bcrypt.__about__ ซึ่งถูกถอดออก
+# ตั้งแต่ bcrypt 5.0 ทำให้ hash รหัสผ่านพังทั้งระบบ
+bcrypt==5.0.0
+# PyJWT[crypto] — ต้องมี extra `crypto` ด้วย ไม่ใช่ PyJWT เปล่า ๆ
+# access token ของเราเซ็นด้วย HS256 ซึ่ง PyJWT ทำได้เองอยู่แล้ว แต่ ID token
+# ของ Google เซ็นด้วย RS256 ซึ่งต้องใช้ cryptography ตรวจลายเซ็น ถ้าไม่ใส่ extra นี้
+# จะ error "Algorithm 'RS256' could not be found" ตอนมีคนกดเข้าสู่ระบบด้วย Google
+PyJWT[crypto]==2.13.0
+
+# ใช้ดึงกุญแจสาธารณะของ Google มาตรวจลายเซ็น ID token (google_oauth.py)
+# ต้องเป็น client แบบ async เพราะเรียกจากใน endpoint ที่เป็น async ทั้งเส้น
+httpx==0.28.1
