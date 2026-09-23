@@ -227,7 +227,7 @@
 
 [data-theme="dark"] .gt-contact-page {
   min-height: 100vh;
-  background: #020617; /* slate-950, same as the other dark pages */
+  background: #0f172a; /* slate-950, same as the other dark pages */
 }
 
 [data-theme="dark"] .gt-contact-card {
@@ -271,7 +271,7 @@
 
 [data-theme="dark"] .gt-float-field input,
 [data-theme="dark"] .gt-float-field textarea {
-  background-color: #0b1324;
+  background-color: #0f172a;
   border: 1px solid #334155;
   color: #f1f5f9;
 }

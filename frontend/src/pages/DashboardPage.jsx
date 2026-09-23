@@ -219,7 +219,7 @@ function ModalShell({ title, onClose, children, footer }) {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl"
+        className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-center justify-between">
@@ -286,7 +286,7 @@ function SwitchChildModal({ children: kids, activeChildId, onSelect, onClose, on
               className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition ${
                 active
                   ? 'border-[#056559] dark:border-teal-400 bg-[#eaf6f3] dark:bg-teal-500/10'
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-300'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300'
               }`}
             >
               {active && (
@@ -330,7 +330,7 @@ function ConfirmRemoveDialog({ child, onCancel, onConfirm }) {
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl"
+        className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-start gap-3">
@@ -437,7 +437,7 @@ function NextSteps({ items }) {
   if (!items || items.length === 0) return null;
 
   return (
-    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
       <h2 className="mb-3 text-base font-semibold text-slate-900 dark:text-slate-100">What to do next</h2>
 
       <div className="flex flex-col gap-3">
@@ -499,7 +499,7 @@ function DashboardPage() {
   // sense without one, so this replaces the whole page body.
   if (!child) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50/50 dark:bg-slate-950 px-4 py-16 text-center">
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50/50 dark:bg-slate-900 px-4 py-16 text-center">
         <p className="text-sm text-slate-500 dark:text-slate-400">Add a child to start tracking growth.</p>
         <Link
           to="/children/new"
@@ -513,14 +513,14 @@ function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
+        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
           <button
             type="button"
             aria-label="Switch child"
@@ -591,7 +591,7 @@ function DashboardPage() {
 
           {/* Growth Trajectory */}
 
-          <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs md:col-span-2">
+          <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs md:col-span-2">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Growth Trajectory</h2>
 
@@ -620,8 +620,8 @@ function DashboardPage() {
                     onClick={() => setSelectedMeasure(key)}
                     className={`rounded-xl border p-3 text-left transition ${
                       active
-                        ? 'border-[#00685f] dark:border-teal-300 bg-white dark:bg-slate-900 ring-1 ring-[#00685f] dark:ring-teal-400'
-                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-slate-300'
+                        ? 'border-[#00685f] dark:border-teal-300 bg-white dark:bg-slate-800 ring-1 ring-[#00685f] dark:ring-teal-400'
+                        : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300'
                     }`}
                   >
                     <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
@@ -733,7 +733,7 @@ function DashboardPage() {
 
           {/* Puberty Screening */}
 
-          <div className="flex flex-col self-start rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div className="flex flex-col self-start rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
             <div className="mb-2 flex items-center gap-2.5">
               <Sparkles size={18} className="text-[#056559] dark:text-teal-300" />
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Puberty Screening</h2>
@@ -757,7 +757,7 @@ function DashboardPage() {
             upload instead of always showing the same prompt.
         ==================================================== */}
 
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
           <div className="mb-2 flex items-center gap-2.5">
             <Sparkles size={18} className="text-[#056559] dark:text-teal-300" />
             <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">AI Bone Age Analysis</h2>
@@ -803,7 +803,7 @@ function DashboardPage() {
             return (
               <div
                 key={a.id}
-                className="flex flex-col overflow-hidden rounded-[14px] bg-white dark:bg-slate-900 shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+                className="flex flex-col overflow-hidden rounded-[14px] bg-white dark:bg-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
               >
                 <div className={`flex h-24 items-center justify-center ${a.bgColor}`}>
                   <IconComponent size={30} color={chart.median} strokeWidth={1.75} />

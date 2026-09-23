@@ -18,7 +18,7 @@
 
 /* Dark mode: one shared page background (slate-950, same as Home) */
 [data-theme="dark"] .page-content {
-  background-color: #020617;
+  background-color: #0f172a;
 }
 
 /* Privacy / Terms reuse .auth-page, which has its own darker backdrop */

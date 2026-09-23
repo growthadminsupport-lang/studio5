@@ -8,7 +8,7 @@ const LIGHT = {
   tick: "#94a3b8",
   median: "#00685f",
   own: "#056559",
-  tooltip: { background: "#ffffff", border: "#eef2f1", text: "#1f2937" },
+  tooltip: { background: "#ffffff", border: "#eef2f1", text: "#0f172a" },
   bandOpacityScale: 1,
   bands: {},
 };

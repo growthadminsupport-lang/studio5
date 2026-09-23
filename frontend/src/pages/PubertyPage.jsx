@@ -43,7 +43,7 @@ function SignQuestion({ label, description, value, onChange, ageValue, onAgeChan
               className={`px-3 py-1.5 text-xs font-semibold transition ${
                 value === o.v
                   ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300'
-                  : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
               } ${o.v !== 'yes' ? 'border-l border-slate-200 dark:border-slate-700' : ''}`}
             >
               {o.label}
@@ -92,14 +92,14 @@ function PubertyPage() {
   const hasHistory = submissions.length > 0;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
+        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
           <Link
             to="/dashboard"
             aria-label="Switch child"
@@ -156,7 +156,7 @@ function PubertyPage() {
         ==================================================== */}
 
         {!formOpen && !hasHistory && (
-          <div className="mb-6 flex flex-col gap-4 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div className="mb-6 flex flex-col gap-4 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs">
             <div className="flex items-center gap-2">
               <Brain size={20} className="text-[#056559] dark:text-teal-300" />
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Before you start</h2>
@@ -228,7 +228,7 @@ function PubertyPage() {
           <div className="flex flex-col gap-6">
 
             {/* Everyday changes */}
-            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
               <div className="mb-1 flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Everyday changes</h2>
@@ -288,7 +288,7 @@ function PubertyPage() {
             </div>
 
             {/* Signs of physical development */}
-            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
               <div>
                 <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Signs of physical development</h2>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
@@ -345,7 +345,7 @@ function PubertyPage() {
             </div>
 
             {/* General */}
-            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+            <div className="flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">General</h2>
 
               <div>
@@ -409,7 +409,7 @@ function PubertyPage() {
         ==================================================== */}
 
         {hasHistory && (
-          <div className="mt-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div className="mt-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
             <h2 className="mb-3 text-base font-semibold text-slate-900 dark:text-slate-100">History</h2>
             <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
               {submissions.map((s) => (

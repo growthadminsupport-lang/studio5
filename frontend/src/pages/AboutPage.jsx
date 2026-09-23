@@ -7,7 +7,7 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50/40 dark:bg-slate-950 py-16 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
+    <div className="min-h-screen bg-slate-50/40 dark:bg-slate-900 py-16 px-4 sm:px-6 lg:px-8 font-sans transition-colors">
       <div className="max-w-4xl mx-auto">
         
         {/* Subtitle & Title */}
@@ -31,7 +31,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
           
           {/* Growth Tracking */}
-          <div className="bg-white dark:bg-[#111b30] p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
             <LineChart className="w-6 h-6 text-[#056559] dark:text-teal-300" strokeWidth={2} />
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Growth Tracking</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -40,7 +40,7 @@ export default function AboutPage() {
           </div>
 
           {/* Puberty Screening */}
-          <div className="bg-white dark:bg-[#111b30] p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
             <Lightbulb className="w-6 h-6 text-[#056559] dark:text-teal-300" strokeWidth={2} />
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Puberty Screening</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -49,7 +49,7 @@ export default function AboutPage() {
           </div>
 
           {/* AI Bone Age */}
-          <div className="bg-white dark:bg-[#111b30] p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
             <PlusSquare className="w-6 h-6 text-[#056559] dark:text-teal-300" strokeWidth={2} />
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">AI Bone Age (in progress)</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -58,7 +58,7 @@ export default function AboutPage() {
           </div>
 
           {/* Privacy by design */}
-          <div className="bg-white dark:bg-[#111b30] p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-teal-400/10 shadow-xs dark:shadow-none space-y-3">
             <Shield className="w-6 h-6 text-[#056559] dark:text-teal-300" strokeWidth={2} />
             <h3 className="font-bold text-base text-slate-900 dark:text-slate-100">Privacy by design</h3>
             <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">

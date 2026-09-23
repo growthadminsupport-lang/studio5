@@ -54,7 +54,7 @@ export default function HomePage() {
   const { isLoggedIn } = useAuth() || {};
 
   return (
-    <div className="bg-slate-50/50 dark:bg-slate-950 text-slate-800 dark:text-slate-200 font-sans transition-colors">
+    <div className="bg-slate-50/50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors">
       
       {/* ----------------- Hero Section ----------------- */}
       <section className="max-w-5xl mx-auto px-6 pt-12 pb-20 text-center flex flex-col items-center">
@@ -75,7 +75,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#056559] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-teal-300 dark:to-emerald-400">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#056559] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-teal-300 dark:to-cyan-400">
           Nurture Every Milestone
         </h1>
         
@@ -102,7 +102,7 @@ export default function HomePage() {
       </section>
 
       {/* ----------------- Dashboard Preview Section ----------------- */}
-      <section className="w-full bg-white dark:bg-[#0b1324] py-16 md:py-24 my-12 text-center border-y border-slate-100 dark:border-slate-800/80 transition-colors">
+      <section className="w-full bg-white dark:bg-slate-800/30 py-16 md:py-24 my-12 text-center border-y border-slate-100 dark:border-slate-800/80 transition-colors">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
@@ -113,9 +113,9 @@ export default function HomePage() {
           </p>
 
           <div className="bg-[#f0f5f4] dark:bg-slate-800/40 p-3 sm:p-5 rounded-3xl border border-slate-200/80 dark:border-slate-700/60 shadow-2xl shadow-slate-300/40 dark:shadow-black/40">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden text-left shadow-xs">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden text-left shadow-xs">
 
-              <div className="bg-white dark:bg-slate-900 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-800 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ff7675] block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#fdcb6e] block"></span>
                 <span className="w-2.5 h-2.5 rounded-full bg-[#55efc4] block"></span>
@@ -127,7 +127,7 @@ export default function HomePage() {
                   <div className="w-4 h-4 rounded-full bg-[#a3eadc] dark:bg-teal-500/50"></div>
                 </div>
 
-                <div className="bg-white dark:bg-slate-900 rounded-lg py-1.5 px-3 border border-[#e2f4f0] dark:border-slate-700 flex items-center gap-2.5 shadow-2xs">
+                <div className="bg-white dark:bg-slate-800 rounded-lg py-1.5 px-3 border border-[#e2f4f0] dark:border-slate-700 flex items-center gap-2.5 shadow-2xs">
                   <div className="w-6 h-6 rounded-full bg-[#a3eadc] dark:bg-teal-500/50 shrink-0"></div>
                   <div className="space-y-1 w-full">
                     <div className="h-2 w-28 bg-[#444444] dark:bg-slate-300 rounded-full"></div>
@@ -137,14 +137,14 @@ export default function HomePage() {
 
                 <div className="grid grid-cols-3 gap-2">
                   {[1, 2, 3].map((_, index) => (
-                    <div key={index} className="bg-white dark:bg-slate-900 rounded-lg py-1.5 px-2.5 border border-[#056559] dark:border-teal-500/50 space-y-1 shadow-2xs">
+                    <div key={index} className="bg-white dark:bg-slate-800 rounded-lg py-1.5 px-2.5 border border-[#056559] dark:border-teal-500/50 space-y-1 shadow-2xs">
                       <div className="h-1 w-8 bg-slate-200 dark:bg-slate-600 rounded-full"></div>
                       <div className="h-2 w-12 bg-[#444444] dark:bg-slate-300 rounded-full"></div>
                     </div>
                   ))}
                 </div>
               
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-2.5 border border-[#e2f4f0] dark:border-slate-700 space-y-2 shadow-2xs">
+                <div className="bg-white dark:bg-slate-800 rounded-lg p-2.5 border border-[#e2f4f0] dark:border-slate-700 space-y-2 shadow-2xs">
                   <div className="h-2 w-24 bg-[#444444] dark:bg-slate-300 rounded-full"></div>
               
                   <div className="relative h-10 sm:h-12 w-full overflow-hidden rounded-md text-[#056559] dark:text-teal-400">
@@ -253,7 +253,7 @@ export default function HomePage() {
               </div>
             
               <div className="p-4 rounded-xl bg-white dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700 shadow-2xs space-y-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100/80 dark:border-emerald-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-teal-50 dark:bg-teal-500/10 border border-teal-100/80 dark:border-teal-500/20 flex items-center justify-center">
                   <Sparkles size={20} className="text-[#056559] dark:text-teal-300" strokeWidth={2} />
                 </div>
                 <div>
@@ -268,10 +268,10 @@ export default function HomePage() {
       </section>
 
       {/* ----------------- Promo Video Banner ----------------- */}
-      <section className="w-full bg-white dark:bg-[#0b1324] py-16 my-12 border-y border-slate-100 dark:border-slate-800/80 transition-colors">
+      <section className="w-full bg-white dark:bg-slate-800/30 py-16 my-12 border-y border-slate-100 dark:border-slate-800/80 transition-colors">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-gradient-to-br from-[#056559] via-[#045248] to-[#023832] rounded-3xl h-64 md:h-80 flex flex-col items-center justify-center text-white relative shadow-xl shadow-teal-950/10 overflow-hidden border border-teal-800/40">
-            <div className="absolute -top-24 -left-24 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-24 -left-24 w-72 h-72 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-teal-300/10 rounded-full blur-3xl pointer-events-none" />
 
             <button 

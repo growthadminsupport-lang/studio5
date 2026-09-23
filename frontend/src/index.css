@@ -3,13 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #f4f6fb;
-  --color-card: #ffffff;
-  --color-primary: #00695c;
-  --color-primary-hover: #00544a;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #d1d5db;
+  /* Brand (teal) scale */
+  --color-brand-50: #eafaf7;
+  --color-brand-100: #d0f2ea;
+  --color-brand-200: #a3eadc;
+  --color-brand-300: #6fdcc7;
+  --color-brand-400: #3fc7ac;
+  --color-brand-500: #00695c;
+  --color-brand-600: #00544a;
+  --color-brand-700: #023d34;
+  --color-brand-800: #06322c;
+  --color-brand-900: #042420;
+
+  /* Sage (secondary green) scale */
+  --color-sage-50: #f2fbf9;
+  --color-sage-100: #e0f5ef;
+  --color-sage-200: #c3f5ee;
+
+  /* Neutral gray scale */
+  --color-gray-100: #f4f6fb;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d1d5db;
+  --color-gray-400: #9ca3af;
+  --color-gray-500: #6b7280;
+  --color-gray-600: #374151;
+
+  /* Semantic tokens (what your components actually use) */
+  --color-cream: #f4f6fb;
+  --color-ink: #1f2937;
+  --color-surface: #ffffff;
+
+  --color-bg: var(--color-cream);
+  --color-card: var(--color-surface);
+  --color-primary: var(--color-brand-500);
+  --color-primary-hover: var(--color-brand-600);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-gray-500);
+  --color-border: var(--color-gray-300);
   --color-success-bg: #eaf7ec;
   --color-success-text: #1c7a34;
 
@@ -17,7 +47,6 @@
   --radius-input: 12px;
 
   --font-family: "Segoe UI", Roboto, sans-serif;
-
   --font-size-base: 17px;
   --font-size-small: 14px;
   --font-size-body: 16px;
@@ -25,12 +54,43 @@
 }
 
 [data-theme="dark"] {
-  --color-bg: #111827;
-  --color-card: #1f2937;
-  --color-text: #f3f4f6;
-  --color-text-muted: #9ca3af;
-  --color-border: #374151;
-  color-scheme: dark; /* dark date pickers, scrollbars, form controls */
+  /* GrowTH dark-mode palette: neutral slate surfaces + teal accent */
+  --color-cream: #0f172a;
+  --color-ink: #e8edf5;
+  --color-surface: #2f2f2f;
+
+  --color-brand-50: #0d211f;
+  --color-brand-100: #123832;
+  --color-brand-200: #1a5049;
+  --color-brand-300: #1f6b60;
+  --color-brand-400: #24a08e;
+  --color-brand-500: #2dd4bf;
+  --color-brand-600: #5fe4d4;
+  --color-brand-700: #93ede1;
+  --color-brand-800: #c3f5ee;
+  --color-brand-900: #e6fbf8;
+
+  --color-sage-50: #0d2420;
+  --color-sage-100: #123a32;
+  --color-sage-200: #3cddc7;
+
+  --color-gray-100: #1c2740;
+  --color-gray-200: #26324c;
+  --color-gray-300: #3c4a68;
+  --color-gray-400: #8a97b8;
+  --color-gray-500: #a7b1cc;
+  --color-gray-600: #c4cce0;
+
+  --color-bg: var(--color-cream);
+  --color-card: var(--color-surface);
+  --color-primary: var(--color-brand-500);
+  --color-primary-hover: var(--color-brand-600);
+  --color-text: var(--color-ink);
+  --color-text-muted: var(--color-gray-400);
+  --color-border: var(--color-gray-300);
+  --color-success-bg: rgba(20, 184, 166, 0.10);
+  --color-success-text: #5eead4;
+  color-scheme: dark;
 }
 
 * {
@@ -48,6 +108,7 @@ body {
   line-height: 1.6;
   background-color: var(--color-bg);
   color: var(--color-text);
+  transition: background-color .15s, color .15s;
 }
 
 .app-layout {

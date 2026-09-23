@@ -1,103 +1,599 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { Ruler, Utensils, Bandage } from "lucide-react";
+
+import growthIcon from "../../assets/icons_knowledge/growth.png";
+import nutritionIcon from "../../assets/icons_knowledge/nutrition.png";
+import boneIcon from "../../assets/icons_knowledge/bone.png";
+import pubertyIcon from "../../assets/icons_knowledge/puberty.png";
+import healthyHabitsIcon from "../../assets/icons_knowledge/healthy.png";
+
+import boneAgeImg from "../../assets/knowledgeImg/ba1.png";
+import nutritionExploreImg from "../../assets/knowledgeImg/nutritionExplore.png";
+import growthExploreImg from "../../assets/knowledgeImg/growthExplore.png";
+import pubertyExploreImg from "../../assets/knowledgeImg/pubertyExplore.png";
+import quickFactsImg from "../../assets/knowledgeImg/quickFacts.png";
 import "./Knowledge.css";
+
+import knowledgeBG from "../../assets/knowledgeBG.png";
+
+
+/* =========================================================
+   ARTICLES
+   ========================================================= */
 
 const articles = [
   {
     id: 1,
     slug: "navigating-growth-spurts",
     label: "Article",
-    title: "Navigating Growth Spurts",
-    desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.",
+    tag: "growth",
+    title: "Growth Spurts",
+    blurb: "When and how your body speeds up.",
     category: "growth",
-    Icon: Ruler,
-    color: "teal",
   },
+
   {
     id: 2,
     slug: "nutrition-for-pre-teens",
     label: "Guide",
-    title: "Nutrition for Pre-teens",
-    desc: "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.",
+    tag: "nutrition",
+    title: "Nutrition",
+    blurb: "Key nutrients for strong bones and healthy growth.",
     category: "nutrition",
-    Icon: Utensils,
-    color: "mint",
   },
+
   {
     id: 3,
+    slug: "understanding-puberty",
+    label: "Explainer",
+    tag: "puberty",
+    title: "Puberty",
+    blurb: "What to expect and how to prepare.",
+    category: "puberty",
+  },
+
+  {
+    id: 4,
     slug: "understanding-bone-age",
     label: "Explainer",
+    tag: "bone age",
     title: "Understanding Bone Age",
-    desc: "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.",
+    blurb: "How skeletal maturity is read from a hand X-ray.",
     category: "bone age",
-    Icon: Bandage,
-    color: "cream",
+  },
+
+  {
+    id: 5,
+    slug: "support-healthy-growth",
+    label: "Guide",
+    tag: "healthy habits",
+    title: "Support Healthy Growth",
+    blurb: "Everyday habits that make a big difference.",
+    category: "healthy habits",
   },
 ];
 
-const categories = ["all", "bone age", "growth", "nutrition"];
+
+/* =========================================================
+   FEATURED ARTICLE
+   ========================================================= */
+
+const featuredSlug = "understanding-bone-age";
+
+const featured = articles.find(
+  (article) => article.slug === featuredSlug
+);
+
+
+/* =========================================================
+   EXPLORE MORE
+   ========================================================= */
+
+const exploreMore = articles
+  .filter((article) => article.slug !== featuredSlug)
+  .slice(0, 3);
+
+
+/* =========================================================
+   CATEGORY CHIPS
+   ========================================================= */
+
+const categoryChips = [
+  {
+    key: "growth",
+    label: "Growth",
+    icon: growthIcon,
+    color: "chip-blue",
+  },
+
+  {
+    key: "nutrition",
+    label: "Nutrition",
+    icon: nutritionIcon,
+    color: "chip-red",
+  },
+
+  {
+    key: "bone age",
+    label: "Bone Age",
+    icon: boneIcon,
+    color: "chip-mint",
+  },
+
+  {
+    key: "puberty",
+    label: "Puberty",
+    icon: pubertyIcon,
+    color: "chip-indigo",
+  },
+
+  {
+    key: "healthy habits",
+    label: "Healthy Habits",
+    icon: healthyHabitsIcon,
+    color: "chip-pink",
+  },
+];
+
+
+/* =========================================================
+   EXPLORE MORE IMAGES
+   ========================================================= */
+
+const exploreImages = {
+  growth: growthExploreImg,
+  nutrition: nutritionExploreImg,
+  puberty: pubertyExploreImg,
+};
+
+
+/* =========================================================
+   MAIN COMPONENT
+   ========================================================= */
 
 function ArticleList() {
-  const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
 
-  const filtered = articles.filter((a) => {
-    const matchesSearch = a.title.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = category === "all" || a.category === category;
-    return matchesSearch && matchesCategory;
-  });
+
+  /* -------------------------------------------------------
+     Filter articles
+     ------------------------------------------------------- */
+
+  const filtered =
+    category === "all"
+      ? articles
+      : articles.filter(
+          (article) => article.category === category
+        );
+
 
   return (
     <div className="knowledge-section">
-      <h2 className="knowledge-heading">Learn</h2>
-      <input
-        type="text"
-        placeholder="Search articles..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="knowledge-search"
-      />
 
-      <div className="knowledge-filters">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            className={category === cat ? "active" : ""}
-            onClick={() => setCategory(cat)}
-          >
-            {cat === "all" ? "All" : cat.charAt(0).toUpperCase() + cat.slice(1)}
-          </button>
-        ))}
-      </div>
 
-      <div className="knowledge-grid">
-        {filtered.map((a) => {
-          const IconComponent = a.Icon;
-          return (
-            <div key={a.id} className="knowledge-card">
-              <div className={`knowledge-icon-tile ${a.color}`}>
-                <IconComponent size={44} color="currentColor" strokeWidth={1.75} />
-              </div>
-              <div className="knowledge-card-body">
-                <span className="knowledge-label">{a.label}</span>
-                <h3>{a.title}</h3>
-                <p>{a.desc}</p>
-                <p className="knowledge-citation">Source: reviewed medical references</p>
-                <Link 
-                  to={`/knowledge/${a.slug}`} 
-                  state={{ from: "/knowledge" }} 
-                  className="knowledge-readmore"
+      {/* =====================================================
+         HERO
+         ===================================================== */}
+
+      <div className="kn-hero">
+
+
+        {/* Background image */}
+
+        <div
+          className="kn-hero-art"
+          aria-hidden="true"
+        >
+          <img
+            src={knowledgeBG}
+            className="kn-hero-bg"
+            alt=""
+          />
+        </div>
+
+
+        {/* Hero text */}
+
+        <div className="kn-hero-text">
+
+          <h1>
+            Knowledge &amp; Resources
+          </h1>
+
+          <p>
+            Learn about growth, nutrition, puberty,
+            and healthy development.
+          </p>
+
+
+          {/* Category buttons */}
+
+          <div className="kn-chip-row">
+
+            {categoryChips.map(
+              ({ key, label, icon, color }) => (
+
+                <button
+                  key={key}
+                  type="button"
+                  className={`kn-chip ${color} ${
+                    category === key ? "active" : ""
+                  }`}
+                  onClick={() =>
+                    setCategory(
+                      category === key
+                        ? "all"
+                        : key
+                    )
+                  }
                 >
-                  Read More
-                </Link>
-              </div>
-            </div>
-          );
-        })}
+
+                  <span className="kn-chip-icon">
+
+                    <img
+                      src={icon}
+                      alt=""
+                    />
+
+                  </span>
+
+                  <span>
+                    {label}
+                  </span>
+
+                </button>
+
+              )
+            )}
+
+          </div>
+
+        </div>
+
       </div>
+
+
+      {/* =====================================================
+         MAIN HEADING
+         ===================================================== */}
+
+      <h2 className="knowledge-heading">
+        Parenting Resources
+      </h2>
+
+
+      {/* =====================================================
+         MAIN LAYOUT
+         ===================================================== */}
+
+      <div className="kn-layout">
+
+
+        {/* ===================================================
+           MAIN CONTENT
+           =================================================== */}
+
+        <div className="kn-main">
+
+
+          {/* =================================================
+             FEATURED ARTICLE
+             ================================================= */}
+
+          {featured && (
+
+            <Link
+              to={`/knowledge/${featured.slug}`}
+              state={{ from: "/knowledge" }}
+              className="kn-featured"
+            >
+
+
+              {/* ---------------------------------------------
+                 Featured image
+                 --------------------------------------------- */}
+
+              <div
+                className={`kn-featured-art art-${featured.tag.replace(
+                  /\s/g,
+                  "-"
+                )}`}
+              >
+
+                <img
+                  src={boneAgeImg}
+                  alt=""
+                  className="kn-feature-icon"
+                />
+
+              </div>
+
+
+              {/* ---------------------------------------------
+                 Featured text
+                 --------------------------------------------- */}
+
+              <div className="kn-featured-body">
+
+                <span className="kn-tag">
+                  {featured.tag.toUpperCase()}
+                </span>
+
+                <h3>
+                  {featured.title}
+                </h3>
+
+                <p>
+                  {featured.blurb}
+                </p>
+
+                <span className="knowledge-readmore">
+
+                  Read More
+
+                  <span className="arrow-icon">
+                    →
+                  </span>
+
+                </span>
+
+              </div>
+
+            </Link>
+
+          )}
+
+
+          {/* =================================================
+             EXPLORE MORE
+             ================================================= */}
+
+          <h2 className="knowledge-heading kn-explore-heading">
+            Explore More
+          </h2>
+
+
+          <div className="knowledge-grid">
+
+            {(category === "all"
+              ? exploreMore
+              : filtered
+            ).map((article) => (
+
+              <Link
+                key={article.id}
+                to={`/knowledge/${article.slug}`}
+                state={{ from: "/knowledge" }}
+                className="knowledge-card"
+              >
+
+
+                {/* -------------------------------------------
+                   Explore image
+                   ------------------------------------------- */}
+
+                <div
+                  className={`knowledge-icon-tile art-${article.tag.replace(
+                    /\s/g,
+                    "-"
+                  )}`}
+                >
+
+                  <ExploreImage
+                    tag={article.tag}
+                  />
+
+                </div>
+
+
+                {/* -------------------------------------------
+                   Card text
+                   ------------------------------------------- */}
+
+                <div className="knowledge-card-body">
+
+                  <h3>
+                    {article.title}
+                  </h3>
+
+                  <p>
+                    {article.blurb}
+                  </p>
+
+                  <span className="knowledge-readmore">
+
+                    Read More
+
+                    <span className="arrow-icon">
+                      →
+                    </span>
+
+                  </span>
+
+                </div>
+
+              </Link>
+
+            ))}
+
+
+            {/* No articles */}
+
+            {category !== "all" &&
+              filtered.length === 0 && (
+
+                <p className="kn-empty">
+                  No articles in this category yet.
+                </p>
+
+              )}
+
+          </div>
+
+        </div>
+
+
+        {/* ===================================================
+           SIDEBAR
+           =================================================== */}
+
+        <aside className="kn-sidebar">
+
+
+          {/* =================================================
+             QUICK FACTS
+             ================================================= */}
+
+          <div className="kn-quickfacts">
+            <div className="kn-quickfacts-content">
+              <div className="kn-quickfacts-text">
+                <div className="kn-quickfacts-head">
+                  <span className="quickfacts-icon">
+                    💡
+                  </span>
+
+                  <span>
+                    Quick Facts
+                  </span>
+                </div>
+
+                <div className="kn-quickfacts-value">
+                  1,300 mg
+                </div>
+
+                <p>
+                  Recommended calcium intake
+                  for ages 9–13.
+                </p>
+              </div>
+
+              <img
+                src={quickFactsImg}
+                alt=""
+                className="kn-quickfacts-image"
+              />
+            </div>
+          </div>
+
+
+          {/* =================================================
+             HEALTHY GROWTH
+             ================================================= */}
+
+          <Link
+            to="/knowledge/support-healthy-growth"
+            state={{ from: "/knowledge" }}
+            className="kn-support-card"
+          >
+
+            <img
+              src={healthyHabitsIcon}
+              alt=""
+              className="kn-support-icon"
+            />
+
+
+            <div>
+
+              <strong>
+                Support Healthy Growth
+              </strong>
+
+              <p>
+                Small habits make a big difference!
+              </p>
+
+            </div>
+
+
+            <span className="kn-support-arrow">
+              →
+            </span>
+
+          </Link>
+
+
+          {/* =================================================
+             RESOURCES
+             ================================================= */}
+
+          <div className="kn-resources-list">
+
+            <h3>
+              Resources
+            </h3>
+
+
+            {articles.map((article) => (
+
+              <Link
+                key={article.id}
+                to={`/knowledge/${article.slug}`}
+                state={{ from: "/knowledge" }}
+                className="kn-resource-row"
+              >
+
+                <span>
+                  {article.title}
+                </span>
+
+                <span className="arrow-icon">
+                  →
+                </span>
+
+              </Link>
+
+            ))}
+
+          </div>
+
+        </aside>
+
+      </div>
+
     </div>
   );
 }
+
+
+/* =========================================================
+   EXPLORE MORE IMAGE COMPONENT
+   ========================================================= */
+
+function ExploreImage({ tag }) {
+
+  let image;
+
+
+  switch (tag) {
+
+    case "growth":
+      image = growthExploreImg;
+      break;
+
+    case "nutrition":
+      image = nutritionExploreImg;
+      break;
+
+    case "puberty":
+      image = pubertyExploreImg;
+      break;
+
+    default:
+      image = growthExploreImg;
+      break;
+
+  }
+
+
+  return (
+    <img
+      src={image}
+      alt=""
+      className="kn-explore-image"
+    />
+  );
+}
+
 
 export default ArticleList;

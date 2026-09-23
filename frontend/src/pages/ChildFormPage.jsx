@@ -19,7 +19,7 @@ const AVATAR_PRESETS = [
 function FloatingLabelField({ label, required, children }) {
   return (
     <div className="relative">
-      <label className="absolute -top-2 left-3 bg-white dark:bg-slate-900 px-1 text-xs text-slate-500 dark:text-slate-400">
+      <label className="absolute -top-2 left-3 bg-white dark:bg-slate-800 px-1 text-xs text-slate-500 dark:text-slate-400">
         {label}
         {required && ' *'}
       </label>
@@ -70,8 +70,8 @@ function ChildFormPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 pb-16 pt-10 dark:bg-slate-950">
-    <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-2xs border border-slate-200 dark:border-slate-700">
+    <div className="min-h-screen px-4 pb-16 pt-10 dark:bg-slate-900">
+    <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-2xs border border-slate-200 dark:border-slate-700">
       <h1 className="text-xl font-bold text-[#056559] dark:text-teal-300">{isEdit ? 'Edit child' : 'Add your child'}</h1>
       <p className="mt-1 mb-6 text-sm text-slate-500 dark:text-slate-400">
         We&apos;ll use this to personalize growth tracking and charts.
@@ -147,7 +147,7 @@ function ChildFormPage() {
             type="button"
             onClick={() => setSex('FEMALE')}
             className={`py-2.5 text-sm font-semibold transition ${
-              sex === 'FEMALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+              sex === 'FEMALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             Girl
@@ -156,7 +156,7 @@ function ChildFormPage() {
             type="button"
             onClick={() => setSex('MALE')}
             className={`border-l-2 border-slate-200 dark:border-slate-700 py-2.5 text-sm font-semibold transition ${
-              sex === 'MALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+              sex === 'MALE' ? 'bg-[#eaf6f3] dark:bg-teal-500/10 text-[#056559] dark:text-teal-300' : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
             }`}
           >
             Boy
@@ -167,7 +167,7 @@ function ChildFormPage() {
           <select
             value={relation}
             onChange={(e) => setRelation(e.target.value)}
-            className={`${fieldClasses} appearance-none bg-white dark:bg-slate-900`}
+            className={`${fieldClasses} appearance-none bg-white dark:bg-slate-800`}
           >
             <option value="PARENT">Parent</option>
             <option value="GUARDIAN">Guardian</option>

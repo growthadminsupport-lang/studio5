@@ -42,7 +42,7 @@
 /* ---------------- Dark Mode ---------------- */
 @media (max-width: 768px) {
   [data-theme="dark"] .bottom-nav {
-    background-color: #0b1324;
+    background-color:  #1e293b;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
   }
 

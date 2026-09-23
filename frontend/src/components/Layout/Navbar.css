@@ -107,7 +107,7 @@
 
 /* ---------------- Dark Mode ---------------- */
 [data-theme="dark"] .navbar {
-  background: #0b1324;
+  background: #1e293b;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 

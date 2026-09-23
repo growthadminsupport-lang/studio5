@@ -8,28 +8,8 @@
   padding: 0;
 }
 
-:root {
-  --color-primary: #00685f;
-  --color-primary-hover: #00524b;
-  --color-bg: #ffffff;
-  --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-card-bg: #ffffff;
-}
-
-/* Dark Theme Variables */
-[data-theme="dark"] {
-  --color-primary: #2aa89a;
-  --color-primary-hover: #36b9aa;
-  --color-bg: #111827;
-  --color-surface: #1f2937;
-  --color-text: #f3f4f6;
-  --color-text-muted: #9ca3af;
-  --color-border: #374151;
-  --color-card-bg: #1f2937;
-}
+/* Color variables now live only in index.css — don't redeclare :root or
+   [data-theme="dark"] here, or the two files fight over the same names. */
 
 html, body {
   height: 100%;
@@ -39,19 +19,3 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
-
-/* Layout Wrapper for Sticky Footer */
-.app-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main-content {
-  flex: 1;
-}
-
-a {
-  color: inherit;
-}
-

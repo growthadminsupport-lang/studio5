@@ -1,5 +1,9 @@
 import { useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
+import growthSpurtImg from "../assets/knowledgeImg/growthPage1.png";
+import growthIcon from "../assets/icons_knowledge/growthPageIcon1.png";
+import pubertyIcon from "../assets/icons_knowledge/growthPageIcon2.png";
+import healthyIcon from "../assets/icons_knowledge/growthPageIcon3.png";
 import "./ArticlePage.css";
 
 const articles = {
@@ -325,156 +329,68 @@ const articles = {
     type: "Article",
     title: "Navigating Growth Spurts",
     description:
-      "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.",
-
+      "A growth spurt happens when your body grows faster than usual, and it can change many things!",
+    image: growthSpurtImg,
     sections: [
-      {
-        title: "What a growth spurt is",
-        content: (
-          <p>
-            For most of childhood, growth is slow and steady — roughly 5–6
-            cm a year. Puberty interrupts that with a burst of rapid growth
-            lasting about two to three years. The fastest point in that burst
-            is called <strong>peak height velocity (PHV)</strong>, and it is
-            the quickest a person will ever grow after infancy.
-          </p>
-        ),
-      },
-
       {
         title: "When to expect it",
         content: (
-          <>
-            <p>
-              <strong>Girls</strong> enter the spurt earlier — typically
-              somewhere between about 9½ and 13½, with the peak classically
-              placed around 11½.
-            </p>
-
-            <p>
-              <strong>Boys</strong> follow roughly two years later, with the
-              spurt falling somewhere between about 12 and 16 and the peak
-              classically around 13½.
-            </p>
-
-            <p>
-              Recent cohorts suggest these milestones are arriving earlier
-              than the classic figures. Either way, the spread between
-              individual children is wide, and being early or late is far
-              more often normal variation than a problem.
-            </p>
-          </>
+          <div className="growth-info-grid">
+          
+            <div className="growth-info-box">
+              <img
+                src={growthIcon}
+                alt=""
+                className="growth-info-icon"
+            />
+        
+              <div className="growth-info-text">
+                <h3>Growth</h3>
+                <p>
+                  Becomes faster during puberty
+                </p>
+              </div>
+            </div>
+        
+            <div className="growth-info-box">
+              <img
+                src={pubertyIcon}
+                alt=""
+                className="growth-info-icon"
+              />
+        
+              <div className="growth-info-text">
+                <h3>Timing</h3>
+                
+                <ul className="article-bullet-list">
+                    <li>Genetics</li>
+                    <li>Nutrition</li>
+                    <li>Sleep</li>
+                </ul>
+              </div>
+            </div>
+        
+            <div className="growth-info-box">
+              <img
+                src={healthyIcon}
+                alt=""
+                className="growth-info-icon"
+              />
+        
+              <div className="growth-info-text">
+                <h3>Individual differences</h3>
+                <p>
+                  Can be normal and healthy
+                </p>
+              </div>
+            </div>
+        
+          </div>
         ),
       },
+        
 
-      {
-        title: "How fast is fast",
-        content: (
-          <p>
-            At the peak, growth reaches roughly{" "}
-            <strong>9.5 cm/year in boys</strong> and{" "}
-            <strong>8.3 cm/year in girls</strong> measured across the whole
-            peak year. In the single fastest year, a boy may gain more than
-            10 cm and a girl around 9 cm.
-            <br />
-            <br />
-            That is close to double the pre-pubertal rate, which is why it's
-            so visible: clothes stop fitting in months rather than years.
-          </p>
-        ),
-      },
-
-      {
-        title: "What else comes with it",
-        content: (
-          <ul>
-            <li>
-              <strong>Feet and hands first.</strong> They often finish
-              growing before the rest, so shoe size can jump well ahead of
-              height.
-            </li>
-
-            <li>
-              <strong>Appetite climbs steeply.</strong> This is expected,
-              not overeating.
-            </li>
-
-            <li>
-              <strong>Clumsiness.</strong> Limb length changes faster than
-              coordination adapts.
-            </li>
-
-            <li>
-              <strong>Aching legs.</strong> Common in the evening, typically
-              in both legs, and settling by morning.
-            </li>
-
-            <li>
-              <strong>More sleep.</strong> Growth hormone is released mostly
-              during deep sleep; the extra need is real.
-            </li>
-          </ul>
-        ),
-      },
-
-      {
-        title: "What's worth a doctor's attention",
-        content: (
-          <>
-            <p>
-              Most spurts need nothing but bigger shoes. Do raise it with a
-              pediatrician if:
-            </p>
-
-            <ul>
-              <li>
-                Growth <strong>crosses downward through percentile lines</strong>{" "}
-                on the chart over successive measurements.
-              </li>
-
-              <li>
-                Height velocity in mid-childhood stays{" "}
-                <strong>below about 4–5 cm/year</strong>.
-              </li>
-
-              <li>
-                Signs of puberty appear{" "}
-                <strong>before age 8 in girls or 9 in boys</strong>.
-              </li>
-
-              <li>
-                There are <strong>no signs of puberty by 13 in girls or 14
-                in boys</strong>.
-              </li>
-
-              <li>
-                Pain is <strong>in one leg only</strong>, wakes the child at
-                night, or comes with limping or swelling.
-              </li>
-            </ul>
-          </>
-        ),
-      },
-
-      {
-        title: "Getting useful data",
-        content: (
-          <p>
-            A single measurement says very little; the <em>trend</em> is
-            what carries information. Measure at consistent intervals —
-            every three to six months is plenty outside the spurt — at the
-            same time of day, barefoot, heels against a wall. Height is
-            measurably greater in the morning than the evening, so
-            consistency matters more than precision.
-            <br />
-            <br />
-            That trend is exactly what GrowTH's growth chart is for: plotted
-            against reference percentile curves, a change in the{" "}
-            <em>shape</em> of your child's line is visible long before it
-            would be obvious in the numbers alone.
-          </p>
-        ),
-      },
+          
     ],
 
     sources: [
@@ -532,6 +448,14 @@ function ArticlePage() {
         <h1>{article.title}</h1>
 
         <p className="article-description">{article.description}</p>
+
+        {article.image && (
+          <img
+            src={article.image}
+            alt={article.title}
+            className="article-main-image"
+          />
+        )}
 
         {article.sections.map((section, index) => (
           <section key={index} className="article-section">

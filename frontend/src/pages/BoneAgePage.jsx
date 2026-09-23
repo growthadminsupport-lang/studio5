@@ -38,7 +38,7 @@ function formatDate(iso) {
 function ConfirmDeleteDialog({ onCancel, onConfirm }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" onClick={onCancel}>
-      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Delete upload?</h3>
         <p className="mt-1 mb-5 text-sm text-slate-500 dark:text-slate-400">
           This removes the X-ray and its analysis from the child&apos;s history.
@@ -108,14 +108,14 @@ function BoneAgePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
+        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
           <Link
             to="/dashboard"
             aria-label="Switch child"
@@ -230,7 +230,7 @@ function BoneAgePage() {
             setDragActive(false);
             handleFile(e.dataTransfer.files?.[0]);
           }}
-          className={`mb-4 flex cursor-pointer flex-col items-center rounded-2xl border-2 border-dashed bg-white dark:bg-slate-900 p-8 text-center transition ${
+          className={`mb-4 flex cursor-pointer flex-col items-center rounded-2xl border-2 border-dashed bg-white dark:bg-slate-800 p-8 text-center transition ${
             dragActive ? 'border-[#056559] dark:border-teal-400 bg-[#f2fbf9] dark:bg-teal-500/10' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500'
           }`}
         >
@@ -267,7 +267,7 @@ function BoneAgePage() {
             History
         ==================================================== */}
 
-        <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+        <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
           <h2 className="mb-3 text-base font-semibold text-slate-900 dark:text-slate-100">History</h2>
 
           <div className="flex flex-col gap-3">

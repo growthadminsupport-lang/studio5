@@ -140,7 +140,7 @@ const bmiCurve = buildBmiCurve(BMI_MILESTONES, 2, 20);
 function ConfirmDeleteDialog({ onCancel, onConfirm }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4" onClick={onCancel}>
-      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Delete measurement?</h3>
         <p className="mt-1 mb-5 text-sm text-slate-500 dark:text-slate-400">
           This removes the entry from the growth chart and history.
@@ -174,7 +174,7 @@ function ConfirmDeleteDialog({ onCancel, onConfirm }) {
 function HeightWeightChart({ title, unit, curve }) {
   const chart = useChartTheme();
   return (
-    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
       <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{title}</h2>
       <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
         Dashed lines are the 3rd/50th/97th percentile reference curves for the child&apos;s age and sex.
@@ -236,7 +236,7 @@ function HeightWeightChart({ title, unit, curve }) {
 function BmiChart({ curve }) {
   const chart = useChartTheme();
   return (
-    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+    <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
       <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">BMI-for-age</h2>
       <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
         Dashed lines are the 3rd and 50th percentile, the 95th (obesity) and 120% of the 95th (severe
@@ -365,14 +365,14 @@ function GrowthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-900 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
+        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
           <Link
             to="/dashboard"
             aria-label="Switch child"
@@ -418,7 +418,7 @@ function GrowthPage() {
             Log a new measurement
         ==================================================== */}
 
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
           <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">Log a new measurement</h2>
 
           <form onSubmit={handleAdd} className="grid grid-cols-1 gap-3 sm:grid-cols-4 sm:items-end">
@@ -463,7 +463,7 @@ function GrowthPage() {
             History
         ==================================================== */}
 
-        <div className="rounded-2xl bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+        <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
           <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-slate-100">History</h2>
 
           <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
