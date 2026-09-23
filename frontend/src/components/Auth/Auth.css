@@ -89,7 +89,7 @@
   width: 100%; 
   margin: 2px auto 10px; 
   text-align: center; 
-  font-size: 14px; 
+  font-size: 12px; 
   line-height: 1.4; 
 }
 
@@ -113,7 +113,7 @@
 .auth-form input[type="password"],
 .auth-form input[type="tel"] {
   width: 100%; 
-  height: 42px; 
+  height: 50px; 
   padding: 0 14px; 
   border: 1px solid var(--color-border); 
   border-radius: 10px; font-size: 14px; 
@@ -132,6 +132,8 @@
    ========================= */
 
 .auth-form button[type="submit"] {
+  width: 100%;
+  align-items: center;
   background: var(--color-primary);
   color: white;
 
