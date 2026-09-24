@@ -14,6 +14,10 @@ import logoLightVideo from "../assets/logo_motion_white_small.mp4";
 import posterDark from "../assets/poster_dark.webp";
 import posterLight from "../assets/poster_light.webp";
 import { useTheme } from "../context/ThemeContext";
+import growthExploreImg from "../assets/knowledgeImg/growthExplore.png";
+import nutritionExploreImg from "../assets/knowledgeImg/nutritionExplore.png";
+import boneAgeExploreImg from "../assets/knowledgeImg/boneAgeExplore.png";
+import pubertyExploreImg from "../assets/knowledgeImg/pubertyExplore.png";
 
 // Shared article dataset
 const articles = [
@@ -21,31 +25,31 @@ const articles = [
     id: 1,
     slug: "navigating-growth-spurts",
     label: "Article",
-    title: "Navigating Growth Spurts",
-    desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.",
+    title: "Growth Spurts",                                   // was: Navigating Growth Spurts
+    desc: "When and how your body speeds up.",                // was: the long text
     category: "growth",
-    Icon: Ruler,
-    bgColor: "bg-[#d9f0ed] dark:bg-teal-500/10",
+    image: growthExploreImg,
+    bgColor: "bg-[#e4f0e8] dark:bg-green-500/10",
   },
   {
     id: 2,
     slug: "nutrition-for-pre-teens",
     label: "Guide",
-    title: "Nutrition for Pre-teens",
-    desc: "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.",
+    title: "Nutrition",                                       // was: Nutrition for Pre-teens
+    desc: "Key nutrients for strong bones and healthy growth.",
     category: "nutrition",
-    Icon: Utensils,
-    bgColor: "bg-[#e4f4ec] dark:bg-emerald-500/10",
+    image: nutritionExploreImg,
+    bgColor: "bg-[#fdecec] dark:bg-red-500/10",
   },
   {
     id: 3,
     slug: "understanding-bone-age",
     label: "Explainer",
     title: "Understanding Bone Age",
-    desc: "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.",
+    desc: "How skeletal maturity is read from a hand X-ray.",
     category: "bone age",
-    Icon: Bandage,
-    bgColor: "bg-[#f7f0df] dark:bg-amber-500/10",
+    image: boneAgeExploreImg,
+    bgColor: "bg-[#eaf6f5] dark:bg-teal-500/10",
   },
 ];
 
@@ -57,9 +61,9 @@ export default function HomePage() {
     <div className="bg-slate-50/50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans transition-colors">
       
       {/* ----------------- Hero Section ----------------- */}
-      <section className="max-w-5xl mx-auto px-6 pt-12 pb-20 text-center flex flex-col items-center">
-        <div className="flex flex-col items-center justify-center mb-6">
-          <div className="w-44 h-44 md:w-64 md:h-64 mb-2 flex items-center justify-center">
+      <section className="max-w-3xl mx-auto px-6 pt-8 pb-10 text-center flex flex-col items-center">
+        <div className="flex flex-col items-center justify-center mb-3">
+          <div className="w-32 h-32 md:w-44 md:h-44 mb-1 flex items-center justify-center">
             <video
               key={theme}
               src={theme === "dark" ? logoDarkVideo : logoLightVideo}
@@ -69,32 +73,32 @@ export default function HomePage() {
               loop
               muted
               playsInline
-              className={`w-full h-full object-contain ${theme === "dark" ? "mix-blend-lighten" : "mix-blend-darken"}`}
+              className={`w-full h-full object-contain scale-125 md:scale-130 -translate-y-2 ${theme === "dark" ? "mix-blend-lighten" : "mix-blend-darken"}`}
               aria-label="GrowTH Logo"
             />
           </div>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-[#056559] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-teal-300 dark:to-cyan-400">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-3 text-[#056559] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-teal-300 dark:to-cyan-400">
           Nurture Every Milestone
         </h1>
         
-        <p className="max-w-2xl text-slate-600 dark:text-slate-400 text-base md:text-lg mb-8 leading-relaxed">
+        <p className="max-w-xl text-slate-600 dark:text-slate-400 text-sm md:text-base mb-6 leading-relaxed">
           GrowTH is the intelligent companion for parents, providing actionable insights
           and calm tracking for your child's developmental journey.
         </p>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
             <Link
               to={isLoggedIn ? "/dashboard" : "/register"}
-              className="px-6 py-3 bg-[#056559] hover:bg-[#03443c] dark:bg-teal-400 dark:hover:bg-teal-300 text-white dark:text-slate-950 font-medium text-sm rounded-full transition shadow-sm"
+              className="px-5 py-2.5 bg-[#056559] hover:bg-[#03443c] dark:bg-teal-400 dark:hover:bg-teal-300 text-white dark:text-slate-950 font-medium text-sm rounded-full transition shadow-sm"
             >
               Start tracking
             </Link>
 
             <Link
               to="/about"
-              className="px-6 py-3 rounded-full text-sm font-semibold text-slate-700 hover:text-teal-700 bg-slate-100 hover:bg-slate-200 dark:bg-transparent dark:text-teal-300 dark:border dark:border-teal-400/40 dark:hover:bg-teal-400/10 transition-colors"
+              className="px-5 py-2.5 rounded-full text-sm font-semibold text-slate-700 hover:text-teal-700 bg-slate-200 hover:bg-slate-200 dark:bg-transparent dark:text-teal-300 dark:border dark:border-teal-400/40 dark:hover:bg-teal-400/10 transition-colors"
             >
               Learn More
             </Link>
@@ -102,17 +106,17 @@ export default function HomePage() {
       </section>
 
       {/* ----------------- Dashboard Preview Section ----------------- */}
-      <section className="w-full bg-white dark:bg-slate-800/30 py-16 md:py-24 my-12 text-center border-y border-slate-100 dark:border-slate-800/80 transition-colors">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="w-full bg-white dark:bg-slate-800/30 py-10 md:py-14 my-8 text-center border-y border-slate-100 dark:border-slate-800/80 transition-colors">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-slate-100 mb-3">
+          <h2 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-3">
             Comprehensive Dashboard
           </h2>
-          <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base mb-12 max-w-2xl mx-auto">
+          <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 max-w-xl mx-auto mx-auto">
             Monitor growth metrics with professional precision on any device.
           </p>
 
-          <div className="bg-[#f0f5f4] dark:bg-slate-800/40 p-3 sm:p-5 rounded-3xl border border-slate-200/80 dark:border-slate-700/60 shadow-2xl shadow-slate-300/40 dark:shadow-black/40">
+          <div className="bg-[#f0f5f4] dark:bg-slate-800/40 p-2 sm:p-3 rounded-2xl border border-slate-200/80 dark:border-slate-700/60 shadow-xl shadow-slate-300/40 dark:shadow-black/40">
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden text-left shadow-xs">
 
               <div className="bg-white dark:bg-slate-800 px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
@@ -313,33 +317,26 @@ export default function HomePage() {
             const IconComponent = a.Icon;
             return (
               <div key={a.id} className="rounded-[14px] overflow-hidden bg-white dark:bg-slate-800/60 border border-transparent dark:border-slate-700 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-none flex flex-col justify-between">
-                <div className={`h-[150px] flex items-center justify-center ${a.bgColor}`}>
-                  <IconComponent size={44} className="text-[#00685f] dark:text-teal-300" strokeWidth={1.75} />
+                <div className={`h-[180px] overflow-hidden ${a.bgColor}`}>
+                  <img src={a.image} alt="" className="w-full h-full object-cover" />
                 </div>
                 <div className="p-[22px] flex flex-col justify-between flex-1">
                   <div>
-                    <span className="text-[#00685f] dark:text-teal-300 text-[12px] font-bold uppercase tracking-[0.06em] block">
-                      {a.label}
-                    </span>
-                    <h3 className="text-[16px] my-2 text-[#111827] dark:text-slate-100 font-semibold">
+                    <h3 className="text-[16px] mb-2 text-[#111827] dark:text-slate-100 font-semibold">
                       {a.title}
                     </h3>
                     <p className="text-[13px] leading-[1.5] text-[#6b7280] dark:text-slate-400">
                       {a.desc}
                     </p>
                   </div>
-                  <div>
-                    <p className="mt-4 text-[12px] text-[#9ca3af] dark:text-slate-500">
-                      Source: reviewed medical references
-                    </p>
-                    <Link 
-                      to={`/knowledge/${a.slug}`} 
-                      state={{ from: "/" }}
-                      className="text-xs font-semibold inline-block mt-3 text-[#00685f] dark:text-teal-300 hover:underline"
-                    >
-                      Read More
-                    </Link>
-                  </div>
+
+                  <Link
+                    to={`/knowledge/${a.slug}`}
+                    state={{ from: "/" }}
+                    className="text-xs font-semibold inline-block mt-4 text-[#00685f] dark:text-teal-300 hover:underline"
+                  >
+                    Read More →
+                  </Link>
                 </div>
               </div>
             );

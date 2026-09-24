@@ -61,7 +61,7 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: right bottom;
+  object-position: right 2%;
 }
 
 /* No fade in light mode (dark mode and mobile add their own below) */
@@ -99,7 +99,7 @@
 }
 
 .kn-spark {
-  width: 26px;
+  width: 30px;
   height: 24px;
   flex-shrink: 0;
 }
@@ -265,7 +265,7 @@
   text-align: left;
   margin: 0 0 14px;
   color: #111827;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.2;
 }
@@ -386,7 +386,7 @@
 
 .knowledge-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(220px, 340px));
   gap: 16px;
   align-items: stretch;
 }
@@ -418,15 +418,16 @@
 /* Image sits on top at its natural ratio */
 
 .knowledge-icon-tile {
-  height: auto;
+  height: 180px;
   display: block;
   overflow: hidden;
 }
 
 .kn-explore-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 }
 
 /* Topic backgrounds */
@@ -484,11 +485,13 @@
 }
 
 .knowledge-card p {
-  max-width: 210px;
   font-size: 16px;
   line-height: 1.3;
   color: #1f2937;
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .knowledge-card .knowledge-readmore {
@@ -546,10 +549,11 @@
 /* Quick Facts (sits directly on the page, no box) */
 
 .kn-quickfacts {
-  background: transparent;
-  border-radius: 14px;
-  padding: 10px 24px 14px;
-  box-shadow: none;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px 24px 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
 
 .kn-quickfacts-head {
@@ -558,7 +562,7 @@
   gap: 8px;
   color: #111827;
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
   margin-bottom: 6px;
 }
 
@@ -566,12 +570,12 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
 }
 
 .kn-quickfacts-value {
-  font-size: 40px;
+  font-size: 36px;
   font-weight: 700;
   line-height: 1.15;
   color: #111827;
@@ -591,19 +595,22 @@
   justify-content: space-between;
   gap: 16px;
 }
-
+ 
 .kn-quickfacts-text {
   min-width: 0;
   flex: 1;
 }
-
+ 
 .kn-quickfacts-image {
-  width: 96px;
-  height: 120px;
+  width: 135px;
+  height: 130px;
   object-fit: contain;
   flex-shrink: 0;
+  align-self: center;
+  margin: 0;
+  position: relative;
+  top: 5px;
 }
-
 
 /* =========================================================
    SUPPORT HEALTHY GROWTH CARD
@@ -624,8 +631,8 @@
 }
 
 .kn-support-icon {
-  width: 46px;
-  height: 46px;
+  width: 68px;
+  height: 68px;
   object-fit: contain;
   display: block;
   flex-shrink: 0;
@@ -633,7 +640,7 @@
 
 .kn-support-card strong {
   display: block;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.25;
   color: #111827;
@@ -641,7 +648,7 @@
 
 .kn-support-card p {
   margin: 2px 0 0;
-  font-size: 16px;
+  font-size: 14px;
   color: #1f2937;
 }
 
@@ -666,7 +673,7 @@
 
 .kn-resources-list h3 {
   margin: 0 0 20px;
-  padding-left: 28px;
+  padding-left: 5px;
   font-size: 24px;
   font-weight: 600;
   color: #111827;
@@ -751,7 +758,7 @@
   }
 
   .knowledge-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   }
 }
 
@@ -784,12 +791,13 @@
 
   /* Text now sits over the whole image, so fade from the top */
   .kn-hero-art::after {
-    background: linear-gradient(
-      180deg,
-      rgba(255, 255, 255, 0.9) 0%,
-      rgba(255, 255, 255, 0.7) 55%,
-      rgba(255, 255, 255, 0.2) 100%
-    );
+    background: none;
+  }
+
+  /* On mobile the banner is cropped by object-fit: cover,
+     so show the LEFT part of the background image */
+  .kn-hero-bg {
+    object-position: left 2%;
   }
 
   .kn-hero-text {
@@ -897,109 +905,13 @@
   background: #0f172a;
 }
 
-/* Hero in dark mode: darken the illustration and fade it into the
-   page navy so the banner blends with the cards below it */
+/* Hero: intentionally kept identical in dark mode — no overrides here,
+   so it falls through to the light-mode .kn-hero / .kn-hero-bg /
+   .kn-hero-art::after / .kn-hero-text rules above. */
 
-[data-theme="dark"] .kn-hero {
-  background: #042f2e;
-  border: 1px solid rgba(94, 234, 212, 0.25);
-}
-
-[data-theme="dark"] .kn-hero-bg {
-  filter: brightness(0.68) saturate(1.05);
-}
-
-[data-theme="dark"] .kn-hero-art::after {
-  background: linear-gradient(
-    90deg,
-    rgba(4, 47, 46, 0.96) 0%,
-    rgba(0, 80, 76, 0.82) 45%,
-    rgba(0, 104, 95, 0.3) 75%,
-    rgba(0, 104, 95, 0) 100%
-  );
-}
-
-[data-theme="dark"] .kn-hero-text h1 {
-  color: #f0fdfa;
-}
-
-[data-theme="dark"] .kn-hero-text p {
-  color: #cbd5e1;
-}
-
-/* Dark glass chips: navy box, colored border and label per category */
-
-[data-theme="dark"] .kn-chip {
-  background: rgba(30, 41, 59, 0.72);
-  border-color: #334155;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-}
-
-[data-theme="dark"] .kn-chip:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="dark"] .kn-chip.chip-blue {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(96, 165, 250, 0.6);
-  color: #bfdbfe;
-}
-
-[data-theme="dark"] .kn-chip.chip-red {
-  background: rgba(239, 68, 68, 0.2);
-  border-color: rgba(248, 113, 113, 0.6);
-  color: #fecaca;
-}
-
-[data-theme="dark"] .kn-chip.chip-mint {
-  background: rgba(20, 184, 166, 0.2);
-  border-color: rgba(94, 234, 212, 0.6);
-  color: #99f6e4;
-}
-
-[data-theme="dark"] .kn-chip.chip-indigo {
-  background: rgba(99, 102, 241, 0.22);
-  border-color: rgba(165, 180, 252, 0.6);
-  color: #c7d2fe;
-}
-
-[data-theme="dark"] .kn-chip.chip-pink {
-  background: rgba(236, 72, 153, 0.2);
-  border-color: rgba(244, 114, 182, 0.6);
-  color: #fbcfe8;
-}
-
-/* Active chip: solid color, white label (beats the rules above) */
-
-[data-theme="dark"] .kn-chip.active {
-  color: #ffffff;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
-}
-
-[data-theme="dark"] .kn-chip.chip-blue.active {
-  background: #2563eb;
-  border-color: #60a5fa;
-}
-
-[data-theme="dark"] .kn-chip.chip-red.active {
-  background: #dc2626;
-  border-color: #f87171;
-}
-
-[data-theme="dark"] .kn-chip.chip-mint.active {
-  background: #0d9488;
-  border-color: #5eead4;
-}
-
-[data-theme="dark"] .kn-chip.chip-indigo.active {
-  background: #4f46e5;
-  border-color: #a5b4fc;
-}
-
-[data-theme="dark"] .kn-chip.chip-pink.active {
-  background: #db2777;
-  border-color: #f472b6;
-}
+/* Chips: intentionally kept identical in dark mode too — no overrides
+   here, so they fall through to the light-mode .kn-chip / .chip-*
+   rules above (matches the hero, which is also frozen to light mode). */
 
 /* Dark heading */
 
@@ -1098,12 +1010,7 @@
 
 @media (max-width: 900px) {
   [data-theme="dark"] .kn-hero-art::after {
-    background: linear-gradient(
-      180deg,
-      rgba(4, 47, 46, 0.96) 0%,
-      rgba(0, 80, 76, 0.82) 55%,
-      rgba(0, 104, 95, 0.4) 100%
-    );
+    background: none;
   }
 }
 
@@ -1126,8 +1033,8 @@
 }
 
 [data-theme="dark"] .kn-quickfacts {
-  background: transparent;
-  border: none;
+  background: #0f172a;
+  border: 1px solid #334155;
 }
 
 [data-theme="dark"] .kn-support-card {

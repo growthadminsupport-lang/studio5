@@ -156,7 +156,7 @@
 }
 
 .growth-info-text .growth-peak-text {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .growth-info-grid {
@@ -179,50 +179,46 @@
   box-sizing: border-box;
 }
 
-/* "Did you know?" note: logo sits in normal flow (no transforms), so the
-   text can never overflow the box on desktop or mobile. */
 .growth-info-box:nth-child(4) {
   grid-column: 1 / -1;
   width: 100%;
+  /* removed: max-width: 480px; */
+  /* removed: justify-self: center; */
   position: relative;
   overflow: visible;
   align-items: center;
-  gap: 18px;
-  margin-top: 14px;
-  padding: 14px 24px 14px 16px;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 8px 16px 8px 12px;
   background: #f7f6f0;
 }
 
 .growth-info-box:nth-child(4) .growth-info-icon {
-  width: 150px;
+  width: 150px;                  /* unchanged */
   height: auto;
   min-height: 0;
-  margin: -20px 0 -20px -6px;
-}
-
-.growth-info-box:nth-child(4) .growth-info-text {
-  flex: 1;
+  margin: -30px 0 -30px -6px;    /* was -20px */
 }
 
 .growth-info-box:nth-child(4) .growth-info-text h3 {
-  font-size: 20px !important;
+  font-size: 17px !important;    /* was 20px */
 }
 
 @media (max-width: 480px) {
   .growth-info-box:nth-child(4) {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 6px;
     margin-top: 40px;
-    padding: 0 16px 16px;
+    padding: 0 12px 12px;
+    max-width: none;
   }
 
   .growth-info-box:nth-child(4) .growth-info-icon {
-    width: 120px;
-    margin: -36px 0 0 0;
+    width: 120px;                /* unchanged */
+    margin: -36px 0 0 0;         /* unchanged */
   }
 }
-
 .growth-info-box:first-child .growth-info-icon {
   width: 75px;
   height: 75px;
@@ -249,7 +245,7 @@
 .growth-info-box h3 {
   flex:1;
   margin: 0 0 4px 0;
-  font-size: px;
+  font-size: 18px;
   font-weight: 700;
   color: #111827;
 }
@@ -258,7 +254,7 @@
   margin: 0;
   font-size: 13px;
   line-height: 1.5;
-  color: #64748b;
+  color: #374151;
 }
 
 .growth-info-text .article-bullet-list {
@@ -384,17 +380,45 @@
   color:  #94a3b8;
 }
 
+/* ---------- Growth spurts dark mode ---------- */
+[data-theme="dark"] .growth-info-box {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .growth-info-box:nth-child(4) {
+  background: #3a3520;
+}
+
+[data-theme="dark"] .growth-info-box h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .growth-info-box p {
+  color: #cbd5e1;
+}
+
 /* =========================================================
    NUTRITION PAGE
    ========================================================= */
 
 /* Wide rounded hero illustration */
-.article-main-image--hero {
+.article-main-image-wrap {
   width: 100%;
   max-width: 760px;
+  margin: 8px auto 12px;
+  border-radius: 24px;
+  overflow: hidden;   /* clips whatever spills out when we zoom */
+}
+
+.article-main-image--hero {
+  width: 100%;
   height: auto;
   object-fit: cover;
-  margin: 8px auto 12px;
+  display: block;
+  margin: 0;                 /* moved to the wrapper now */
+  transform: scale(1.3);     /* zoom past the border — tweak this value */
+  transform-origin: center;
 }
 
 /* ---------- The 4 key nutrients (2 x 2) ---------- */
@@ -792,8 +816,8 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .pub-support-card {
@@ -816,18 +840,16 @@
   object-fit: contain;
 }
 
-/* ---------- Note box with logo (Puberty + Support Healthy Growth) ----------
-   Same look as the "Did you know?" box on the Growth Spurts page.
-   The logo is in normal flow (no transforms), so text never overflows. */
 .info-note {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 12px;
   position: relative;
   overflow: visible;
-  max-width: 600px;
-  margin: 40px auto 0;
-  padding: 14px 24px 14px 16px;
+  width: 100%;
+  max-width: none;
+  margin: 44px 0 0;
+  padding: 8px 16px 8px 12px;
   box-sizing: border-box;
   background: #f7f6f0;
   border: 1px solid #e2e8f0;
@@ -835,46 +857,51 @@
 }
 
 .info-note-logo {
-  width: 150px;
+  width: 150px;                  /* unchanged */
   height: auto;
-  margin: -20px 0 -20px -6px;
+  margin: -30px 0 -30px -6px;    /* was -20px, pulls the box height down */
   flex-shrink: 0;
   object-fit: contain;
 }
 
-.info-note-text {
-  flex: 1;
-  min-width: 0;
-}
-
-@media (max-width: 480px) {
-  .info-note {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-top: 44px;
-    padding: 0 16px 16px;
-  }
-
-  .info-note-logo {
-    width: 120px;
-    margin: -36px 0 0 0;
-  }
-}
-
 .info-note-text h3 {
-  margin: 0 0 4px;
-  font-size: 20px;
+  margin: 0 0 3px;
+  font-size: 17px;               /* was 20px */
   font-weight: 700;
   color: #111827;
 }
 
 .info-note-text p {
   margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;               /* was 14px */
+  line-height: 1.45;
   color: #374151;
 }
+
+.info-note-remember .info-note-text h3 {
+  font-size: 18px;   /* title, change as you like */
+}
+
+.info-note-remember .info-note-text p {
+  font-size: 13px;   /* text, change as you like */
+}
+
+@media (max-width: 480px) {
+  .info-note {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;                    /* was 8px */
+    margin-top: 44px;
+    padding: 0 12px 12px;        /* was 0 16px 16px */
+  }
+
+  .info-note-logo {
+    width: 120px;                /* unchanged */
+    margin: -36px 0 0 0;         /* unchanged */
+  }
+}
+
+
 
 /* ---------- Puberty responsive ---------- */
 @media (max-width: 700px) {
@@ -922,8 +949,8 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 18px;
-  max-width: 600px;
-  margin: 0 auto;
+  width: 100%;
+  margin: 0;
 }
 
 .hg-card {

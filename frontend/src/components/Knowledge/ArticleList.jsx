@@ -91,9 +91,9 @@ const featured = articles.find(
    EXPLORE MORE
    ========================================================= */
 
-const exploreMore = articles
-  .filter((article) => article.slug !== featuredSlug)
-  .slice(0, 3);
+const exploreMore = articles.filter(
+  (article) => article.slug !== featuredSlug
+);
 
 
 /* =========================================================

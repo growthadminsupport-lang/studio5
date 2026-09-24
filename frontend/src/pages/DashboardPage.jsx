@@ -12,10 +12,16 @@ import {
   Pencil,
   Utensils,
   Bandage,
+  Heart,
+  Salad,
   X,
   Check,
   AlertTriangle,
 } from 'lucide-react';
+
+import growthExploreImg from '../assets/knowledgeImg/growthExplore.png';
+import nutritionExploreImg from '../assets/knowledgeImg/nutritionExplore.png';
+import pubertyExploreImg from '../assets/knowledgeImg/pubertyExplore.png';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -120,34 +126,30 @@ const articles = [
     id: 1,
     slug: 'navigating-growth-spurts',
     label: 'Article',
-    title: 'Navigating Growth Spurts',
-    desc: "When the pubertal growth spurt happens, how fast it goes, and which changes are worth a doctor's attention.",
+    title: 'Growth Spurts',
+    desc: 'When and how your body speeds up.',
     category: 'growth',
-    Icon: Ruler,
-    bgColor: 'bg-[#d9f0ed] dark:bg-teal-500/10',
+    image: growthExploreImg,
   },
   {
     id: 2,
     slug: 'nutrition-for-pre-teens',
     label: 'Guide',
-    title: 'Nutrition for Pre-teens',
-    desc: 'Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.',
+    title: 'Nutrition',
+    desc: 'Key nutrients for strong bones and healthy growth.',
     category: 'nutrition',
-    Icon: Utensils,
-    bgColor: 'bg-[#e4f4ec] dark:bg-emerald-500/10',
+    image: nutritionExploreImg,
   },
   {
     id: 3,
-    slug: 'understanding-bone-age',
+    slug: 'understanding-puberty',
     label: 'Explainer',
-    title: 'Understanding Bone Age',
-    desc: 'How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.',
-    category: 'bone age',
-    Icon: Bandage,
-    bgColor: 'bg-[#f7f0df] dark:bg-amber-500/10',
+    title: 'Puberty',
+    desc: 'What to expect and how to prepare.',
+    category: 'puberty',
+    image: pubertyExploreImg,
   },
 ];
-
 // ============================================================
 // Helpers
 // ============================================================
@@ -798,36 +800,27 @@ function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {articles.map((a) => {
-            const IconComponent = a.Icon;
-            return (
-              <div
-                key={a.id}
-                className="flex flex-col overflow-hidden rounded-[14px] bg-white dark:bg-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
-              >
-                <div className={`flex h-24 items-center justify-center ${a.bgColor}`}>
-                  <IconComponent size={30} color={chart.median} strokeWidth={1.75} />
-                </div>
-
-                <div className="flex flex-1 flex-col p-4">
-                  <span className="text-[10px] font-bold uppercase tracking-wide text-[#00685f] dark:text-teal-300">
-                    {a.label}
-                  </span>
-                  <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">{a.title}</h3>
-                  <p className="mt-1.5 flex-1 text-xs leading-5 text-slate-500 dark:text-slate-400">{a.desc}</p>
-
-                  <Link
-                    to={`/knowledge/${a.slug}`}
-                    className="mt-3 inline-block text-xs font-semibold text-[#00685f] dark:text-teal-300 hover:underline"
-                  >
-                    Read More
-                  </Link>
-                </div>
+          {articles.map((a) => (
+            <div
+              key={a.id}
+              className="flex flex-col overflow-hidden rounded-[14px] bg-white dark:bg-slate-800 shadow-[0_4px_12px_rgba(0,0,0,0.02)]"
+            >
+              <img src={a.image} alt={a.title} className="h-36 w-full object-cover" />
+          
+              <div className="flex flex-1 flex-col p-4">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100">{a.title}</h3>
+                <p className="mt-1.5 flex-1 text-sm leading-5 text-slate-500 dark:text-slate-400">{a.desc}</p>
+          
+                <Link
+                  to={`/knowledge/${a.slug}`}
+                  className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[#00685f] dark:text-teal-300 hover:underline"
+                >
+                  Read More →
+                </Link>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
-
       </div>
 
       {modal === 'switch' && (

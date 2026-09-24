@@ -62,7 +62,7 @@ const keyNutrients = [
   },
   {
     name: "Iron",
-    amount: "8 mg/day (ages 9–13)",
+    amount: "(ages 9–13)",
     note: "Rises in both sexes; higher in girls after menarche.",
     icon: ironIcon,
     tone: "peach",
@@ -340,7 +340,7 @@ const articles = {
         content: (
           <p>
             Puberty is the time when a child's body gradually develops into an
-            adult body. Everyone grows at their own pace.
+            adult body. Everyone grows at their own pace, and the changes may happen at different ages.  
           </p>
         ),
       },
@@ -424,10 +424,10 @@ const articles = {
               ))}
             </div>
 
-            <div className="info-note">
+            <div className="info-note info-note-remember">
               <img src={logoDidyouknow} alt="" className="info-note-logo" />
 
-              <div className="info-note-text">
+              <div className="info-note-text info-note-remember">
                 <h3>Remember</h3>
                 <p>
                   Healthy growth isn't just about being taller — it's about
@@ -590,11 +590,13 @@ function ArticlePage() {
         <p className="article-description">{article.description}</p>
 
         {article.image && (
-          <img
-            src={article.image}
-            alt={article.title}
-            className={`article-main-image ${article.imageClass || ""}`}
-          />
+          <div className="article-main-image-wrap">
+            <img
+              src={article.image}
+              alt={article.title}
+              className={`article-main-image ${article.imageClass || ""}`}
+            />
+          </div>
         )}
 
         {article.sections.map((section, index) => (

@@ -58,6 +58,8 @@
   width: 120px; 
   height: auto; 
   margin: 0 auto 8px;
+  transform: scale(1.35);        /* new: 1.6 = 160% size, change as you like */
+  transform-origin: center;
 }
 
 /* Dark mode logo */
