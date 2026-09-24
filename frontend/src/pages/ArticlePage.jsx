@@ -1,156 +1,269 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { Link, useParams, useLocation } from "react-router-dom";
 import growthSpurtImg from "../assets/knowledgeImg/growthPage1.png";
+import nutriImg from "../assets/knowledgeImg/nutriPage1.png";
+import calciumIcon from "../assets/knowledgeImg/nutriPage2.png";
+import vitaminDIcon from "../assets/knowledgeImg/nutriPage3.png";
+import proteinIcon from "../assets/knowledgeImg/nutriPage4.png";
+import ironIcon from "../assets/knowledgeImg/nutriPage5.png";
+import calciumFoodIcon from "../assets/knowledgeImg/nutriPage6.png";
+import vitaminDFoodIcon from "../assets/knowledgeImg/nutriPage7.png";
+import proteinFoodIcon from "../assets/knowledgeImg/nutriPage8.png";
+import ironFoodIcon from "../assets/knowledgeImg/nutriPage9.png";
+import boneHeroImg from "../assets/knowledgeImg/boneAgePage1.png";
+import chronoAgeIcon from "../assets/knowledgeImg/bonAgePage2.png";
+import boneAgeIcon from "../assets/knowledgeImg/bonAgePage3.png";
+import xrayStepIcon from "../assets/knowledgeImg/bonAgePage4.png";
+import compareStepIcon from "../assets/knowledgeImg/bonAgePage5.png";
+import estimateStepIcon from "../assets/knowledgeImg/bonAgePage6.png";
+import gpMethodIcon from "../assets/knowledgeImg/bonAgePage7.png";
+import twMethodIcon from "../assets/knowledgeImg/bonAgePage8.png";
+import pubertyHeroImg from "../assets/knowledgeImg/pubertyPage1.png";
+import tallerIcon from "../assets/knowledgeImg/pubertyPage2.png";
+import skinIcon from "../assets/knowledgeImg/pubertyPage3.png";
+import bodyDevIcon from "../assets/knowledgeImg/pubertyPage4.png";
+import feelingsIcon from "../assets/knowledgeImg/pubertyPage5.png";
+import talkIcon from "../assets/knowledgeImg/pubertyPage6.png";
+import careIcon from "../assets/knowledgeImg/pubertyPage7.png";
+import restIcon from "../assets/knowledgeImg/pubertyPage8.png";
+import eatWellImg from "../assets/knowledgeImg/supportHealthPage1.png";
+import stayActiveImg from "../assets/knowledgeImg/supportHealthPage2.png";
+import sleepWellImg from "../assets/knowledgeImg/supportHealthPage3.png";
+import trackGrowthImg from "../assets/knowledgeImg/supportHealthPage4.png";
 import growthIcon from "../assets/icons_knowledge/growthPageIcon1.png";
 import pubertyIcon from "../assets/icons_knowledge/growthPageIcon2.png";
 import healthyIcon from "../assets/icons_knowledge/growthPageIcon3.png";
+import logoDidyouknow from "../assets/logo_knowledge.png";
 import "./ArticlePage.css";
+
+/* ---------- Nutrition page data ---------- */
+
+const keyNutrients = [
+  {
+    name: "Calcium",
+    amount: "1,300 mg/day",
+    note: "Builds strong bones and teeth.",
+    icon: calciumIcon,
+    tone: "blue",
+  },
+  {
+    name: "Vitamin D",
+    amount: "600 IU/day",
+    note: "Helps your body absorb calcium.",
+    icon: vitaminDIcon,
+    tone: "amber",
+  },
+  {
+    name: "Protein",
+    amount: "10–30% of daily calories",
+    note: "Supports tissue growth and repair.",
+    icon: proteinIcon,
+    tone: "green",
+  },
+  {
+    name: "Iron",
+    amount: "8 mg/day (ages 9–13)",
+    note: "Rises in both sexes; higher in girls after menarche.",
+    icon: ironIcon,
+    tone: "peach",
+  },
+];
+
+const foodSources = [
+  { name: "Calcium", foods: "Milk, yogurt, cheese, tofu, leafy greens", icon: calciumFoodIcon },
+  { name: "Vitamin D", foods: "Fish, egg yolk, fortified foods", icon: vitaminDFoodIcon },
+  { name: "Protein", foods: "Eggs, fish, meat, beans, tofu", icon: proteinFoodIcon },
+  { name: "Iron", foods: "Meat, beans, tofu, leafy greens", icon: ironFoodIcon },
+];
+
+/* ---------- Bone age page data ---------- */
+
+const ageTypes = [
+  {
+    name: "Chronological age",
+    note: "How long you have been alive.",
+    icon: chronoAgeIcon,
+  },
+  {
+    name: "Bone age",
+    note: "How mature your bones are.",
+    icon: boneAgeIcon,
+  },
+];
+
+const measureSteps = [
+  { title: "X-ray", note: "Hand and Wrist", icon: xrayStepIcon },
+  { title: "Compare", note: "With reference images", icon: compareStepIcon },
+  { title: "Estimate", note: "Skeletal maturity", icon: estimateStepIcon },
+];
+
+const boneMethods = [
+  {
+    name: "Greulich–Pyle (GP)",
+    note: "Compare the whole hand with an atlas.",
+    icon: gpMethodIcon,
+  },
+  {
+    name: "Tanner–Whitehouse (TW3)",
+    note: "Score individual bones separately.",
+    icon: twMethodIcon,
+  },
+];
+
+/* ---------- Puberty page data ---------- */
+
+const pubertyChanges = [
+  {
+    title: "Growing taller",
+    note: "Height and body shape change.",
+    icon: tallerIcon,
+  },
+  {
+    title: "Skin & body hair",
+    note: "Sweat, oily skin, and new hair may appear.",
+    icon: skinIcon,
+  },
+  {
+    title: "Body development",
+    note: "Breasts, periods, or voice changes may begin.",
+    icon: bodyDevIcon,
+  },
+  {
+    title: "Feelings & emotions",
+    note: "New feelings and mood changes are common.",
+    icon: feelingsIcon,
+  },
+];
+
+const pubertySupport = [
+  {
+    title: "Talk openly",
+    note: "Ask questions with a trusted adult.",
+    icon: talkIcon,
+  },
+  {
+    title: "Care for your body",
+    note: "Keep clean, eat well, and stay active.",
+    icon: careIcon,
+  },
+  {
+    title: "Rest well",
+    note: "Make time for sleep and relaxation.",
+    icon: restIcon,
+  },
+];
+
+/* ---------- Support healthy growth page data ---------- */
+
+const healthyHabits = [
+  {
+    title: "Eat Well",
+    note: "Choose a variety of nutritious foods.",
+    image: eatWellImg,
+  },
+  {
+    title: "Stay Active",
+    note: "Regular activity supports bone and muscle health.",
+    image: stayActiveImg,
+  },
+  {
+    title: "Sleep Well",
+    note: "Get enough sleep for better growth and mood.",
+    image: sleepWellImg,
+  },
+  {
+    title: "Track Your Growth",
+    note: "Regular checkups help monitor your progress.",
+    image: trackGrowthImg,
+  },
+];
 
 const articles = {
   "understanding-bone-age": {
     type: "Explainer",
     title: "Understanding Bone Age",
     description:
-      "How skeletal maturity is read from a hand X-ray, why a doctor would order one, and the limits of what it can tell you.",
+      "Bone age is a way to measure how mature a child's skeleton is.",
+    image: boneHeroImg,
+    imageClass: "article-main-image--hero",
 
     sections: [
       {
-        title: 'What "bone age" actually measures',
-        content: (
-          <p>
-            Bone age is a reading of <strong>skeletal maturity</strong> —
-            how far a child's bones have developed — rather than how long
-            they have been alive. It's assessed from a single X-ray of the
-            left hand and wrist, because the growing ends of those small
-            bones (the growth plates) change shape in a predictable order
-            from infancy through the end of growth.
-            <br />
-            <br />
-            A radiologist compares that X-ray against a reference and
-            reports an age. If a 9-year-old's bones look like the reference
-            for an 11-year-old, their bone age is "advanced" by about two
-            years. If they look like a 7-year-old's, it's "delayed".
-          </p>
-        ),
-      },
-
-      {
-        title: "How it's read",
+        title: "What is Bone Age?",
         content: (
           <>
-            <p>Two methods dominate clinical practice:</p>
-
-            <ul>
-              <li>
-                <strong>Greulich–Pyle (GP)</strong> — the reader matches the
-                whole hand against an atlas of reference radiographs and
-                picks the closest match. It's fast and simple, which is why
-                it's the most widely used method.
-              </li>
-
-              <li>
-                <strong>Tanner–Whitehouse (TW3)</strong> — each individual
-                bone is scored separately and the scores are summed. It
-                takes longer but is more granular.
-              </li>
-            </ul>
-
             <p>
-              Increasingly these are assisted by automated software, which
-              improves consistency between readers.
+              Bone age is not the same as chronological age. It shows how much
+              a child's bones have developed, rather than how long they have
+              been alive.
             </p>
+
+            <div className="bone-age-grid">
+              {ageTypes.map((item) => (
+                <div key={item.name} className="bone-age-card">
+                  <img src={item.icon} alt="" className="bone-age-icon" />
+
+                  <div>
+                    <h3>{item.name}</h3>
+                    <p>{item.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </>
         ),
       },
 
       {
-        title: "Why a doctor might order one",
+        title: "How is it measured?",
         content: (
-          <>
-            <p>
-              Bone age is not a routine test. It's requested when a specific
-              question needs answering:
-            </p>
+          <div className="bone-steps">
+            {measureSteps.map((step, index) => (
+              <Fragment key={step.title}>
+                <div className="bone-step">
+                  <span className="bone-step-num">{index + 1}</span>
+                  <img src={step.icon} alt="" className="bone-step-icon" />
+                  <h3>{step.title}</h3>
+                  <p>{step.note}</p>
+                </div>
 
-            <ul>
-              <li>
-                <strong>Predicting adult height.</strong> Bone age tells you
-                how much growing time is left. Two children the same height
-                at the same age can have very different adult heights if one
-                has far more growth remaining.
-              </li>
-
-              <li>
-                <strong>Investigating early or late puberty.</strong> Sex
-                hormones accelerate skeletal maturation, so a bone age
-                running ahead of chronological age is one of the signals
-                that supports a precocious puberty workup.
-              </li>
-
-              <li>
-                <strong>Investigating short stature or poor growth.</strong>{" "}
-                A delayed bone age in a short child often means growth is
-                simply happening on a later schedule, with more time in hand
-                than the current height suggests.
-              </li>
-            </ul>
-          </>
+                {index < measureSteps.length - 1 && (
+                  <svg
+                    className="bone-step-arrow"
+                    viewBox="0 0 48 14"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2 7H44M38 2L45 7L38 12"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </Fragment>
+            ))}
+          </div>
         ),
       },
 
       {
-        title: "What it can't tell you",
+        title: "Two common methods",
         content: (
-          <ul>
-            <li>
-              <strong>It is not a diagnosis.</strong> Bone age is one input
-              among several — growth velocity, parental heights, pubertal
-              stage, and blood work all matter.
-            </li>
+          <div className="bone-method-grid">
+            {boneMethods.map((item) => (
+              <div key={item.name} className="bone-method-card">
+                <img src={item.icon} alt="" className="bone-method-icon" />
 
-            <li>
-              <strong>Readings vary between readers.</strong> Agreement
-              between two radiologists reading the same film is good but not
-              perfect, so small differences of a few months are not
-              meaningful.
-            </li>
-
-            <li>
-              <strong>The reference population matters.</strong> The GP
-              atlas is built on radiographs of North American children
-              collected in the 1930s and 40s. Applying it to contemporary
-              children from different populations can introduce bias, which
-              is a known limitation and an active area of research.
-            </li>
-
-            <li>
-              <strong>Height predictions are estimates.</strong> They carry
-              a real margin of error and become more reliable closer to the
-              end of growth.
-            </li>
-          </ul>
-        ),
-      },
-
-      {
-        title: "What this means for you as a parent",
-        content: (
-          <>
-            <p>
-              If a bone age has been ordered, it is answering a question
-              your doctor already has — it is not a screening test to seek
-              out on your own. Bring the report to the appointment along
-              with your child's height history; the trend over time is
-              usually more informative than any single number.
-            </p>
-
-            <p>
-              GrowTH's bone age feature is a{" "}
-              <strong>preliminary, non-diagnostic</strong> tool and is
-              clearly marked as such. It does not replace a radiologist's
-              reading.
-            </p>
-          </>
+                <div>
+                  <h3>{item.name}</h3>
+                  <p>{item.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         ),
       },
     ],
@@ -167,152 +280,41 @@ const articles = {
     type: "Guide",
     title: "Nutrition for Pre-teens",
     description:
-      "Calcium, vitamin D, iron and protein targets for ages 9–13 — and the everyday habits that matter more than any single nutrient.",
-
+      "Good nutrition gives your body the energy and nutrients it needs to grow, stay healthy and feel your best.",
+    image: nutriImg,
+    imageClass: "article-main-image--hero",
     sections: [
       {
-        title: "Why ages 9–13 matter so much",
+        title: "The 4 key nutrients",
         content: (
-          <p>
-            More than half of adult bone mass is laid down during
-            adolescence. The skeleton a child builds in these years is
-            roughly the skeleton they keep — bone that isn't built now is
-            very difficult to add later. At the same time, appetite and
-            growth rate rise sharply, and food choices start moving out of a
-            parent's direct control.
-            <br />
-            <br />
-            This is the window where nutrition has the most leverage.
-          </p>
+          <div className="nutri-grid">
+            {keyNutrients.map((item) => (
+              <div key={item.name} className={`nutri-card nutri-${item.tone}`}>
+                <img src={item.icon} alt="" className="nutri-card-icon" />
+
+                <div className="nutri-card-text">
+                  <h3>{item.name}</h3>
+                  <p className="nutri-card-amount">{item.amount}</p>
+                  <p className="nutri-card-note">{item.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         ),
       },
 
       {
-        title: "The numbers that matter",
+        title: "Food sources",
         content: (
-          <table className="article-table">
-            <thead>
-              <tr>
-                <th>Nutrient</th>
-                <th>Ages 9–13</th>
-                <th>Why</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>Calcium</td>
-                <td>
-                  <strong>1,300 mg/day</strong>
-                </td>
-                <td>
-                  Bone mineral density; the same target for boys and girls
-                </td>
-              </tr>
-
-              <tr>
-                <td>Vitamin D</td>
-                <td>
-                  <strong>600 IU (15 µg)/day</strong>
-                </td>
-                <td>Needed to absorb calcium</td>
-              </tr>
-
-              <tr>
-                <td>Protein</td>
-                <td>
-                  <strong>10–30% of daily calories</strong>
-                </td>
-                <td>Tissue growth during the spurt</td>
-              </tr>
-
-              <tr>
-                <td>Iron</td>
-                <td>Rises in both sexes</td>
-                <td>Oxygen transport; deficiency is common</td>
-              </tr>
-            </tbody>
-          </table>
-        ),
-      },
-
-      {
-        title: "Where to actually get them",
-        content: (
-          <>
-            <p>
-              <strong>Calcium.</strong> Milk, yoghurt and cheese are the
-              densest sources. If dairy isn't part of your family's diet,
-              small fish eaten with the bones, firm tofu set with calcium,
-              fortified soy milk, and dark leafy greens such as kale, pak
-              choi and Chinese broccoli all contribute meaningfully.
-            </p>
-
-            <p>
-              <strong>Vitamin D.</strong> Few foods contain much. Oily fish,
-              egg yolk and fortified milk are the main dietary sources;
-              sensible sun exposure covers the rest for most children.
-            </p>
-
-            <p>
-              <strong>Iron.</strong> Red meat, liver and blood-based dishes
-              are absorbed best. Plant sources — beans, tofu, dark greens —
-              are absorbed far better when eaten with something high in
-              vitamin C in the same meal.
-            </p>
-
-            <p>
-              <strong>Protein.</strong> Easy to meet in most diets: eggs,
-              fish, chicken, pork, beans, tofu, nuts. Most children in this
-              age group are not short on protein, and supplements are rarely
-              needed.
-            </p>
-          </>
-        ),
-      },
-
-      {
-        title: "Habits that matter more than any single nutrient",
-        content: (
-          <ul>
-            <li>
-              <strong>Don't skip breakfast.</strong> It's the meal most
-              often dropped at this age and the one that most reliably costs
-              calcium and iron.
-            </li>
-
-            <li>
-              <strong>Watch what drinks replace.</strong> Sweetened drinks
-              displacing milk is one of the most common ways calcium intake
-              quietly collapses.
-            </li>
-
-            <li>
-              <strong>Be careful with restrictive dieting.</strong>{" "}
-              Weight-loss dieting during the growth spurt can compromise
-              both bone accrual and final height.
-            </li>
-
-            <li>
-              <strong>Eat together where you can.</strong> Shared meals are
-              consistently associated with better diet quality in this age
-              group.
-            </li>
-          </ul>
-        ),
-      },
-
-      {
-        title: "When to ask a professional",
-        content: (
-          <p>
-            Talk to a pediatrician or dietitian if your child follows a
-            restricted diet, is persistently tired or pale, has dropped
-            across growth percentile lines, or if you're considering
-            supplements. Supplement doses for children are not scaled-down
-            adult doses, and more is not better — particularly for vitamin D
-            and iron, both of which are harmful in excess.
-          </p>
+          <div className="food-grid">
+            {foodSources.map((item) => (
+              <div key={item.name} className="food-card">
+                <img src={item.icon} alt="" className="food-card-icon" />
+                <h3>{item.name}</h3>
+                <p>{item.foods}</p>
+              </div>
+            ))}
+          </div>
         ),
       },
     ],
@@ -325,6 +327,125 @@ const articles = {
     ],
   },
 
+  "understanding-puberty": {
+    type: "Explainer",
+    title: "Understanding Puberty",
+    description: "Growing up brings changes to your body and feelings.",
+    image: pubertyHeroImg,
+    imageClass: "article-main-image--hero",
+
+    sections: [
+      {
+        title: "What is puberty?",
+        content: (
+          <p>
+            Puberty is the time when a child's body gradually develops into an
+            adult body. Everyone grows at their own pace.
+          </p>
+        ),
+      },
+
+      {
+        title: "Changes you may notice",
+        content: (
+          <div className="pub-change-grid">
+            {pubertyChanges.map((item) => (
+              <div key={item.title} className="pub-change-card">
+                <img src={item.icon} alt="" className="pub-change-icon" />
+
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.note}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ),
+      },
+
+      {
+        title: "Support through the changes",
+        content: (
+          <>
+            <div className="pub-support-grid">
+              {pubertySupport.map((item) => (
+                <div key={item.title} className="pub-support-card">
+                  <div className="pub-support-art">
+                    <img src={item.icon} alt="" className="pub-support-icon" />
+                  </div>
+
+                  <h3>{item.title}</h3>
+                  <p>{item.note}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="info-note">
+              <img src={logoDidyouknow} alt="" className="info-note-logo" />
+
+              <div className="info-note-text">
+                <h3>Everyone has their own timeline</h3>
+                <p>
+                  Changes happen at different times. If you feel worried, talk
+                  with a healthcare professional.
+                </p>
+              </div>
+            </div>
+          </>
+        ),
+      },
+    ],
+
+    sources: [
+      "Growth and Normal Puberty — Pediatrics, American Academy of Pediatrics",
+      "Physical Growth and Sexual Maturation of Adolescents — Merck Manual",
+    ],
+  },
+
+  "support-healthy-growth": {
+    type: "Guide",
+    title: "Support Healthy Growth",
+    description: "Healthy habits today build a stronger, healthier you tomorrow.",
+
+    sections: [
+      {
+        content: (
+          <>
+            <div className="hg-grid">
+              {healthyHabits.map((item) => (
+                <div key={item.title} className="hg-card">
+                  <img src={item.image} alt="" className="hg-card-img" />
+
+                  <div className="hg-card-body">
+                    <h3>{item.title}</h3>
+                    <p>{item.note}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="info-note">
+              <img src={logoDidyouknow} alt="" className="info-note-logo" />
+
+              <div className="info-note-text">
+                <h3>Remember</h3>
+                <p>
+                  Healthy growth isn't just about being taller — it's about
+                  being stronger, healthier and happier!
+                </p>
+              </div>
+            </div>
+          </>
+        ),
+      },
+    ],
+
+    sources: [
+      "A Teenager's Nutritional Needs — HealthyChildren.org",
+      "Take Charge of Your Health: A Guide for Teenagers — NIDDK",
+    ],
+  },
+
   "navigating-growth-spurts": {
     type: "Article",
     title: "Navigating Growth Spurts",
@@ -333,7 +454,7 @@ const articles = {
     image: growthSpurtImg,
     sections: [
       {
-        title: "When to expect it",
+        title: "What to expect",
         content: (
           <div className="growth-info-grid">
           
@@ -384,7 +505,22 @@ const articles = {
                 </p>
               </div>
             </div>
-        
+
+            <div className="growth-info-box">
+              <img
+                src={logoDidyouknow}
+                alt=""
+                className="growth-info-icon"
+              />
+
+              <div className="growth-info-text">
+                <h3>Did you know?</h3>
+                <p className="growth-peak-text">
+                  Girls usually reach their peak growth around 10.5-12.8 years,
+                  while boys usually reach it around 12-16 years.
+                </p>
+              </div>
+            </div>
           </div>
         ),
       },
@@ -440,12 +576,16 @@ function ArticlePage() {
   return (
     <div className="article-bg">
     <div className="article-page">
-      {/* This stays OUTSIDE the white box */}
+      {/* Back link + type label stay OUTSIDE the white box */}
+      <Link to={backTarget} className="article-back-link article-back-top">
+        {backLabel}
+      </Link>
+
       <div className="article-type">{article.type}</div>
 
       {/* Everything below is inside the white box */}
       <article className="article-card">
-        <h1>{article.title}</h1>
+        <h1 className="article-title">{article.title}</h1>
 
         <p className="article-description">{article.description}</p>
 
@@ -453,37 +593,26 @@ function ArticlePage() {
           <img
             src={article.image}
             alt={article.title}
-            className="article-main-image"
+            className={`article-main-image ${article.imageClass || ""}`}
           />
         )}
 
         {article.sections.map((section, index) => (
           <section key={index} className="article-section">
-            <h2>{section.title}</h2>
+            {section.title && (
+              <h2 style={{ fontWeight: 700 }}>{section.title}</h2>
+            )}
             <div className="article-section-content">
               {section.content}
             </div>
           </section>
         ))}
 
-        <div className="article-sources">
-          <h2>Sources</h2>
-
-          <ul>
-            {article.sources.map((source, index) => (
-              <li key={index}>{source}</li>
-            ))}
-          </ul>
-        </div>
-
         <p className="article-disclaimer">
           General information for parents — not medical advice. Talk to your
           child's doctor about anything specific to them.
         </p>
 
-        <Link to={backTarget} className="article-back-link">
-          {backLabel}
-        </Link>
       </article>
     </div>
     </div>

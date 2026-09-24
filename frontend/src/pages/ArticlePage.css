@@ -11,7 +11,11 @@
   object-fit: contain;
   display: block;
   margin: 24px auto 32px;
-  border-radius: 16px;
+  border-radius: 24px;
+}
+
+.article-title {
+  font-weight: 700;
 }
 
 /* Article / Guide / Explainer */
@@ -22,6 +26,13 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 12px;
+}
+
+/* Back link shown above the article type */
+.article-back-top {
+  display: block;
+  margin: 0 0 20px;
+  font-size: 14px;
 }
 
 /* White article box */
@@ -54,6 +65,7 @@
 .article-sources h2 {
   color: var(--color-text);
   font-size: 22px;
+  font-weight: 700;
   margin: 0 0 14px;
 }
 
@@ -143,6 +155,10 @@
   text-decoration: underline;
 }
 
+.growth-info-text .growth-peak-text {
+  font-size: 14px;
+}
+
 .growth-info-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -152,20 +168,71 @@
 
 .growth-info-box {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
+  align-items: stretch;
+  gap: 16px;
 
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 16px;
+  border-radius: 10px;
 
-  padding: 20px;
+  padding: 10px;
   box-sizing: border-box;
 }
 
+/* "Did you know?" note: logo sits in normal flow (no transforms), so the
+   text can never overflow the box on desktop or mobile. */
+.growth-info-box:nth-child(4) {
+  grid-column: 1 / -1;
+  width: 100%;
+  position: relative;
+  overflow: visible;
+  align-items: center;
+  gap: 18px;
+  margin-top: 14px;
+  padding: 14px 24px 14px 16px;
+  background: #f7f6f0;
+}
+
+.growth-info-box:nth-child(4) .growth-info-icon {
+  width: 150px;
+  height: auto;
+  min-height: 0;
+  margin: -20px 0 -20px -6px;
+}
+
+.growth-info-box:nth-child(4) .growth-info-text {
+  flex: 1;
+}
+
+.growth-info-box:nth-child(4) .growth-info-text h3 {
+  font-size: 20px !important;
+}
+
+@media (max-width: 480px) {
+  .growth-info-box:nth-child(4) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 40px;
+    padding: 0 16px 16px;
+  }
+
+  .growth-info-box:nth-child(4) .growth-info-icon {
+    width: 120px;
+    margin: -36px 0 0 0;
+  }
+}
+
+.growth-info-box:first-child .growth-info-icon {
+  width: 75px;
+  height: 75px;
+  margin-top: -2px;
+}
+
 .growth-info-icon {
-  width: 42px;
-  height: 42px;
+  width: 60px;
+  height: 50px;
+  min-height: 60px;
   object-fit: contain;
   flex-shrink: 0;
 }
@@ -174,9 +241,15 @@
   min-width: 0;
 }
 
+
+.growth-info-text p {
+  margin: 0;
+}
+
 .growth-info-box h3 {
-  margin: 0 0 7px;
-  font-size: 17px;
+  flex:1;
+  margin: 0 0 4px 0;
+  font-size: px;
   font-weight: 700;
   color: #111827;
 }
@@ -188,6 +261,13 @@
   color: #64748b;
 }
 
+.growth-info-text .article-bullet-list {
+  margin-top: 2px;
+}
+
+.growth-info-box:nth-child(2) .growth-info-text h3 {
+  margin-left: 8px;
+}
 
 /* Mobile */
 @media (max-width: 768px) {
@@ -228,14 +308,20 @@
   }
 }
 
+
 .article-bullet-list {
-  list-style-type: disc !important;
-  padding-left: 24px;
-  margin: 8px 0 16px;
+  margin: 0;
+  padding-left: 18px;
+  color: #666;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  list-style-type: disc;
 }
 
 .article-bullet-list li {
   display: list-item !important;
+  list-style-type: disc !important;
   margin-bottom: 6px;
 }
 
@@ -296,4 +382,598 @@
 
 [data-theme="dark"] .article-bullet-list li::marker {
   color:  #94a3b8;
+}
+
+/* =========================================================
+   NUTRITION PAGE
+   ========================================================= */
+
+/* Wide rounded hero illustration */
+.article-main-image--hero {
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  object-fit: cover;
+  margin: 8px auto 12px;
+}
+
+/* ---------- The 4 key nutrients (2 x 2) ---------- */
+.nutri-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.nutri-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 10px;
+}
+
+.nutri-blue  { background: #eef2fb; }
+.nutri-amber { background: #fdf5e8; }
+.nutri-green { background: #eef7ef; }
+.nutri-peach { background: #fdf3e2; }
+
+.nutri-card-icon {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.nutri-card-text {
+  min-width: 0;
+}
+
+.nutri-card-text h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #111827;
+}
+
+.nutri-card-text p {
+  margin: 0;
+}
+
+.nutri-card-text .nutri-card-amount {
+  margin-bottom: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.nutri-card-text .nutri-card-note {
+  font-size: 14px;
+  line-height: 1.45;
+  color: #374151;
+}
+
+/* ---------- Food sources (4 across) ---------- */
+.food-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.food-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 16px 12px 18px;
+  background: #f6f6f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.food-card-icon {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.food-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.food-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #374151;
+}
+
+/* ---------- Nutrition responsive ---------- */
+@media (max-width: 900px) {
+  .food-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .nutri-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Nutrition dark mode ---------- */
+[data-theme="dark"] .nutri-card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .nutri-blue  { background: #1e2a44; }
+[data-theme="dark"] .nutri-amber { background: #3a2f1a; }
+[data-theme="dark"] .nutri-green { background: #1c3324; }
+[data-theme="dark"] .nutri-peach { background: #3b2a1c; }
+
+[data-theme="dark"] .nutri-card-text h3,
+[data-theme="dark"] .nutri-card-text .nutri-card-amount,
+[data-theme="dark"] .food-card h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .nutri-card-text .nutri-card-note,
+[data-theme="dark"] .food-card p {
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .food-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+
+/* =========================================================
+   UNDERSTANDING BONE AGE PAGE
+   ========================================================= */
+
+/* ---------- What is bone age: two small cards ---------- */
+.bone-age-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.bone-age-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 230px;
+  padding: 14px 18px;
+  background: #eef8f4;
+  border-radius: 8px;
+}
+
+.bone-age-icon {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.bone-age-card h3 {
+  margin: 0 0 2px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.bone-age-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #4b5563;
+}
+
+/* ---------- How is it measured: 3 steps with arrows ---------- */
+.bone-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.bone-step {
+  position: relative;
+  flex: 1 1 0;
+  max-width: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 26px 12px 18px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.bone-step-num {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d5ebe2;
+  color: #0f3d33;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.bone-step-icon {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.bone-step h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.bone-step p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.4;
+  color: #374151;
+}
+
+.bone-step-arrow {
+  flex: 0 0 48px;
+  width: 48px;
+  height: 14px;
+  color: #6b7280;
+}
+
+/* ---------- Two common methods ---------- */
+.bone-method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.bone-method-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: #f9f5e6;
+  border-radius: 8px;
+}
+
+.bone-method-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.bone-method-card h3 {
+  margin: 0 0 2px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.bone-method-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #374151;
+}
+
+/* ---------- Bone age responsive ---------- */
+@media (max-width: 700px) {
+  .bone-steps {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .bone-step {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .bone-step-arrow {
+    transform: rotate(90deg);
+    margin: 10px 0;
+  }
+
+  .bone-method-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Bone age dark mode ---------- */
+[data-theme="dark"] .bone-age-card {
+  background: #12332e;
+}
+
+[data-theme="dark"] .bone-method-card {
+  background: #3a3520;
+}
+
+[data-theme="dark"] .bone-step {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .bone-step-num {
+  background: #1f4a44;
+  color: #a7f3e6;
+}
+
+[data-theme="dark"] .bone-step-arrow {
+  color: #94a3b8;
+}
+
+[data-theme="dark"] .bone-age-card h3,
+[data-theme="dark"] .bone-step h3,
+[data-theme="dark"] .bone-method-card h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .bone-age-card p,
+[data-theme="dark"] .bone-step p,
+[data-theme="dark"] .bone-method-card p {
+  color: #cbd5e1;
+}
+
+
+/* =========================================================
+   UNDERSTANDING PUBERTY PAGE
+   ========================================================= */
+
+/* ---------- Changes you may notice (2 x 2) ---------- */
+.pub-change-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pub-change-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #eef8f5;
+  border-radius: 8px;
+}
+
+.pub-change-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pub-change-card h3,
+.pub-support-card h3 {
+  margin: 0 0 3px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pub-change-card p,
+.pub-support-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #374151;
+}
+
+/* ---------- Support through the changes (3 across) ---------- */
+.pub-support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.pub-support-card {
+  padding: 16px 16px 18px;
+  background: #eef8f5;
+  border-radius: 8px;
+}
+
+.pub-support-art {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 96px;
+  margin-bottom: 12px;
+}
+
+.pub-support-icon {
+  max-width: 100%;
+  max-height: 96px;
+  object-fit: contain;
+}
+
+/* ---------- Note box with logo (Puberty + Support Healthy Growth) ----------
+   Same look as the "Did you know?" box on the Growth Spurts page.
+   The logo is in normal flow (no transforms), so text never overflows. */
+.info-note {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  position: relative;
+  overflow: visible;
+  max-width: 600px;
+  margin: 40px auto 0;
+  padding: 14px 24px 14px 16px;
+  box-sizing: border-box;
+  background: #f7f6f0;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.info-note-logo {
+  width: 150px;
+  height: auto;
+  margin: -20px 0 -20px -6px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.info-note-text {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .info-note {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 44px;
+    padding: 0 16px 16px;
+  }
+
+  .info-note-logo {
+    width: 120px;
+    margin: -36px 0 0 0;
+  }
+}
+
+.info-note-text h3 {
+  margin: 0 0 4px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.info-note-text p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+/* ---------- Puberty responsive ---------- */
+@media (max-width: 700px) {
+  .pub-support-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .pub-change-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Puberty dark mode ---------- */
+[data-theme="dark"] .pub-change-card,
+[data-theme="dark"] .pub-support-card {
+  background: #12332e;
+}
+
+[data-theme="dark"] .info-note {
+  background: #3a3520;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .pub-change-card h3,
+[data-theme="dark"] .pub-support-card h3,
+[data-theme="dark"] .info-note-text h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .pub-change-card p,
+[data-theme="dark"] .pub-support-card p,
+[data-theme="dark"] .info-note-text p {
+  color: #cbd5e1;
+}
+
+
+/* =========================================================
+   SUPPORT HEALTHY GROWTH PAGE
+   (uses the shared .info-note box defined in the Puberty section)
+   ========================================================= */
+
+.hg-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.hg-card {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.hg-card-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 938 / 410;
+  object-fit: cover;
+}
+
+.hg-card-body {
+  padding: 12px 14px 18px;
+}
+
+.hg-card-body h3 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #0f172a;
+}
+
+.hg-card-body p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+@media (max-width: 600px) {
+  .hg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+[data-theme="dark"] .hg-card {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .hg-card-body h3 {
+  color: #f1f5f9;
+}
+
+[data-theme="dark"] .hg-card-body p {
+  color: #cbd5e1;
 }

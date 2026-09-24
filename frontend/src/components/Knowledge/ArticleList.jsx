@@ -11,6 +11,8 @@ import boneAgeImg from "../../assets/knowledgeImg/ba1.png";
 import nutritionExploreImg from "../../assets/knowledgeImg/nutritionExplore.png";
 import growthExploreImg from "../../assets/knowledgeImg/growthExplore.png";
 import pubertyExploreImg from "../../assets/knowledgeImg/pubertyExplore.png";
+import boneAgeExploreImg from "../../assets/knowledgeImg/boneAgeExplore.png";
+import supportHealthExploreImg from "../../assets/knowledgeImg/supportHealthExplore.png";
 import quickFactsImg from "../../assets/knowledgeImg/quickFacts.png";
 import "./Knowledge.css";
 
@@ -144,6 +146,8 @@ const exploreImages = {
   growth: growthExploreImg,
   nutrition: nutritionExploreImg,
   puberty: pubertyExploreImg,
+  "bone age": boneAgeExploreImg,
+  "healthy habits": supportHealthExploreImg,
 };
 
 
@@ -196,8 +200,10 @@ function ArticleList() {
 
         <div className="kn-hero-text">
 
-          <h1>
-            Knowledge &amp; Resources
+          <h1 className="kn-hero-title">
+            <Spark className="kn-spark kn-spark-left" />
+            <span>Knowledge &amp; Resources</span>
+            <Spark className="kn-spark kn-spark-right" />
           </h1>
 
           <p>
@@ -252,6 +258,9 @@ function ArticleList() {
 
       </div>
 
+
+      {/* Everything below the hero: full width */}
+      <div className="kn-content">
 
       {/* =====================================================
          MAIN HEADING
@@ -551,7 +560,28 @@ function ArticleList() {
 
       </div>
 
+      </div>
+
     </div>
+  );
+}
+
+
+/* =========================================================
+   SPARKLE MARK (yellow dashes beside the hero title)
+   ========================================================= */
+
+function Spark({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 26 24" aria-hidden="true">
+      <path
+        d="M3 4L22 10M3 20L22 14"
+        fill="none"
+        stroke="#ffc83d"
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
@@ -562,29 +592,7 @@ function ArticleList() {
 
 function ExploreImage({ tag }) {
 
-  let image;
-
-
-  switch (tag) {
-
-    case "growth":
-      image = growthExploreImg;
-      break;
-
-    case "nutrition":
-      image = nutritionExploreImg;
-      break;
-
-    case "puberty":
-      image = pubertyExploreImg;
-      break;
-
-    default:
-      image = growthExploreImg;
-      break;
-
-  }
-
+  const image = exploreImages[tag] || growthExploreImg;
 
   return (
     <img
