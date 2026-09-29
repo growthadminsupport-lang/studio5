@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationsProvider } from "./context/NotificationsContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import { ChildrenProvider } from "./context/ChildrenContext";
 import "./index.css";
 import App from "./App.jsx";
 
@@ -13,7 +14,9 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <NotificationsProvider>
           <ThemeProvider>
-            <App />
+            <ChildrenProvider>
+              <App />
+            </ChildrenProvider>
           </ThemeProvider>
         </NotificationsProvider>
       </AuthProvider>

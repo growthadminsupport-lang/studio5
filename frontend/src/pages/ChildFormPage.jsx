@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { User } from 'lucide-react';
+import { useChildren } from '../context/ChildrenContext';
 
 // Placeholder avatar choices — swap `bg` for real illustrated presets
 // once art is ready (mirrors CHILD_AVATAR_PRESETS in the reference).
+// Not saved yet: the API's Child has no avatar field (docs/api.md).
 const AVATAR_PRESETS = [
   { id: 'a1', bg: '#f7d9c4' },
   { id: 'a2', bg: '#dcefe9' },
@@ -12,10 +14,12 @@ const AVATAR_PRESETS = [
   { id: 'a5', bg: '#d7e8fc' },
 ];
 
-// No ChildContext or API in this repo yet — this form is self-contained
-// and just navigates to /dashboard on submit. Wire it up to real child
-// state (or an API call) once that exists; until then nothing is
-// actually persisted.
+function todayIso() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
 function FloatingLabelField({ label, required, children }) {
   return (
     <div className="relative">
@@ -34,57 +38,98 @@ const fieldClasses =
 function ChildFormPage() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
+  const { getChild, addChild, updateChild } = useChildren();
   const isEdit = Boolean(id);
 
-  // DashboardPage's edit-pencil link passes the child via router state
-  // (state={{ child }}) since there's no shared ChildContext yet.
-  // Landing here directly (refresh, bookmark) has nothing to prefill from.
-  const existingChild = location.state?.child ?? null;
+  // Looked up by the id in the URL, so refreshing /children/:id/edit
+  // still prefills the form.
+  const existingChild = isEdit ? getChild(id) : null;
 
   const [avatarId, setAvatarId] = useState(AVATAR_PRESETS[0].id);
-  const [fullName, setFullName] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [sex, setSex] = useState('FEMALE'); // 'FEMALE' | 'MALE'
-  const [relation, setRelation] = useState('PARENT');
+  const [fullName, setFullName] = useState(existingChild?.fullName ?? '');
+  const [nickname, setNickname] = useState(existingChild?.nickname ?? '');
+  const [dateOfBirth, setDateOfBirth] = useState(existingChild?.dateOfBirth ?? '');
+  const [sex, setSex] = useState(existingChild?.sex ?? 'FEMALE'); // 'FEMALE' | 'MALE'
+  const [relation, setRelation] = useState(existingChild?.relation ?? 'PARENT');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (!isEdit || !existingChild) return;
-    setFullName(existingChild.name ?? '');
-    setNickname(existingChild.nickname ?? '');
-    setDateOfBirth(existingChild.dateOfBirth ?? '');
-    setSex(existingChild.sex ?? 'FEMALE');
-    setRelation(existingChild.relation ?? 'PARENT');
-  }, [isEdit, existingChild]);
+  // Back to the page the form was opened from (Growth, Puberty, …);
+  // falls back to the dashboard when the form was opened directly.
+  function goBack() {
+    if (window.history.state?.idx > 0) navigate(-1);
+    else navigate('/dashboard', { replace: true });
+  }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSaving(true);
+    setError(null);
 
-    // TODO: persist via ChildContext (or an API call) once one exists.
-    // Right now this only returns to the dashboard — edits here don't
-    // yet flow back into DashboardPage's own child list.
-    navigate('/dashboard');
+    const name = fullName.trim();
+    if (!name) {
+      setError('Please enter your child’s full name.');
+      return;
+    }
+    if (!dateOfBirth || dateOfBirth > todayIso()) {
+      setError('Please enter a date of birth that isn’t in the future.');
+      return;
+    }
+
+    // Same body as POST /children and PATCH /children/:id in docs/api.md
+    const body = {
+      fullName: name,
+      nickname: nickname.trim() || null,
+      sex,
+      dateOfBirth,
+      relation,
+    };
+
+    setSaving(true);
+    try {
+      if (isEdit) await updateChild(id, body);
+      else await addChild(body);
+      goBack();
+    } catch (err) {
+      setError(err?.response?.data?.message ?? 'Couldn’t save. Please try again.');
+      setSaving(false);
+    }
+  }
+
+  if (isEdit && !existingChild) {
+    return (
+      <div className="min-h-screen px-4 pb-16 pt-10 dark:bg-slate-900">
+        <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-8 text-center shadow-2xs border border-slate-200 dark:border-slate-700">
+          <h1 className="text-lg font-bold text-slate-900 dark:text-slate-100">Child not found</h1>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            This profile doesn&apos;t exist or was removed.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/dashboard', { replace: true })}
+            className="mt-5 rounded-full bg-[#056559] dark:bg-teal-400 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-950 transition hover:bg-[#03443c] dark:hover:bg-teal-300"
+          >
+            Back to dashboard
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen px-4 pb-16 pt-10 dark:bg-slate-900">
-    <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-8 shadow-2xs border border-slate-200 dark:border-slate-700">
+    <div className="mx-auto w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-2xs border border-slate-200 dark:border-slate-700 sm:p-8">
       <h1 className="text-xl font-bold text-[#056559] dark:text-teal-300">{isEdit ? 'Edit child' : 'Add your child'}</h1>
       <p className="mt-1 mb-6 text-sm text-slate-500 dark:text-slate-400">
         We&apos;ll use this to personalize growth tracking and charts.
       </p>
 
-      {isEdit && !existingChild && (
-        <p className="mb-6 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
-          Opened this page directly, so the form starts blank — go back and use the edit button on the
-          child&apos;s profile card instead to load their current details.
+      {error && (
+        <p role="alert" className="mb-5 rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-300">
+          {error}
         </p>
       )}
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
         <div>
           <p className="mb-1 text-sm font-medium text-slate-900 dark:text-slate-100">Choose an avatar</p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
@@ -136,6 +181,7 @@ function ChildFormPage() {
           <input
             type="date"
             required
+            max={todayIso()}
             value={dateOfBirth}
             onChange={(e) => setDateOfBirth(e.target.value)}
             className={fieldClasses}

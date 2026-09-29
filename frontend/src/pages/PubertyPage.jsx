@@ -1,18 +1,9 @@
 import { useState } from 'react';
-import { ArrowLeftRight, Pencil, Baby, Brain } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Brain } from 'lucide-react';
+import { useChildren } from '../context/ChildrenContext';
+import ChildProfileCard, { NoChildState } from '../components/ChildProfile/ChildProfileCard';
 
-// No ChildContext or API in this repo yet — same mock child shape used
-// across the other pages.
-const child = {
-  id: 'c1',
-  name: 'growth',
-  gender: 'Girl', // drives which physical-development question shows
-  ageLabel: '18 Years, 4 Months',
-  bornLabel: 'Born May 5, 2008',
-};
 
-const isFemale = child.gender === 'Girl';
 
 // ============================================================
 // Sign question — yes / no / not sure, with an optional age field
@@ -71,6 +62,8 @@ function SignQuestion({ label, description, value, onChange, ageValue, onAgeChan
 // ============================================================
 
 function PubertyPage() {
+  const { activeChild: child } = useChildren();
+  const isFemale = child?.sex === 'FEMALE';
   const [formOpen, setFormOpen] = useState(false);
   const [answers, setAnswers] = useState({});
   const [notes, setNotes] = useState('');
@@ -91,6 +84,8 @@ function PubertyPage() {
 
   const hasHistory = submissions.length > 0;
 
+  if (!child) return <NoChildState />;
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">
@@ -99,45 +94,7 @@ function PubertyPage() {
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
-          <Link
-            to="/dashboard"
-            aria-label="Switch child"
-            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559] dark:hover:text-teal-300"
-          >
-            <ArrowLeftRight size={20} />
-          </Link>
-
-          <Link
-            to={`/children/${child.id}/edit`}
-            state={{ child }}
-            aria-label="Edit child profile"
-            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950 shadow-sm transition hover:bg-[#03443c] dark:hover:bg-teal-300"
-          >
-            <Pencil size={13} />
-          </Link>
-
-          <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#a7ebd9] dark:bg-teal-500/50">
-              <Baby size={34} strokeWidth={1.5} className="text-[#056559] dark:text-teal-300" />
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{child.name}</h2>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.gender}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.ageLabel}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.bornLabel}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ChildProfileCard />
 
         {/* ====================================================
             Intro
@@ -164,14 +121,14 @@ function PubertyPage() {
 
             <p className="text-sm text-slate-600 dark:text-slate-400">
               A few questions about the physical changes that mark the start of puberty, checked against the
-              age ranges doctors use for {child.name}. Two minutes.
+              age ranges doctors use for {child.fullName}. Two minutes.
             </p>
 
             <ul className="flex flex-col gap-2 text-sm text-slate-600 dark:text-slate-400">
               <li className="flex gap-2">
                 <span className="text-[#056559] dark:text-teal-300">•</span>
                 <span>
-                  <span className="font-medium text-slate-900 dark:text-slate-100">You never need to examine {child.name}.</span>{' '}
+                  <span className="font-medium text-slate-900 dark:text-slate-100">You never need to examine {child.fullName}.</span>{' '}
                   Answer from what you have happened to notice. Most of it is everyday stuff — shoe sizes,
                   body odour, growing out of a uniform.
                 </span>
@@ -190,7 +147,7 @@ function PubertyPage() {
               <li className="flex gap-2">
                 <span className="text-[#056559] dark:text-teal-300">•</span>
                 <span>
-                  Answers are stored against {child.name}&apos;s profile and visible only to their guardians.
+                  Answers are stored against {child.fullName}&apos;s profile and visible only to their guardians.
                 </span>
               </li>
             </ul>

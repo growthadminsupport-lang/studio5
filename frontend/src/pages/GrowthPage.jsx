@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useChartTheme } from '../utils/chartTheme';
-import { Link } from 'react-router-dom';
-import { ArrowLeftRight, Pencil, Baby, Trash2, Check, X } from 'lucide-react';
+import { useChildren } from '../context/ChildrenContext';
+import ChildProfileCard, { NoChildState } from '../components/ChildProfile/ChildProfileCard';
+import { Pencil, Trash2, Check, X } from 'lucide-react';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -13,15 +14,6 @@ import {
   Tooltip,
 } from 'recharts';
 
-// No ChildContext or API in this repo yet — same mock child shape used
-// across the other pages.
-const child = {
-  id: 'c1',
-  name: 'growth',
-  gender: 'Girl',
-  ageLabel: '18 Years, 4 Months',
-  bornLabel: 'Born May 5, 2008',
-};
 
 // ============================================================
 // Reference curves — same placeholder milestone approach as
@@ -195,7 +187,7 @@ function HeightWeightChart({ title, unit, curve }) {
               tick={{ fill: chart.tick, fontSize: 11 }}
               axisLine={{ stroke: chart.axis }}
               tickLine={false}
-              width={40}
+              width={48}
               tickFormatter={(v) => `${Math.round(v)}${unit}`}
             />
             <Tooltip
@@ -204,13 +196,13 @@ function HeightWeightChart({ title, unit, curve }) {
               contentStyle={chart.tooltipStyle}
             />
 
-            <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} />
-            <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} />
-            <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.6)} />
+            <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.6)} tooltipType="none" activeDot={false} />
 
-            <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3" />
+            <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3 (low)" />
             <Line type="monotone" dataKey="p50" stroke={chart.median} strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
-            <Line type="monotone" dataKey="p97" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P97" />
+            <Line type="monotone" dataKey="p97" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P97 (high)" />
 
             {/* The child's own measurements — empty until logged. */}
             <Line type="monotone" dataKey="value" data={[]} stroke={chart.own} strokeWidth={2.5} dot={{ r: 4, fill: chart.own }} name={title} />
@@ -218,13 +210,13 @@ function HeightWeightChart({ title, unit, curve }) {
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559] dark:bg-teal-400" />{title}</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3 (low)</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f] dark:border-teal-300" />P50 (median)</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P97</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P97 (high)</span>
       </div>
-      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5] dark:bg-blue-500/50" />Below P3</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc] dark:bg-emerald-500/50" />Typical range</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8] dark:bg-orange-500/50" />Above P97</span>
@@ -267,37 +259,37 @@ function BmiChart({ curve }) {
               contentStyle={chart.tooltipStyle}
             />
 
-            <Area type="monotone" dataKey="underweight" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} />
-            <Area type="monotone" dataKey="healthy" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} />
-            <Area type="monotone" dataKey="overweight" stackId="bands" stroke="none" fill={chart.band("#fbeec2")} fillOpacity={chart.opacity(0.7)} />
-            <Area type="monotone" dataKey="obesity" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.7)} />
-            <Area type="monotone" dataKey="severeBand" stackId="bands" stroke="none" fill={chart.band("#f9d3d3")} fillOpacity={chart.opacity(0.6)} />
+            <Area type="monotone" dataKey="underweight" stackId="bands" stroke="none" fill={chart.band("#dbe4f5")} fillOpacity={chart.opacity(0.7)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="healthy" stackId="bands" stroke="none" fill={chart.band("#c8f0dc")} fillOpacity={chart.opacity(0.6)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="overweight" stackId="bands" stroke="none" fill={chart.band("#fbeec2")} fillOpacity={chart.opacity(0.7)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="obesity" stackId="bands" stroke="none" fill={chart.band("#fde2c8")} fillOpacity={chart.opacity(0.7)} tooltipType="none" activeDot={false} />
+            <Area type="monotone" dataKey="severeBand" stackId="bands" stroke="none" fill={chart.band("#f9d3d3")} fillOpacity={chart.opacity(0.6)} tooltipType="none" activeDot={false} />
 
-            <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3" />
+            <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3 (underweight)" />
             <Line type="monotone" dataKey="p50" stroke={chart.median} strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
             <Line type="monotone" dataKey="p95" stroke="#c2760c" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P95 (obesity)" />
-            <Line type="monotone" dataKey="severe" stroke="#dc2626" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="120% of P95 (severe)" />
+            <Line type="monotone" dataKey="severe" stroke="#dc2626" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="120% of P95 (severe obesity)" />
 
             <Line type="monotone" dataKey="value" data={[]} stroke={chart.own} strokeWidth={2.5} dot={{ r: 4, fill: chart.own }} name="BMI-for-age" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+      <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded bg-[#056559] dark:bg-teal-400" />BMI-for-age</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />P3 (underweight)</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f] dark:border-teal-300" />P50 (median)</span>
         <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-[#c2760c] dark:border-amber-500" />P95 (obesity)</span>
-        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-red-500" />120% of P95 (severe)</span>
+        <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 rounded border-t border-dashed border-red-500" />120% of P95 (severe obesity)</span>
       </div>
-      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+      <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#dbe4f5] dark:bg-blue-500/50" />Underweight</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#c8f0dc] dark:bg-emerald-500/50" />Healthy weight</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fbeec2] dark:bg-yellow-500/50" />Overweight</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#fde2c8] dark:bg-orange-500/50" />Obesity</span>
         <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#f9d3d3] dark:bg-red-500/50" />Severe obesity</span>
       </div>
-      <p className="mt-2 text-xs text-slate-400">
+      <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
         BMI-for-age applies from 2 years. Below that, weight-for-length is the measure clinicians use.
       </p>
     </div>
@@ -309,6 +301,7 @@ function BmiChart({ curve }) {
 // ============================================================
 
 function GrowthPage() {
+  const { activeChild: child } = useChildren();
   const [heightCm, setHeightCm] = useState('');
   const [weightKg, setWeightKg] = useState('');
   const [measuredAt, setMeasuredAt] = useState(() => new Date().toISOString().slice(0, 10));
@@ -364,6 +357,8 @@ function GrowthPage() {
     return new Date(iso).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
   }
 
+  if (!child) return <NoChildState />;
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -372,45 +367,7 @@ function GrowthPage() {
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
-          <Link
-            to="/dashboard"
-            aria-label="Switch child"
-            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559] dark:hover:text-teal-300"
-          >
-            <ArrowLeftRight size={20} />
-          </Link>
-
-          <Link
-            to={`/children/${child.id}/edit`}
-            state={{ child }}
-            aria-label="Edit child profile"
-            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950 shadow-sm transition hover:bg-[#03443c] dark:hover:bg-teal-300"
-          >
-            <Pencil size={13} />
-          </Link>
-
-          <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#a7ebd9] dark:bg-teal-500/50">
-              <Baby size={34} strokeWidth={1.5} className="text-[#056559] dark:text-teal-300" />
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{child.name}</h2>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.gender}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.ageLabel}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.bornLabel}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ChildProfileCard />
 
         <h1 className="mb-6 text-xl font-bold text-[#056559] dark:text-teal-300">Growth Tracking</h1>
 

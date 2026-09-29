@@ -1,21 +1,18 @@
 import { useState } from 'react';
 import { useChartTheme } from '../utils/chartTheme';
 import { Link } from 'react-router-dom';
+import { useChildren } from '../context/ChildrenContext';
+import ChildProfileCard, { NoChildState } from '../components/ChildProfile/ChildProfileCard';
 import {
-  ArrowLeftRight,
   Ruler,
   Weight,
   Accessibility,
   Sparkles,
-  Baby,
   Plus,
-  Pencil,
   Utensils,
   Bandage,
   Heart,
   Salad,
-  X,
-  Check,
   AlertTriangle,
 } from 'lucide-react';
 
@@ -38,38 +35,18 @@ import {
 // ============================================================
 
 const MEASURES = {
-  height: { label: 'Height', unit: 'cm', icon: Ruler, chartTitle: 'Height-for-age vs. Reference', percentileKey: 'heightPercentile' },
-  weight: { label: 'Weight', unit: 'kg', icon: Weight, chartTitle: 'Weight-for-age vs. Reference', percentileKey: 'weightPercentile' },
-  bmi: { label: 'BMI', unit: '', icon: Accessibility, chartTitle: 'BMI-for-age vs. Reference', percentileKey: 'bmiPercentile' },
+  height: { label: 'Height', unit: 'cm', icon: Ruler, valueKey: 'heightCm', chartTitle: 'Height-for-age vs. Reference', percentileKey: 'heightPercentile' },
+  weight: { label: 'Weight', unit: 'kg', icon: Weight, valueKey: 'weightKg', chartTitle: 'Weight-for-age vs. Reference', percentileKey: 'weightPercentile' },
+  bmi: { label: 'BMI', unit: '', icon: Accessibility, valueKey: 'bmi', chartTitle: 'BMI-for-age vs. Reference', percentileKey: 'bmiPercentile' },
 };
 
 // ============================================================
 // Mock Data
 // ============================================================
 
-// One child, no measurement logged yet — tiles show "—" and percentile
-// fields stay null until the child has a growth entry, same as a
-// freshly created profile. Swap this for real API data once it exists.
-const INITIAL_CHILDREN = [
-  {
-    id: 'c1',
-    name: 'growth',
-    nickname: '',
-    dateOfBirth: '2008-05-05', // raw ISO date — source of truth for the edit form
-    sex: 'FEMALE', // 'FEMALE' | 'MALE'
-    relation: 'PARENT',
-    gender: 'Girl',
-    ageLabel: '18 Years, 4 Months',
-    ageShort: '18 years old',
-    bornLabel: 'Born May 5, 2008',
-    height: null,
-    weight: null,
-    bmi: null,
-    heightPercentile: null,
-    weightPercentile: null,
-    bmiPercentile: null,
-  },
-];
+// The child's most recent GrowthRecord (docs/api.md) — the latest entry
+// from GET /growth?childId=. null until one is logged, so the tiles show "—".
+const latestRecord = null;
 
 // Drives the "Worth a look" banner. null until growth stats flag
 // something — comes from the backend's guidance calculation later.
@@ -211,227 +188,6 @@ function describeStatus(percentile) {
 }
 
 // ============================================================
-// Modal shell — shared overlay + card used by both child modals
-// ============================================================
-
-function ModalShell({ title, onClose, children, footer }) {
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
-      onClick={onClose}
-    >
-      <div
-        className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{title}</h2>
-          <button
-            type="button"
-            aria-label="Close"
-            onClick={onClose}
-            className="text-slate-400 transition hover:text-slate-600 dark:hover:text-slate-300"
-          >
-            <X size={20} />
-          </button>
-        </div>
-
-        {children}
-
-        {footer && <div className="mt-5 flex items-center justify-between">{footer}</div>}
-      </div>
-    </div>
-  );
-}
-
-function ChildAvatar({ size = 56, iconSize = 28 }) {
-  return (
-    <div
-      className="flex shrink-0 items-center justify-center rounded-full bg-[#a7ebd9] dark:bg-teal-500/50"
-      style={{ width: size, height: size }}
-    >
-      <Baby size={iconSize} strokeWidth={1.5} className="text-[#056559] dark:text-teal-300" />
-    </div>
-  );
-}
-
-// ============================================================
-// Switch Child modal
-// ============================================================
-
-function SwitchChildModal({ children: kids, activeChildId, onSelect, onClose, onManage }) {
-  return (
-    <ModalShell
-      title="Switch child"
-      onClose={onClose}
-      footer={
-        <button
-          type="button"
-          onClick={onManage}
-          className="text-sm font-semibold text-[#056559] dark:text-teal-300 hover:underline"
-        >
-          Manage
-        </button>
-      }
-    >
-      <div className="grid grid-cols-2 gap-3">
-        {kids.map((kid) => {
-          const active = kid.id === activeChildId;
-          return (
-            <button
-              key={kid.id}
-              type="button"
-              onClick={() => {
-                onSelect(kid.id);
-                onClose();
-              }}
-              className={`relative flex flex-col items-center gap-2 rounded-xl border-2 p-4 text-center transition ${
-                active
-                  ? 'border-[#056559] dark:border-teal-400 bg-[#eaf6f3] dark:bg-teal-500/10'
-                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300'
-              }`}
-            >
-              {active && (
-                <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950">
-                  <Check size={12} strokeWidth={3} />
-                </span>
-              )}
-              <ChildAvatar />
-              <div>
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{kid.name}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">{kid.ageShort}</p>
-              </div>
-            </button>
-          );
-        })}
-
-        <Link
-          to="/children/new"
-          className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#bcece0] dark:border-teal-500/30 p-4 text-center text-[#056559] dark:text-teal-300 transition hover:bg-[#f2fbf9] dark:hover:bg-teal-500/10"
-        >
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#eaf6f3] dark:bg-teal-500/10">
-            <Plus size={22} />
-          </span>
-          <p className="text-sm font-semibold">Add child</p>
-        </Link>
-      </div>
-    </ModalShell>
-  );
-}
-
-// ============================================================
-// Manage children (remove) modal
-// ============================================================
-
-// A second, smaller confirm dialog stacked on top of ManageChildrenModal —
-// the X starts the removal, this is the actual point of no return.
-function ConfirmRemoveDialog({ child, onCancel, onConfirm }) {
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/40 p-4"
-      onClick={onCancel}
-    >
-      <div
-        className="w-full max-w-sm rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-3 flex items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-red-50 dark:bg-red-500/10">
-            <AlertTriangle size={18} className="text-red-600 dark:text-red-400" />
-          </span>
-          <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Remove child?</h3>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              This permanently deletes their growth, screening, and bone age history.
-            </p>
-          </div>
-        </div>
-
-        <p className="mb-5 text-sm text-slate-700 dark:text-slate-300">
-          Remove {child.name}? This can&apos;t be undone.
-        </p>
-
-        <div className="flex justify-end gap-2">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-full border border-slate-200 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 transition hover:bg-slate-50 dark:hover:bg-slate-800"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600"
-          >
-            Remove
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ManageChildrenModal({ children: kids, onClose, onRemove }) {
-  const [pendingRemoveId, setPendingRemoveId] = useState(null);
-  const pendingChild = kids.find((k) => k.id === pendingRemoveId) ?? null;
-
-  return (
-    <ModalShell
-      title="Remove a child"
-      onClose={onClose}
-      footer={
-        <button
-          type="button"
-          onClick={onClose}
-          className="ml-auto text-sm font-semibold text-[#056559] dark:text-teal-300 hover:underline"
-        >
-          Done
-        </button>
-      }
-    >
-      <div className="grid grid-cols-2 gap-3">
-        {kids.length === 0 && (
-          <p className="col-span-2 text-sm text-slate-500 dark:text-slate-400">No children on this account yet.</p>
-        )}
-
-        {kids.map((kid) => (
-          <div
-            key={kid.id}
-            className="relative flex flex-col items-center gap-2 rounded-xl border-2 border-[#056559] dark:border-teal-400 bg-[#eaf6f3] dark:bg-teal-500/10 p-4 text-center"
-          >
-            <button
-              type="button"
-              aria-label={`Remove ${kid.name}`}
-              onClick={() => setPendingRemoveId(kid.id)}
-              className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition hover:bg-red-600"
-            >
-              <X size={13} strokeWidth={2.5} />
-            </button>
-            <ChildAvatar />
-            <div>
-              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{kid.name}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{kid.ageShort}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {pendingChild && (
-        <ConfirmRemoveDialog
-          child={pendingChild}
-          onCancel={() => setPendingRemoveId(null)}
-          onConfirm={() => {
-            onRemove(pendingChild.id);
-            setPendingRemoveId(null);
-          }}
-        />
-      )}
-    </ModalShell>
-  );
-}
-
-// ============================================================
 // What to do next
 // ============================================================
 
@@ -479,87 +235,23 @@ function NextSteps({ items }) {
 function DashboardPage() {
   const chart = useChartTheme();
   const [selectedMeasure, setSelectedMeasure] = useState('height');
-  const [children, setChildren] = useState(INITIAL_CHILDREN);
-  const [activeChildId, setActiveChildId] = useState(INITIAL_CHILDREN[0]?.id ?? null);
-  const [modal, setModal] = useState(null); // null | 'switch' | 'manage'
-
-  const child = children.find((c) => c.id === activeChildId) ?? null;
+  const { activeChild: child } = useChildren();
   const currentMeasure = MEASURES[selectedMeasure];
   const curve = REFERENCE_CURVES[selectedMeasure];
 
-  function handleRemoveChild(id) {
-    setChildren((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      if (activeChildId === id) {
-        setActiveChildId(next[0]?.id ?? null);
-      }
-      return next;
-    });
-  }
-
   // No child on the account yet — nothing else on the dashboard makes
   // sense without one, so this replaces the whole page body.
-  if (!child) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-50/50 dark:bg-slate-900 px-4 py-16 text-center">
-        <p className="text-sm text-slate-500 dark:text-slate-400">Add a child to start tracking growth.</p>
-        <Link
-          to="/children/new"
-          className="inline-flex items-center gap-1 rounded-full bg-[#056559] dark:bg-teal-400 px-5 py-2.5 text-sm font-semibold text-white dark:text-slate-950 transition hover:bg-[#03443c] dark:hover:bg-teal-300"
-        >
-          <Plus size={16} />
-          Add child
-        </Link>
-      </div>
-    );
-  }
+  if (!child) return <NoChildState />;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-5 sm:py-8">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 
         {/* ====================================================
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
-          <button
-            type="button"
-            aria-label="Switch child"
-            onClick={() => setModal('switch')}
-            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559] dark:hover:text-teal-300"
-          >
-            <ArrowLeftRight size={20} />
-          </button>
-
-          <Link
-            to={`/children/${child.id}/edit`}
-            state={{ child }}
-            aria-label="Edit child profile"
-            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950 shadow-sm transition hover:bg-[#03443c] dark:hover:bg-teal-300"
-          >
-            <Pencil size={13} />
-          </Link>
-
-          <div className="flex items-center gap-5">
-            <ChildAvatar size={64} iconSize={34} />
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{child.name}</h2>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.gender}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.ageLabel}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.bornLabel}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ChildProfileCard />
 
         {/* ====================================================
             Worth a look — only renders once growth stats actually
@@ -589,12 +281,12 @@ function DashboardPage() {
             Growth Trajectory + Puberty
         ==================================================== */}
 
-        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
 
           {/* Growth Trajectory */}
 
-          <div className="rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs md:col-span-2">
-            <div className="mb-4 flex items-center justify-between">
+          <div className="min-w-0 rounded-2xl bg-white dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-5 lg:col-span-2">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Growth Trajectory</h2>
 
               <Link
@@ -612,25 +304,25 @@ function DashboardPage() {
               {Object.entries(MEASURES).map(([key, measure]) => {
                 const Icon = measure.icon;
                 const active = selectedMeasure === key;
-                const value = child[key];
-                const status = describeStatus(child[measure.percentileKey]);
+                const value = latestRecord?.[measure.valueKey] ?? null;
+                const status = describeStatus(latestRecord?.[measure.percentileKey]);
 
                 return (
                   <button
                     key={key}
                     type="button"
                     onClick={() => setSelectedMeasure(key)}
-                    className={`rounded-xl border p-3 text-left transition ${
+                    className={`min-w-0 rounded-xl border p-2.5 text-left transition sm:p-3 ${
                       active
                         ? 'border-[#00685f] dark:border-teal-300 bg-white dark:bg-slate-800 ring-1 ring-[#00685f] dark:ring-teal-400'
                         : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300'
                     }`}
                   >
-                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                      <Icon size={12} />
+                    <span className="flex items-center gap-1 truncate text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+                      <Icon size={12} className="shrink-0" />
                       {measure.label}
                     </span>
-                    <span className="mt-1 block text-lg font-bold text-slate-900 dark:text-slate-100">
+                    <span className="mt-1 block truncate text-base font-bold text-slate-900 dark:text-slate-100 sm:text-lg">
                       {value !== null ? `${value}${measure.unit}` : '—'}
                     </span>
                     {status && (
@@ -648,7 +340,7 @@ function DashboardPage() {
               </p>
             </div>
 
-            <div className="mt-3 h-[260px] w-full">
+            <div className="mt-3 h-[220px] w-full sm:h-[260px] lg:h-[280px]">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={curve} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke={chart.grid} vertical={false} />
@@ -664,7 +356,7 @@ function DashboardPage() {
                     tick={{ fill: chart.tick, fontSize: 11 }}
                     axisLine={{ stroke: chart.axis }}
                     tickLine={false}
-                    width={36}
+                    width={48}
                     tickFormatter={(v) => `${Math.round(v)}${currentMeasure.unit}`}
                   />
                   <Tooltip
@@ -673,15 +365,16 @@ function DashboardPage() {
                     contentStyle={{ ...chart.tooltipStyle, boxShadow: '0 4px 15px rgba(0,0,0,0.08)' }}
                   />
 
-                  {/* Stacked bands: below P3, typical range, above P97 */}
-                  <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill={chart.band("#e2e8f0")} fillOpacity={chart.opacity(0.85)} />
-                  <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill={chart.band("#bfdbfe")} fillOpacity={chart.opacity(0.65)} />
-                  <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill={chart.band("#fed7aa")} fillOpacity={chart.opacity(0.6)} />
+                  {/* Stacked bands: below P3, typical range, above P97.
+                      Background only — hidden from the tooltip. */}
+                  <Area type="monotone" dataKey="belowP3" stackId="bands" stroke="none" fill={chart.band("#e2e8f0")} fillOpacity={chart.opacity(0.85)} tooltipType="none" activeDot={false} />
+                  <Area type="monotone" dataKey="typicalRange" stackId="bands" stroke="none" fill={chart.band("#bfdbfe")} fillOpacity={chart.opacity(0.65)} tooltipType="none" activeDot={false} />
+                  <Area type="monotone" dataKey="aboveP97" stackId="bands" stroke="none" fill={chart.band("#fed7aa")} fillOpacity={chart.opacity(0.6)} tooltipType="none" activeDot={false} />
 
                   {/* Reference percentile lines */}
-                  <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3" />
+                  <Line type="monotone" dataKey="p3" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P3 (low)" />
                   <Line type="monotone" dataKey="p50" stroke={chart.median} strokeWidth={1.5} strokeDasharray="2 3" dot={false} name="P50 (median)" />
-                  <Line type="monotone" dataKey="p97" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P97" />
+                  <Line type="monotone" dataKey="p97" stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" dot={false} name="P97 (high)" />
 
                   {/* The child's own measurements — empty until logged,
                       the legend swatch below stays regardless. */}
@@ -699,14 +392,14 @@ function DashboardPage() {
             </div>
 
             {/* Custom legend — matches the two-row key under the chart */}
-            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5">
                 <span className="h-0.5 w-4 rounded bg-[#056559] dark:bg-teal-400" />
                 {currentMeasure.chartTitle}
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />
-                P3
+                P3 (low)
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-0.5 w-4 rounded border-t border-dashed border-[#00685f] dark:border-teal-300" />
@@ -714,10 +407,10 @@ function DashboardPage() {
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-0.5 w-4 rounded border-t border-dashed border-slate-400 dark:border-slate-500" />
-                P97
+                P97 (high)
               </span>
             </div>
-            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-400">
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-[#e2e8f0] dark:bg-slate-600" />
                 Below P3
@@ -735,7 +428,7 @@ function DashboardPage() {
 
           {/* Puberty Screening */}
 
-          <div className="flex flex-col self-start rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
+          <div className="flex w-full flex-col self-start rounded-2xl bg-white dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-5">
             <div className="mb-2 flex items-center gap-2.5">
               <Sparkles size={18} className="text-[#056559] dark:text-teal-300" />
               <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">Puberty Screening</h2>
@@ -759,8 +452,8 @@ function DashboardPage() {
             upload instead of always showing the same prompt.
         ==================================================== */}
 
-        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-5 border border-slate-200 dark:border-slate-700 shadow-2xs">
-          <div className="mb-2 flex items-center gap-2.5">
+        <div className="mb-6 rounded-2xl bg-white dark:bg-slate-800 p-4 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-5">
+          <div className="mb-2 flex flex-wrap items-center gap-2.5">
             <Sparkles size={18} className="text-[#056559] dark:text-teal-300" />
             <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">AI Bone Age Analysis</h2>
             <span className="rounded-full bg-amber-50 dark:bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:text-amber-300">
@@ -799,7 +492,7 @@ function DashboardPage() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {articles.map((a) => (
             <div
               key={a.id}
@@ -823,23 +516,6 @@ function DashboardPage() {
         </div>
       </div>
 
-      {modal === 'switch' && (
-        <SwitchChildModal
-          children={children}
-          activeChildId={activeChildId}
-          onSelect={setActiveChildId}
-          onClose={() => setModal(null)}
-          onManage={() => setModal('manage')}
-        />
-      )}
-
-      {modal === 'manage' && (
-        <ManageChildrenModal
-          children={children}
-          onClose={() => setModal(null)}
-          onRemove={handleRemoveChild}
-        />
-      )}
     </div>
   );
 }

@@ -1,9 +1,7 @@
 import { useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useChildren } from '../context/ChildrenContext';
+import ChildProfileCard, { NoChildState } from '../components/ChildProfile/ChildProfileCard';
 import {
-  ArrowLeftRight,
-  Pencil,
-  Baby,
   UploadCloud,
   Trash2,
   AlertTriangle,
@@ -11,14 +9,6 @@ import {
   X,
 } from 'lucide-react';
 
-// Mock child shape used across pages — no ChildContext yet.
-const child = {
-  id: 'c1',
-  name: 'growth',
-  gender: 'Girl',
-  ageLabel: '18 Years, 4 Months',
-  bornLabel: 'Born May 5, 2008',
-};
 
 // Demo-only — real calibration/accuracy numbers come from the backend
 // once bone-age analysis is actually wired up.
@@ -69,6 +59,7 @@ function ConfirmDeleteDialog({ onCancel, onConfirm }) {
 // ============================================================
 
 function BoneAgePage() {
+  const { activeChild: child } = useChildren();
   const inputRef = useRef(null);
   const [history, setHistory] = useState([]);
   const [uploadError, setUploadError] = useState(null);
@@ -107,6 +98,8 @@ function BoneAgePage() {
     setPendingDeleteId(null);
   }
 
+  if (!child) return <NoChildState />;
+
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-900 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">
@@ -115,45 +108,7 @@ function BoneAgePage() {
             Child Profile
         ==================================================== */}
 
-        <div className="relative mb-6 rounded-2xl bg-white dark:bg-slate-800 p-6 border border-slate-200 dark:border-slate-700 shadow-2xs sm:p-8">
-          <Link
-            to="/dashboard"
-            aria-label="Switch child"
-            className="absolute right-6 top-6 text-slate-400 transition hover:text-[#056559] dark:hover:text-teal-300"
-          >
-            <ArrowLeftRight size={20} />
-          </Link>
-
-          <Link
-            to={`/children/${child.id}/edit`}
-            state={{ child }}
-            aria-label="Edit child profile"
-            className="absolute right-7 top-16 flex h-7 w-7 items-center justify-center rounded-full bg-[#056559] dark:bg-teal-400 text-white dark:text-slate-950 shadow-sm transition hover:bg-[#03443c] dark:hover:bg-teal-300"
-          >
-            <Pencil size={13} />
-          </Link>
-
-          <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#a7ebd9] dark:bg-teal-500/50">
-              <Baby size={34} strokeWidth={1.5} className="text-[#056559] dark:text-teal-300" />
-            </div>
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">{child.name}</h2>
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.gender}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.ageLabel}
-                </span>
-                <span className="rounded-full border border-[#bcece0] dark:border-teal-500/30 px-2 py-0.5 text-xs font-medium text-[#056559] dark:text-teal-300">
-                  {child.bornLabel}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ChildProfileCard />
 
         {/* ====================================================
             Intro
