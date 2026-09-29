@@ -15,7 +15,7 @@ ASYNC_DRIVER = "postgresql+asyncpg"
 # ใช้ตอน CORS_ORIGINS ไม่ได้ตั้งไว้ — ตั้งใจให้เป็นค่าของเครื่อง dev เท่านั้น
 # ถ้าขึ้น production แล้วลืมตั้ง frontend จะถูกบล็อกทันทีและเห็นปัญหาเลย
 # ซึ่งปลอดภัยกว่าการ default เป็น "*" ที่เปิดให้เว็บไหนก็ได้ยิงเข้ามา
-DEFAULT_CORS_ORIGINS = ["http://localhost:3000"]
+DEFAULT_CORS_ORIGINS = ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173"]
 
 # ค่าที่ PostgreSQL รับใน sslmode — asyncpg รับ string ชุดเดียวกันนี้ผ่าน ssl=
 _VALID_SSLMODES = frozenset({

@@ -31,3 +31,6 @@ client_secret*.json
 # Optional frontend tooling
 node_modules/
 dist/
+
+# Model weights are checksum-verified GitHub release assets
+bone_age_ai/models/
