@@ -14,9 +14,10 @@ services:
     region: singapore
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt
+    branch: Backend+AI
+    buildCommand: pip install -r requirements.txt -r requirements-model.txt && python -m bone_age_ai.download
     startCommand: python init_database.py && exec uvicorn main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /health
+    healthCheckPath: /ready
     envVars:
       - key: PYTHON_VERSION
         value: "3.12.14"

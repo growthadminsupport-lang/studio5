@@ -228,3 +228,6 @@ See [Git handoff](docs/git-handoff.md) for review and push commands.
 ## Render deployment with CDC 2000
 
 Use the root `render.yaml` Blueprint and follow [the deployment guide](docs/render-deployment.md). It documents environment values, transactional initialization, reference ages, readiness checks, and export before the free database expires. Existing local data is not uploaded or automatically recalculated.
+
+## Refine9 model
+See [refine9 integration and verification](docs/refine9-integration.md) for the checkpoint, private prediction API, setup, tests, and pending deployment requirements.

@@ -12,7 +12,7 @@ import uuid
 from datetime import date, datetime
 
 from sqlalchemy import (
-    Boolean, Date, DateTime, Float, ForeignKey, Integer, Numeric, SmallInteger, String, func,
+    Boolean, Date, DateTime, Float, ForeignKey, Integer, LargeBinary, Numeric, SmallInteger, String, func,
 )
 from sqlalchemy.dialects.postgresql import CITEXT, ENUM as PgEnum, INET, UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -249,7 +249,7 @@ class GrowthRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
-# ยังไม่มี model ของ chd_puberty_screenings, chd_bone_age_predictions,
+# ยังไม่มี model ของ chd_puberty_screenings,
 # adm_accounts, adm_sessions, adm_audit_logs, cms_articles
 # ต้องเพิ่มก่อนถึงจะเขียน endpoint ของส่วนนั้น ๆ ได้
 #
@@ -263,3 +263,20 @@ class GrowthRecord(Base):
 #
 # adm_role กับ cms_article_status ใน admin_schema.sql ก็เป็น ENUM — ตอนเพิ่ม model
 # ของ adm_/cms_ ต้องประกาศ PgEnum(..., create_type=False) เหมือนกัน
+
+
+class BoneAgePrediction(Base):
+    __tablename__ = 'chd_bone_age_predictions'
+    id: Mapped[uuid.UUID] = mapped_column('bon_id', UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    child_id: Mapped[uuid.UUID] = mapped_column('chd_id', UUID(as_uuid=True), ForeignKey('chd_profiles.chd_id', ondelete='CASCADE'))
+    prediction_date: Mapped[date] = mapped_column(Date)
+    image_path: Mapped[str] = mapped_column(String)
+    image_data: Mapped[bytes | None] = mapped_column(LargeBinary, nullable=True, deferred=True)
+    image_type: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    predicted_months: Mapped[float | None] = mapped_column(Numeric(6, 2, asdecimal=False), nullable=True)
+    margin_error: Mapped[float | None] = mapped_column(Numeric(5, 2, asdecimal=False), nullable=True)
+    model_version: Mapped[str] = mapped_column(String(50))
+    status: Mapped[str] = mapped_column(String(10))
+    failure_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

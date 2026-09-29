@@ -30,6 +30,8 @@ from mailer import APP_ENV, EMAIL_ENABLED
 from routes_auth import router as auth_router
 from routes_children import router as children_router
 from routes_growth import router as growth_router
+from routes_bone_age import router as bone_age_router, recover_interrupted
+from bone_age_ai.inference import initialize, model_status
 
 load_dotenv()
 
@@ -56,6 +58,11 @@ async def lifespan(app: FastAPI):
         "เปิด" if GOOGLE_ENABLED else "ปิด (ไม่ได้ตั้ง GOOGLE_CLIENT_IDS)",
         "เปิด" if EMAIL_ENABLED else "ปิด (ไม่ได้ตั้งค่าบริการอีเมล — อีเมลจะพิมพ์ลง log แทน)",
     )
+    import asyncio
+    ready = await asyncio.to_thread(initialize)
+    if ready:
+        await recover_interrupted()
+    logger.warning('Refine9 bone age model ready: %s', ready)
     yield
     # ปิด connection pool ให้เรียบร้อยตอนเซิร์ฟเวอร์หยุด
     await engine.dispose()
@@ -97,6 +104,7 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(children_router)
 app.include_router(growth_router)
+app.include_router(bone_age_router)
 
 
 @app.get("/", tags=["health"])
@@ -114,3 +122,12 @@ async def health():
     except Exception:
         logger.warning("Readiness check failed; check database initialization and CDC seed")
         return JSONResponse(status_code=503, content={"status": "unavailable"})
+
+
+@app.get('/ready', tags=['health'])
+async def ready():
+    database_status = await health()
+    if isinstance(database_status, JSONResponse):
+        return database_status
+    result = model_status()
+    return JSONResponse(result, status_code=200 if result['ready'] else 503)

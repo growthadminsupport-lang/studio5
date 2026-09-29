@@ -1,6 +1,7 @@
 """HTTP validation regression tests using real FastAPI/Pydantic, without a DB."""
 import os
 import unittest
+from unittest.mock import patch
 
 from _stubs import add_project_root_to_path
 
@@ -56,7 +57,7 @@ class RequestValidationTests(unittest.TestCase):
         ]
         app.dependency_overrides[get_db] = no_database
         try:
-            with TestClient(app) as client:
+            with patch("main.initialize", return_value=False), TestClient(app) as client:
                 for path, body, secret in cases:
                     with self.subTest(path=path):
                         response = client.post(path, json=body)

@@ -24,3 +24,5 @@ PyJWT[crypto]==2.13.0
 # ใช้ดึงกุญแจสาธารณะของ Google มาตรวจลายเซ็น ID token (google_oauth.py)
 # ต้องเป็น client แบบ async เพราะเรียกจากใน endpoint ที่เป็น async ทั้งเส้น
 httpx==0.28.1
+python-multipart==0.0.32
+pillow==12.2.0

@@ -1,0 +1,19 @@
+{
+  "run": "refine9_b5_456",
+  "backbone": "EfficientNet-B5",
+  "imageSize": 456,
+  "modelVersion": "effnetb5-refine9-tta-rsna",
+  "checkpoint": "best_model_refine9_b5_456.pth",
+  "sha256": "18ba920a8d2eada0198477619b2b1945df98f028384aeae0fafc8aa82987491c",
+  "bytes": 115444602,
+  "validationSamples": 1425,
+  "maeMonths": 7.425048931228072,
+  "accuracyWithin12Months": 0.8021052631578948,
+  "url": "https://github.com/growthadminsupport-lang/studio5/releases/download/refine9-b5-456-v1/best_model_refine9_b5_456.pth",
+  "sourceHashes": {
+    "train.py": "0b0d3686225335d59daa7378e6fe803d5071277ae883f080c0c6668a38abdf6f",
+    "model.py": "dd65c24822a8c8fa6c618cca016bd1c1344f330aa11bc6041775613d5b7ac406",
+    "dataset.py": "ca7d010af6810cf4de6de3c9bd12db2fad53927aee437483757af5a86f74f5a4",
+    "evaluate.py": "adeeb2a85ede8cc4edebcfbed81c8459927b441bb04892e7eacc8d65b7e1d4af"
+  }
+}

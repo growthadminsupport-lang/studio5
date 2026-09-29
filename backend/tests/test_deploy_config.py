@@ -276,7 +276,7 @@ print("\nค่า default ตอนไม่ได้ตั้ง CORS_ORIGINS"
 
 # main.py เขียนว่า parse_cors_origins(...) or DEFAULT_CORS_ORIGINS จำลองพฤติกรรมนั้นตรงนี้
 fallback = parse_cors_origins("") or DEFAULT_CORS_ORIGINS
-report("ไม่ตั้งค่าแล้วได้ localhost", fallback == ["http://localhost:3000"],
+report("ไม่ตั้งค่าแล้วได้ localhost", fallback == ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173"],
        fail_detail=f"ได้ {fallback}", ok_detail=str(fallback))
 
 # default ต้องไม่เปิดกว้าง ไม่งั้นลืมตั้งค่าตอน deploy = เว็บไหนก็ยิงเข้ามาได้

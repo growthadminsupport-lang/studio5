@@ -33,17 +33,18 @@ export function saveSession(tokens, remember = false) {
   (remember ? localStorage : sessionStorage).setItem(REFRESH_KEY, tokens.refresh_token);
 }
 
-async function send(path, { method = 'GET', body, token = null } = {}) {
+async function send(path, { method = 'GET', body, token = null, responseType = 'json' } = {}) {
   if (import.meta.env.PROD && !baseUrl) throw new Error('VITE_API_URL is not configured');
   const response = await fetch(`${baseUrl}${path}`, {
     method,
     headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
+      ...(body && !(body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    ...(body ? { body: JSON.stringify(body) } : {}),
+    ...(body ? { body: body instanceof FormData ? body : JSON.stringify(body) } : {}),
   });
   if (response.status === 204) return null;
+  if (response.ok && responseType === 'blob') return response.blob();
   const data = await response.json().catch(() => null);
   if (!response.ok) throw new ApiError(response.status, data?.detail);
   return data;
@@ -77,15 +78,15 @@ export async function refreshAccess() {
   return refreshPromise;
 }
 
-export async function authedRequest(path, { method = 'GET', body } = {}) {
+export async function authedRequest(path, { method = 'GET', body, responseType = 'json' } = {}) {
   if (!accessToken) await refreshAccess();
   if (!accessToken) throw new ApiError(401, 'Session ended');
   try {
-    return await send(path, { method, body, token: accessToken });
+    return await send(path, { method, body, responseType, token: accessToken });
   } catch (error) {
     if (error.status !== 401 || path === '/api/auth/refresh') throw error;
     await refreshAccess();
     if (!accessToken) throw new ApiError(401, 'Session ended');
-    return send(path, { method, body, token: accessToken });
+    return send(path, { method, body, responseType, token: accessToken });
   }
 }
