@@ -1,5 +1,15 @@
 # Authentication change memory
 
+## Latest update — 2026-09-23
+
+This section supersedes the older Settings-only linking description below. Users can now activate pending password accounts using a matching Google identity plus their existing website password, directly from login/registration. `POST /api/auth/google/link-login` locks the account, verifies the password and fresh Google token, links the identity, marks email verified, consumes verification tokens, and issues session tokens without replacing the password hash. Both methods reach the same account and child data. `GoogleLinkForm.jsx` supplies the inline confirmation UI; `AuthContext.jsx` accepts the resulting tokens. Optional `expected_email` prevents Google sign-in/creation against a different email entered in the form.
+
+Resend HTTPS delivery is implemented in `mailer.py`; production gates now use `EMAIL_ENABLED` for either SMTP or Resend. Local URLs are frontend `http://127.0.0.1:5173` and API `http://127.0.0.1:8001`. Private email settings belong only in ignored `backend/.env`.
+
+Verified: 10 backend regression files, frontend build, targeted auth lint, and a transaction-rolled-back PostgreSQL HTTP test of activation, password preservation, both login methods, repeated linking, and child identity preservation. The database test mocked Google token verification. Live Google login and actual inbox delivery remain pending. No deployment occurred. See `backend/docs/frontend-auth-integration.md` for the current contract.
+
+## Earlier implementation record
+
 Date: 2026-09-23. Scope: `studio5` FastAPI backend and React frontend. The sibling `project_stu5` is a separate NestJS/Prisma application; its authentication code was not changed by this work. Its `memory.md` contains a separate review. Project context there describes GrowTH as a child growth and bone-age application, and Google login as a later addition to the original email/password TOR.
 
 ## Cause and decision

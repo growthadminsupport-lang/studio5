@@ -33,6 +33,7 @@ import logging
 import os
 import smtplib
 import ssl
+import httpx
 from email.headerregistry import Address
 from email.message import EmailMessage
 
@@ -75,6 +76,11 @@ MAIL = parse_mail_settings(
 MAIL_FROM_NAME = os.environ.get("MAIL_FROM_NAME", SERVICE_NAME)
 
 SMTP_ENABLED = MAIL is not None
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "").strip()
+RESEND_FROM = os.environ.get("MAIL_FROM", "").strip()
+if RESEND_API_KEY and ("@" not in RESEND_FROM or "\n" in RESEND_FROM or "\r" in RESEND_FROM):
+    raise ValueError("RESEND_API_KEY requires a valid MAIL_FROM sender")
+EMAIL_ENABLED = SMTP_ENABLED or bool(RESEND_API_KEY)
 
 # กันเซิร์ฟเวอร์ SMTP ที่รับ connection แล้วเงียบ ทำให้ thread ค้างสะสมไปเรื่อย ๆ
 _SMTP_TIMEOUT_SECONDS = 15
@@ -152,6 +158,20 @@ async def _deliver(to_email: str, subject: str, body: str) -> bool:
     ฟังก์ชัน send_* ข้างล่างเรียกผ่านนี่จุดเดียว จะเปลี่ยนไปใช้ HTTP API ของ
     ผู้ให้บริการ (Resend / SendGrid / SES) แทน SMTP ก็แก้แค่ฟังก์ชันนี้
     """
+    if RESEND_API_KEY:
+        try:
+            async with httpx.AsyncClient(timeout=15) as client:
+                response = await client.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
+                    json={"from": RESEND_FROM, "to": [to_email], "subject": subject, "text": body},
+                )
+                response.raise_for_status()
+            return True
+        except httpx.HTTPError:
+            # Do not log provider responses, recipients, message tokens, or credentials.
+            logger.error("Email delivery via Resend failed")
+            return False
     if not SMTP_ENABLED:
         _log_instead(to_email, subject, body)
         return False
@@ -164,7 +184,7 @@ async def _deliver(to_email: str, subject: str, body: str) -> bool:
         # log ที่อยู่ผู้รับไว้ด้วยเพื่อให้ตามได้ว่าใครไม่ได้รับอีเมล
         # แต่ **ห้าม log เนื้อหา** เพราะข้างในมีโทเคนตั้งรหัสผ่านใหม่อยู่
         # ใครอ่าน log ได้ก็จะยึดบัญชีได้ทันที
-        logger.error("ส่งอีเมลถึง %s ไม่สำเร็จ (%s): %s", to_email, subject, exc)
+        logger.error("SMTP email delivery failed (%s)", type(exc).__name__)
         return False
 
     logger.info("ส่งอีเมลถึง %s แล้ว (%s)", to_email, subject)

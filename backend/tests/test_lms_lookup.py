@@ -1,5 +1,5 @@
 """
-ทดสอบการหาค่า LMS จากตารางอ้างอิง + การ interpolate + การคำนวณรวม
+ทดสอบการหาค่า LMS จากตารางอ้างอิง + CDC monthly bins + การคำนวณรวม
 ใช้ FakeSession แทนฐานข้อมูลจริง (ดูคำอธิบายใน _stubs.py)
 
 รัน:  python tests/test_lms_lookup.py
@@ -14,7 +14,6 @@ add_project_root_to_path()
 stub_sqlalchemy_if_missing()
 
 from growth_calc import (  # noqa: E402
-    MAX_EXTRAPOLATION_MONTHS,
     calculate_growth_result,
     evaluate_metric,
     get_lms_params,
@@ -48,35 +47,13 @@ def check_lms(name, rows, age, expected):
            ok_detail=str(tuple(round(x, 6) for x in got)))
 
 
-# ตารางตัวอย่าง: มีข้อมูลที่อายุ 12 กับ 36 เดือนเท่านั้น
-SPARSE = [
-    RefRow(12, l_value=-1.0, m_value=100.0, s_value=0.040),
-    RefRow(36, l_value=1.0, m_value=140.0, s_value=0.060),
-]
-
-print("get_lms_params — ตรงกับตารางพอดี")
-check_lms("อายุ 12 ตรงกับแถวแรก", SPARSE, 12, (-1.0, 100.0, 0.040))
-check_lms("อายุ 36 ตรงกับแถวสุดท้าย", SPARSE, 36, (1.0, 140.0, 0.060))
-
-print("\nget_lms_params — interpolate ระหว่างสองแถว")
-# อายุ 24 อยู่กึ่งกลางระหว่าง 12 กับ 36 พอดี ทุกค่าต้องเป็นค่ากลาง
-check_lms("อายุ 24 = กึ่งกลาง", SPARSE, 24, (0.0, 120.0, 0.050))
-# อายุ 18 = 25% ของช่วง
-check_lms("อายุ 18 = 25% ของช่วง", SPARSE, 18, (-0.5, 110.0, 0.045))
-
-print("\nget_lms_params — นอกช่วงตาราง (MAX_EXTRAPOLATION_MONTHS = %d)" % MAX_EXTRAPOLATION_MONTHS)
-check_lms("ต่ำกว่าตารางเล็กน้อย ยังใช้แถวขอบได้",
-          SPARSE, 12 - MAX_EXTRAPOLATION_MONTHS, (-1.0, 100.0, 0.040))
-check_lms("ต่ำกว่าตารางเกินกำหนด ต้องได้ None",
-          SPARSE, 12 - MAX_EXTRAPOLATION_MONTHS - 1, None)
-check_lms("สูงกว่าตารางเล็กน้อย ยังใช้แถวขอบได้",
-          SPARSE, 36 + MAX_EXTRAPOLATION_MONTHS, (1.0, 140.0, 0.060))
-check_lms("สูงกว่าตารางเกินกำหนด ต้องได้ None (เดิมเอาค่าขอบมาใช้เงียบ ๆ)",
-          SPARSE, 36 + MAX_EXTRAPOLATION_MONTHS + 1, None)
-check_lms("อายุ 40 ปี กับตารางเด็ก ต้องได้ None", SPARSE, 480, None)
-
-print("\nget_lms_params — ไม่มีข้อมูลเลย")
-check_lms("ตารางว่าง", [], 24, None)
+SPARSE = [RefRow(24, -1, 100, .04), RefRow(24.5, 1, 140, .06)]
+check_lms("exact lower endpoint", SPARSE, 24, (-1,100,.04))
+check_lms("monthly bin", SPARSE, 24.8, (1,140,.06))
+check_lms("missing monthly row is unavailable", SPARSE, 25, None)
+check_lms("below range", SPARSE, 23.99, None)
+check_lms("above range", SPARSE, 240.01, None)
+check_lms("empty", [], 24, None)
 
 print("\nevaluate_metric")
 
@@ -104,10 +81,10 @@ def check_metric(name, rows, age, value, expect_sds=None, expect_flagged=None, e
 
 
 # ที่อายุ 12: L=-1, M=100, S=0.04 — วัดได้ 100 พอดีต้องได้ SDS 0 / percentile 50
-check_metric("วัดได้เท่าค่ากลาง -> SDS 0 ไม่ flag", SPARSE, 12, 100.0,
+check_metric("วัดได้เท่าค่ากลาง -> SDS 0 ไม่ flag", SPARSE, 24, 100.0,
              expect_sds=0.0, expect_flagged=False)
-check_metric("สูงกว่าค่ากลางมาก -> flag", SPARSE, 12, 130.0, expect_flagged=True)
-check_metric("ต่ำกว่าค่ากลางมาก -> flag", SPARSE, 12, 80.0, expect_flagged=True)
+check_metric("สูงกว่าค่ากลางมาก -> flag", SPARSE, 24, 130.0, expect_flagged=True)
+check_metric("ต่ำกว่าค่ากลางมาก -> flag", SPARSE, 24, 80.0, expect_flagged=True)
 check_metric("ไม่มีข้อมูลอ้างอิง -> None", SPARSE, 480, 100.0, expect_none=True)
 
 print("\ncalculate_growth_result — เส้นทางปกติครบทั้ง 3 metric")

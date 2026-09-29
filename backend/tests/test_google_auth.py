@@ -43,6 +43,19 @@ class GoogleTokenTests(unittest.IsolatedAsyncioTestCase):
             await self.verify({"iat": int(time.time()) - 301}, max_age_seconds=300)
         self.assertEqual(caught.exception.status_code, 401)
 
+    async def test_small_clock_skew_allowed_for_login_and_linking(self):
+        for max_age in (None, 300):
+            profile = await self.verify({"iat": int(time.time()) + 20}, max_age_seconds=max_age)
+            self.assertEqual(profile.subject, "google-subject")
+
+    async def test_clock_skew_is_bounded(self):
+        for max_age in (None, 300):
+            for claims in ({"iat": int(time.time()) + 40},
+                           {"exp": int(time.time()) - 40}):
+                with self.subTest(max_age=max_age, claims=claims), self.assertRaises(HTTPException) as caught:
+                    await self.verify(claims, max_age_seconds=max_age)
+                self.assertEqual(caught.exception.status_code, 401)
+
     async def test_valid_issuers_and_authority(self):
         for issuer in ("https://accounts.google.com", "accounts.google.com"):
             profile = await self.verify({"iss": issuer})

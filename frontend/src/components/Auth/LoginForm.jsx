@@ -1,3 +1,4 @@
+import GoogleLinkForm from "./GoogleLinkForm";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -15,6 +16,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
+  const [linkCredential, setLinkCredential] = useState(null);
   const [busy, setBusy] = useState(false);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ function LoginForm() {
       navigate("/dashboard", { replace: true });
     } catch (reason) {
       setError(reason.code === 'EMAIL_VERIFICATION_REQUIRED'
-        ? 'Verify your email first. Use the link sent at registration or request a new one.'
+        ? 'Verify your email using its link, or choose Google with the same email and confirm your website password.'
         : reason.status === 401 ? 'Invalid email or password.' : reason.message);
     } finally { setBusy(false); }
   }
@@ -37,14 +39,16 @@ function LoginForm() {
     setError("");
     setBusy(true);
     try {
-      await loginWithGoogle(credential, false, remember);
+      await loginWithGoogle(credential, false, remember, email.trim());
       navigate("/dashboard", { replace: true });
     } catch (reason) {
-      setError(reason.code === 'LINK_REQUIRED'
-        ? 'This email already has a website account. Log in with its password, then link Google in Settings. If you did not set that password, use Forgot password to claim the email first. Your data is not changed by this Google attempt.'
-        : reason.status === 400 ? 'No account yet. Create an account and accept the terms first.' : reason.message);
+      if (reason.code === 'LINK_REQUIRED') {
+        setLinkCredential(credential);
+      } else setError(reason.message);
     } finally { setBusy(false); }
   }
+
+  if (linkCredential) return <GoogleLinkForm credential={linkCredential} email={email} remember={remember} onCancel={() => setLinkCredential(null)} />;
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">

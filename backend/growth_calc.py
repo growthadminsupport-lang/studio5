@@ -8,10 +8,6 @@ from models import GrowthReferenceLMS
 
 SDS_FLAG_THRESHOLD = 2.0  # |SDS| เกินนี้ = is_flagged (ปรับได้ตามเกณฑ์ที่ทีมกำหนด)
 
-# ยอมให้อายุอยู่นอกช่วงของตาราง reference ได้ไม่เกินกี่เดือน
-# ถ้าเกินนี้ถือว่าไม่มีข้อมูลอ้างอิง (คืน None) ดีกว่าเอาค่าขอบตารางมาใช้เงียบ ๆ
-MAX_EXTRAPOLATION_MONTHS = 3
-
 METRIC_LABELS = {
     "height": "ส่วนสูง",
     "weight": "น้ำหนัก",
@@ -33,57 +29,40 @@ def calculate_age_months(date_of_birth: date, measurement_date: date) -> int:
     return max(months, 0)
 
 
+def cdc_lookup_age(age_months: float) -> float | None:
+    """CDC half-month rows represent completed-month bins; endpoints are exact."""
+    if not math.isfinite(age_months) or not 24 <= age_months <= 240:
+        return None
+    if age_months in (24, 240):
+        return float(age_months)
+    return math.floor(age_months) + 0.5
+
+
+def reference_age_months(born: date, measured: date) -> float:
+    """Calendar age with a fractional month so >20th birthday is out of range."""
+    import calendar
+    months = calculate_age_months(born, measured)
+    def anniversary(n):
+        year, month = divmod(born.year * 12 + born.month - 1 + n, 12)
+        return date(year, month + 1, min(born.day, calendar.monthrange(year, month + 1)[1]))
+    start, end = anniversary(months), anniversary(months + 1)
+    return months + (measured - start).days / (end - start).days
+
+
 async def get_lms_params(
-    db: AsyncSession, sex: str, age_months: int, metric_type: str
+    db: AsyncSession, sex: str, age_months: float, metric_type: str
 ) -> tuple[float, float, float] | None:
-    """หา L, M, S จาก ref_growth_lms — interpolate ระหว่าง 2 เดือนใกล้เคียงถ้าไม่มี exact match"""
-    lower = (
-        await db.execute(
-            select(GrowthReferenceLMS)
-            .where(
-                GrowthReferenceLMS.sex == sex,
-                GrowthReferenceLMS.metric_type == metric_type,
-                GrowthReferenceLMS.age_months <= age_months,
-            )
-            .order_by(GrowthReferenceLMS.age_months.desc())
-            .limit(1)
-        )
-    ).scalar_one_or_none()
-
-    upper = (
-        await db.execute(
-            select(GrowthReferenceLMS)
-            .where(
-                GrowthReferenceLMS.sex == sex,
-                GrowthReferenceLMS.metric_type == metric_type,
-                GrowthReferenceLMS.age_months >= age_months,
-            )
-            .order_by(GrowthReferenceLMS.age_months.asc())
-            .limit(1)
-        )
-    ).scalar_one_or_none()
-
-    if lower is None and upper is None:
-        return None  # ไม่มีข้อมูลอ้างอิงช่วงอายุนี้เลย
-
-    # อยู่นอกช่วงตาราง: เดิมหยิบค่าขอบมาใช้เท่าไหร่ก็ได้ เด็กอายุ 40 ปีจึงถูกเทียบ
-    # กับเกณฑ์อายุ 20 ปีโดยไม่มีสัญญาณอะไรเลย — จำกัดระยะที่ยอมให้คลาดได้
-    if lower is None:
-        if upper.age_months - age_months > MAX_EXTRAPOLATION_MONTHS:
-            return None
-        return (upper.l_value, upper.m_value, upper.s_value)
-    if upper is None:
-        if age_months - lower.age_months > MAX_EXTRAPOLATION_MONTHS:
-            return None
-        return (lower.l_value, lower.m_value, lower.s_value)
-    if lower.age_months == upper.age_months:
-        return (lower.l_value, lower.m_value, lower.s_value)
-
-    fraction = (age_months - lower.age_months) / (upper.age_months - lower.age_months)
-    l = lower.l_value + fraction * (upper.l_value - lower.l_value)
-    m = lower.m_value + fraction * (upper.m_value - lower.m_value)
-    s = lower.s_value + fraction * (upper.s_value - lower.s_value)
-    return (l, m, s)
+    target = cdc_lookup_age(age_months)
+    if target is None:
+        return None
+    row = (await db.execute(select(GrowthReferenceLMS).where(
+        GrowthReferenceLMS.sex == sex,
+        GrowthReferenceLMS.metric_type == metric_type,
+        GrowthReferenceLMS.age_months == target,
+    ))).scalar_one_or_none()
+    if row is None:
+        return None
+    return row.l_value, row.m_value, row.s_value
 
 
 def calculate_sds(value: float, l: float, m: float, s: float) -> float:
@@ -126,7 +105,7 @@ class MetricResult:
 
 
 async def evaluate_metric(
-    db: AsyncSession, sex: str, age_months: int, metric_type: str, value: float
+    db: AsyncSession, sex: str, age_months: float, metric_type: str, value: float
 ) -> MetricResult | None:
     """คำนวณ SDS + percentile + is_flagged สำหรับ metric เดียว"""
     params = await get_lms_params(db, sex, age_months, metric_type)
@@ -154,7 +133,7 @@ async def calculate_growth_result(
     if height_cm <= 0 or weight_kg <= 0:
         raise ValueError("ส่วนสูงและน้ำหนักต้องมากกว่า 0")
 
-    age_months = calculate_age_months(date_of_birth, measurement_date)
+    age_months = reference_age_months(date_of_birth, measurement_date)
     bmi = round(weight_kg / ((height_cm / 100) ** 2), 2)
 
     height_result = await evaluate_metric(db, sex, age_months, "height", height_cm)

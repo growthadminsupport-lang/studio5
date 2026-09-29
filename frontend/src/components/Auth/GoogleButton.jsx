@@ -19,7 +19,8 @@ function loadGoogle() {
 }
 
 export default function GoogleButton({ onCredential, disabled = false }) {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const clientId = import.meta.env.DEV && import.meta.env.VITE_HIDE_GOOGLE_LOGIN === '1'
+    ? '' : import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const mountRef = useRef(null);
   const callbackRef = useRef(onCredential);
   const [error, setError] = useState('');

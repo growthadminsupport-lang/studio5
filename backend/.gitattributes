@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# Preserve official CDC download checksums across Windows/Linux checkouts.
+data/cdc2000/*.csv -text

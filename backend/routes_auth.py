@@ -52,12 +52,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import mailer
 from auth import (
+    local_verification_bypass,
     account_locked_error,
     clear_failed_attempts,
     consume_password_reset,
@@ -134,7 +135,14 @@ class RegisterRequest(BaseModel):
         return v
 
 
+class GoogleLinkLoginRequest(BaseModel):
+    id_token: str = Field(min_length=1, max_length=4096)
+    email: EmailStr
+    current_password: str
+
+
 class GoogleRequest(BaseModel):
+    expected_email: EmailStr | None = None
     """
     ID token ที่ frontend ได้จาก Google Identity Services
 
@@ -215,6 +223,10 @@ class MessageReply(BaseModel):
     message: str
 
 
+class RegistrationReply(MessageReply):
+    verification_required: bool = True
+
+
 class MeReply(BaseModel):
     id: str
     full_name: str
@@ -256,7 +268,7 @@ async def _issue_email_verification(db: AsyncSession, user: User) -> str:
     return raw
 
 
-@router.post("/register", response_model=MessageReply, status_code=status.HTTP_202_ACCEPTED)
+@router.post("/register", response_model=RegistrationReply, status_code=status.HTTP_202_ACCEPTED)
 async def register(data: RegisterRequest, request: Request, db: Db):
     """
     สร้างบัญชีที่ยังไม่อนุญาตให้เข้าสู่ระบบและส่งลิงก์ยืนยันทางอีเมล
@@ -267,7 +279,13 @@ async def register(data: RegisterRequest, request: Request, db: Db):
 
     await enforce_ip_rate_limit(db, request)
 
-    if mailer.APP_ENV == "production" and not mailer.SMTP_ENABLED:
+    local_registration = local_verification_bypass()
+    registration_reply = (
+        "Continue to sign in with your email and password."
+        if local_registration else REGISTRATION_REPLY
+    )
+
+    if mailer.APP_ENV == "production" and not mailer.EMAIL_ENABLED:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "ยังไม่ได้ตั้งค่าระบบส่งอีเมลยืนยัน")
 
     # ตรวจซ้ำอีกรอบโดยเอาอีเมลกับชื่อมาประกอบ กันตั้งรหัสเป็นข้อมูลตัวเอง
@@ -283,7 +301,7 @@ async def register(data: RegisterRequest, request: Request, db: Db):
         password_hash=await hash_password(data.password),
         terms_accepted=True,
         terms_accepted_at=_now(),
-        email_verification_required=True,
+        email_verification_required=not local_registration,
     )
     db.add(user)
 
@@ -291,12 +309,16 @@ async def register(data: RegisterRequest, request: Request, db: Db):
         await db.flush()
     except IntegrityError:
         await db.rollback()
-        return MessageReply(message=REGISTRATION_REPLY)
+        return RegistrationReply(message=registration_reply, verification_required=not local_registration)
+
+    if local_registration:
+        await db.commit()
+        return RegistrationReply(message=registration_reply, verification_required=False)
 
     token = await _issue_email_verification(db, user)
     await db.commit()
     await mailer.send_email_verification(user.email, user.full_name, token)
-    return MessageReply(message=REGISTRATION_REPLY)
+    return RegistrationReply(message=REGISTRATION_REPLY)
 
 
 @router.post("/email/verification/resend", response_model=MessageReply)
@@ -310,7 +332,7 @@ async def resend_email_verification(data: EmailRequest, request: Request, db: Db
                 EmailVerification.created_at > _now() - timedelta(hours=1),
             )
         )).scalar_one()
-        if sent_last_hour < 3 and (mailer.SMTP_ENABLED or mailer.APP_ENV != "production"):
+        if sent_last_hour < 3 and (mailer.EMAIL_ENABLED or mailer.APP_ENV != "production"):
             token = await _issue_email_verification(db, user)
             await db.commit()
             await mailer.send_email_verification(user.email, user.full_name, token)
@@ -365,6 +387,8 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
     await enforce_ip_rate_limit(db, request)
 
     profile = await verify_google_id_token(data.id_token)
+    if data.expected_email and str(data.expected_email).casefold() != profile.email.casefold():
+        raise HTTPException(403, {"code": "GOOGLE_EMAIL_MISMATCH", "message": "Choose the Google account matching the email you entered."})
 
     identity = await find_identity(db, PROVIDER_GOOGLE, profile.subject)
 
@@ -429,6 +453,55 @@ async def google_sign_in(data: GoogleRequest, request: Request, db: Db):
 
     await _link_google(db, user, profile)
     return await _finish_google_login(db, user, request, is_new_account=True)
+
+
+@router.post("/google/link-login", response_model=GoogleTokenPair)
+async def google_link_login(data: GoogleLinkLoginRequest, request: Request, db: Db):
+    await enforce_ip_rate_limit(db, request)
+    try:
+        profile = await verify_google_id_token(data.id_token, max_age_seconds=300)
+    except HTTPException as exc:
+        if exc.status_code == 401:
+            raise HTTPException(401, {"code": "GOOGLE_REAUTH_REQUIRED", "message": "Choose your Google account again to continue."}) from None
+        raise
+    if profile.email.casefold() != str(data.email).casefold():
+        raise HTTPException(403, {"code": "GOOGLE_EMAIL_MISMATCH", "message": "Choose the Google account matching your website email."})
+    user = (await db.execute(select(User).where(User.email == data.email).with_for_update())).scalar_one_or_none()
+    invalid = HTTPException(401, {"code": "INVALID_PASSWORD", "message": "Invalid email or website password."})
+    if user is None or user.password_hash is None:
+        await burn_time()
+        await record_login_attempt(db, str(data.email), request, succeeded=False)
+        await db.commit()
+        raise invalid
+    if locked := account_locked_error(user):
+        await record_login_attempt(db, user.email, request, succeeded=False)
+        await db.commit()
+        raise locked
+    if not await verify_password(data.current_password, user.password_hash):
+        await register_failed_attempts_for_link(db, user, request)
+        raise invalid
+    identity = await find_identity(db, PROVIDER_GOOGLE, profile.subject)
+    if identity is not None and identity.user_id != user.id:
+        raise HTTPException(409, "Google identity belongs to a different account")
+    already = (await db.execute(select(Identity).where(
+        Identity.user_id == user.id, Identity.provider == PROVIDER_GOOGLE
+    ))).scalar_one_or_none()
+    if already is not None and already.subject != profile.subject:
+        raise HTTPException(409, "This account is linked to a different Google identity")
+    if identity is None:
+        await _link_google(db, user, profile)
+    # Google verifies the email claim; the website password proves account ownership.
+    user.email_verified_at = user.email_verified_at or _now()
+    await db.execute(update(EmailVerification).where(
+        EmailVerification.user_id == user.id, EmailVerification.used_at.is_(None)
+    ).values(used_at=_now()))
+    return await _finish_google_login(db, user, request, is_new_account=False, linked=True)
+
+
+async def register_failed_attempts_for_link(db: AsyncSession, user: User, request: Request):
+    await register_failed_attempt(db, user)
+    await record_login_attempt(db, user.email, request, succeeded=False)
+    await db.commit()
 
 
 @router.post("/google/link", response_model=MessageReply)
@@ -549,7 +622,7 @@ async def login(data: LoginRequest, request: Request, db: Db):
         await db.commit()
         raise invalid
 
-    if user.email_verification_required and user.email_verified_at is None:
+    if user.email_verification_required and user.email_verified_at is None and not local_verification_bypass():
         raise HTTPException(
             status.HTTP_403_FORBIDDEN,
             {"code": "EMAIL_VERIFICATION_REQUIRED", "message": "Verify your email before signing in."},

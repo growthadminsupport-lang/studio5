@@ -193,7 +193,7 @@ class GrowthReferenceLMS(Base):
     # ทั้งสองคอลัมน์ถูกใช้ใน WHERE ของ get_lms_params() — ต้องเป็น ENUM ตรงชนิดจริง
     # (ดูคำอธิบายที่ SexType/MetricType ด้านบน)
     sex: Mapped[str] = mapped_column(SexType)
-    age_months: Mapped[int] = mapped_column(Integer)
+    age_months: Mapped[float] = mapped_column(Float)
     metric_type: Mapped[str] = mapped_column(MetricType)
     l_value: Mapped[float] = mapped_column(Float)
     m_value: Mapped[float] = mapped_column(Float)

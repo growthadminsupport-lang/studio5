@@ -108,16 +108,16 @@ check("missing references must not report normal",
       lambda: "ปกติ" not in missing["guidance_message"], expect=True)
 check("missing references keep SDS null",
       lambda: all(missing[f"{metric}_sds"] is None for metric in ("height", "weight", "bmi")), expect=True)
-partial = result_with_references({"height": [RefRow(48, 1, 110, 0.1)]})
+partial = result_with_references({"height": [RefRow(48.5, 1, 110, 0.1)]})
 check("partial references must not report all normal",
       lambda: "ปกติ" not in partial["guidance_message"], expect=True)
-flagged_partial = result_with_references({"height": [RefRow(48, 1, 80, 0.1)]})
+flagged_partial = result_with_references({"height": [RefRow(48.5, 1, 80, 0.1)]})
 check("partial references retain flagged metric guidance and explain missing data",
       lambda: flagged_partial["is_flagged"] and "ส่วนสูง" in flagged_partial["guidance_message"]
       and "ข้อมูลอ้างอิง" in flagged_partial["guidance_message"], expect=True)
 complete = result_with_references({
-    "height": [RefRow(48, 1, 110, 0.1)], "weight": [RefRow(48, 1, 20, 0.1)],
-    "bmi": [RefRow(48, 1, 16.53, 0.1)],
+    "height": [RefRow(48.5, 1, 110, 0.1)], "weight": [RefRow(48.5, 1, 20, 0.1)],
+    "bmi": [RefRow(48.5, 1, 16.53, 0.1)],
 })
 check("complete normal references retain normal result",
       lambda: "ทั้งหมดอยู่ในเกณฑ์ปกติ" in complete["guidance_message"] and not complete["is_flagged"], expect=True)

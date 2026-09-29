@@ -41,8 +41,8 @@ export function AuthProvider({ children }) {
     return acceptTokens(tokens, remember);
   }
 
-  async function loginWithGoogle(idToken, termsAccepted = false, remember = false) {
-    const tokens = await publicRequest('/api/auth/google', { id_token: idToken, terms_accepted: termsAccepted });
+  async function loginWithGoogle(idToken, termsAccepted = false, remember = false, expectedEmail = null) {
+    const tokens = await publicRequest('/api/auth/google', { id_token: idToken, terms_accepted: termsAccepted, expected_email: expectedEmail || null });
     return acceptTokens(tokens, remember);
   }
 
@@ -73,6 +73,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={{
     user, email: user?.email || '', isLoggedIn: Boolean(user), loading,
     login, loginWithGoogle, register, logout, linkGoogle,
+    linkGoogleAndLogin: async (idToken, email, password, remember = false) => acceptTokens(await publicRequest("/api/auth/google/link-login", { id_token: idToken, email, current_password: password }), remember),
     requestPasswordReset: (email) => publicRequest('/api/auth/password/forgot', { email }),
     resetPassword: (token, newPassword) => publicRequest('/api/auth/password/reset', { token, new_password: newPassword }),
     verifyEmail: (token, password) => publicRequest('/api/auth/email/verify', { token, password }),

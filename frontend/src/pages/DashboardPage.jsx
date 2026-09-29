@@ -1,3 +1,4 @@
+import { useChildren } from '../lib/useChildren';
 import { useState } from 'react';
 import { useChartTheme } from '../utils/chartTheme';
 import { Link } from 'react-router-dom';
@@ -36,34 +37,6 @@ const MEASURES = {
   weight: { label: 'Weight', unit: 'kg', icon: Weight, chartTitle: 'Weight-for-age vs. Reference', percentileKey: 'weightPercentile' },
   bmi: { label: 'BMI', unit: '', icon: Accessibility, chartTitle: 'BMI-for-age vs. Reference', percentileKey: 'bmiPercentile' },
 };
-
-// ============================================================
-// Mock Data
-// ============================================================
-
-// One child, no measurement logged yet — tiles show "—" and percentile
-// fields stay null until the child has a growth entry, same as a
-// freshly created profile. Swap this for real API data once it exists.
-const INITIAL_CHILDREN = [
-  {
-    id: 'c1',
-    name: 'growth',
-    nickname: '',
-    dateOfBirth: '2008-05-05', // raw ISO date — source of truth for the edit form
-    sex: 'FEMALE', // 'FEMALE' | 'MALE'
-    relation: 'PARENT',
-    gender: 'Girl',
-    ageLabel: '18 Years, 4 Months',
-    ageShort: '18 years old',
-    bornLabel: 'Born May 5, 2008',
-    height: null,
-    weight: null,
-    bmi: null,
-    heightPercentile: null,
-    weightPercentile: null,
-    bmiPercentile: null,
-  },
-];
 
 // Drives the "Worth a look" banner. null until growth stats flag
 // something — comes from the backend's guidance calculation later.
@@ -477,23 +450,15 @@ function NextSteps({ items }) {
 function DashboardPage() {
   const chart = useChartTheme();
   const [selectedMeasure, setSelectedMeasure] = useState('height');
-  const [children, setChildren] = useState(INITIAL_CHILDREN);
-  const [activeChildId, setActiveChildId] = useState(INITIAL_CHILDREN[0]?.id ?? null);
+  const { children, child, activeChildId, setActiveChildId, removeChild, loading, error } = useChildren();
   const [modal, setModal] = useState(null); // null | 'switch' | 'manage'
 
-  const child = children.find((c) => c.id === activeChildId) ?? null;
   const currentMeasure = MEASURES[selectedMeasure];
   const curve = REFERENCE_CURVES[selectedMeasure];
 
-  function handleRemoveChild(id) {
-    setChildren((prev) => {
-      const next = prev.filter((c) => c.id !== id);
-      if (activeChildId === id) {
-        setActiveChildId(next[0]?.id ?? null);
-      }
-      return next;
-    });
-  }
+  const handleRemoveChild = removeChild;
+  if (loading) return <p role="status" className="p-8">Loading children…</p>;
+  if (error) return <p role="alert" className="p-8">{error}</p>;
 
   // No child on the account yet — nothing else on the dashboard makes
   // sense without one, so this replaces the whole page body.
@@ -642,7 +607,7 @@ function DashboardPage() {
             <div>
               <h3 className="text-sm font-bold text-[#056559] dark:text-teal-300">{currentMeasure.chartTitle}</h3>
               <p className="mt-0.5 text-xs text-slate-400">
-                Dashed lines are the 3rd/50th/97th percentile reference curves for the child&apos;s age and sex.
+                Illustrative reference curves only; these are not validated for your child. Recorded values are shown above.
               </p>
             </div>
 

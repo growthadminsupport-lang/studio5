@@ -1,29 +1,17 @@
 // src/pages/ProfilePage.jsx
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import "./ProfilePage.css";
 
 function ProfilePage() {
-  const { logout, email } = useAuth() || {};
+  const { logout, email, user } = useAuth() || {};
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("Name XX");
-
-  const handleSave = (e) => {
-    e.preventDefault();
-  };
+  const fullName = user?.full_name || '';
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
-  };
-
-  const handleDeleteAccount = () => {
-    if (window.confirm("Are you sure you want to delete your account?")) {
-      logout();
-      navigate("/login", { replace: true });
-    }
   };
 
   return (
@@ -34,10 +22,10 @@ function ProfilePage() {
           <User size={40} />
         </div>
         <h2 className="profile-name">{fullName || "User Name"}</h2>
-        <p className="profile-email">{email || "username@gmail.com"}</p>
+        <p className="profile-email">{email}</p>
         <Link to="/settings" className="profile-settings-link">
           <Settings size={16} />
-          <span>Photo & password settings</span>
+          <span>Account settings</span>
         </Link>
       </div>
 
@@ -45,20 +33,8 @@ function ProfilePage() {
         {/* Account Card (Full-width Input + Save Button) */}
         <div className="account-card">
           <h3>Account</h3>
-          <form onSubmit={handleSave}>
-            <div className="input-group">
-              <label htmlFor="fullName">Full name</label>
-              <input
-                id="fullName"
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-            </div>
-            <button type="submit" className="btn-primary">
-              Save changes
-            </button>
-          </form>
+          <p>Full name: {fullName}</p>
+          <p>Email: {email}</p>
         </div>
 
         {/* Log Out Card (Full-width Outlined Button) */}
@@ -68,17 +44,7 @@ function ProfilePage() {
           </button>
         </div>
 
-        {/* Danger Zone Card (Full-width Danger Button) */}
-        <div className="account-card">
-          <h3>Danger zone</h3>
-          <button
-            type="button"
-            className="btn-danger-outline"
-            onClick={handleDeleteAccount}
-          >
-            Delete account
-          </button>
-        </div>
+
       </div>
     </div>
   );

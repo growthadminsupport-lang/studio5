@@ -1,4 +1,22 @@
+## 2026-09-29 — CDC 2000 and Render preparation
+
+- Vendor official CDC CSVs and SHA-256 manifest; seed 1,308 rows transactionally without overwriting conflicts.
+- Preserve half-month LMS ages, use CDC monthly bins, and return unavailable outside 24–240 months.
+- Root Render Blueprint uses Python 3.12.14, initialization before Uvicorn, production configuration checks, and database/schema/reference readiness.
+- Add CDC percentile validation, production configuration checks, and disposable PostgreSQL/live HTTP smoke coverage.
+- Deployment/export instructions: `docs/render-deployment.md`. No hosted deployment or local application database migration performed.
+
 # Changelog
+
+## 2026-09-23 — One account with password and Google login
+
+- Add unauthenticated `/api/auth/google/link-login` with fresh Google proof, email matching, website-password confirmation, row locking, and existing attempt limits.
+- Activate pending accounts and consume verification tokens while preserving the password hash, account ID, and child data.
+- Add optional `expected_email` to Google sign-in and inline `GoogleLinkForm` to login/registration pages. Keep Settings linking available.
+- Support Resend HTTPS delivery alongside SMTP, including production registration/resend checks and sanitized failure logging.
+- No new migration required on the current schema. No cloud deployment performed.
+- Validation: 10 backend regression files, frontend build, targeted auth lint, and rollback-only PostgreSQL HTTP linking checks passed. Google proof was mocked in the database test; real Google sign-in and inbox delivery remain unverified.
+
 
 ## 2026-09-22 — Descriptive filenames
 

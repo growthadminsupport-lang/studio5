@@ -4,6 +4,10 @@ FastAPI backend for parent accounts, child profiles, and growth records, backed 
 
 **Status, 2026-09-23:** password-preserving Google linking and new-account email verification are implemented. Regression tests, the React build, a disposable PostgreSQL HTTP smoke run, and a legacy-schema migration check pass. SMTP delivery and a real Google browser sign-in still need live verification before deployment.
 
+## Latest authentication update
+
+The current local API uses port 8001 through the root `start-local.ps1`; the commands below retain the standalone port-8000 example. Google linking now works before login and preserves website passwords. Resend HTTPS or SMTP can provide email delivery; real inbox delivery remains unverified. All 10 backend regression files, the frontend build, targeted auth lint, and a PostgreSQL linking smoke test passed. The smoke test mocked Google verification and rolled back its data. See the frontend authentication guide for the current API contract and testing limits. The new Render blueprint is at repository-root `render.yaml`; no deployment has been performed.
+
 ## Start here
 
 - [Frontend API guide](docs/frontend-api.md): connection settings, endpoints, and child/growth examples.
@@ -28,9 +32,9 @@ After starting the backend:
 
 | Area | Current behavior |
 | --- | --- |
-| Accounts | New password registrations require an email link and registration password before login. Existing accounts remain accessible. |
+| Accounts | New password registrations require an email link plus registration password, or matching Google plus website-password confirmation, before login. Existing accounts remain accessible. |
 | Sessions | Bearer access tokens, rotating refresh tokens, session listing, logout, and logout from all devices. |
-| Google | Verify a Google ID token, create an account, or sign in with an already-linked identity. An email match returns `LINK_REQUIRED`; authenticated linking requires the website password and a fresh Google token. |
+| Google | Verify a Google ID token, create an account, or sign in with an already-linked identity. An email match returns `LINK_REQUIRED`; inline password confirmation can verify and link the account through `/api/auth/google/link-login`. Settings linking remains available. |
 | Children | Create, list, read, update, and delete profiles belonging to the authenticated parent. |
 | Growth | Save height/weight, calculate BMI, and read measurement history. Percentile/SDS require reference LMS data. |
 | Email | Password reset and security notification code is implemented. SMTP delivery has not been verified; development mode logs email content. |
@@ -160,7 +164,7 @@ These controls are not a claim of a completed security audit or production readi
 
 ## Data and calculation limits
 
-- Reference LMS data has not been seeded in the current local setup. Missing reference values produce null percentile/SDS fields and an incomplete-reference message; `is_flagged: false` alone does not establish a normal result.
+- CDC 2000 data for ages 24–240 months is bundled. Run `python init_database.py` to migrate and seed the configured database; deployment does this automatically. Missing reference values produce null percentile/SDS fields and an incomplete-reference message; `is_flagged: false` alone does not establish a normal result.
 - Changing a child's sex or birth date does not recalculate existing growth records.
 - One measurement per child per date is allowed. Deleting a child cascades to associated records.
 - There is no upload endpoint, private image storage integration, model loader, or AI inference endpoint yet.
@@ -220,3 +224,7 @@ Deploy the API and database only after applying the correct schema/migrations, s
 Use the actual URL assigned to the deployed service; no example Render URL in documentation should be treated as a live endpoint. Keep `.env`, local credentials, logs, uploads, and virtual environments out of Git.
 
 See [Git handoff](docs/git-handoff.md) for review and push commands.
+
+## Render deployment with CDC 2000
+
+Use the root `render.yaml` Blueprint and follow [the deployment guide](docs/render-deployment.md). It documents environment values, transactional initialization, reference ages, readiness checks, and export before the free database expires. Existing local data is not uploaded or automatically recalculated.

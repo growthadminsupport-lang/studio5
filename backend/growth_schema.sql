@@ -290,7 +290,7 @@ CREATE INDEX idx_chd_bone_age_predictions_chd_id
 CREATE TABLE ref_growth_lms (
     lms_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     sex sex_type NOT NULL,
-    age_months INTEGER NOT NULL,
+    age_months DOUBLE PRECISION NOT NULL,
     metric_type metric_type NOT NULL,
     l_value DOUBLE PRECISION NOT NULL,
     m_value DOUBLE PRECISION NOT NULL,

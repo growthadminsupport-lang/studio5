@@ -1,18 +1,10 @@
+import { useChildren } from '../lib/useChildren';
 import { useState } from 'react';
 import { ArrowLeftRight, Pencil, Baby, Brain } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-// No ChildContext or API in this repo yet — same mock child shape used
-// across the other pages.
-const child = {
-  id: 'c1',
-  name: 'growth',
-  gender: 'Girl', // drives which physical-development question shows
-  ageLabel: '18 Years, 4 Months',
-  bornLabel: 'Born May 5, 2008',
-};
 
-const isFemale = child.gender === 'Girl';
+
 
 // ============================================================
 // Sign question — yes / no / not sure, with an optional age field
@@ -71,6 +63,8 @@ function SignQuestion({ label, description, value, onChange, ageValue, onAgeChan
 // ============================================================
 
 function PubertyPage() {
+  const { child, loading, error } = useChildren();
+  const isFemale = child?.gender === 'Girl';
   const [formOpen, setFormOpen] = useState(false);
   const [answers, setAnswers] = useState({});
   const [notes, setNotes] = useState('');
@@ -91,6 +85,9 @@ function PubertyPage() {
 
   const hasHistory = submissions.length > 0;
 
+  if (loading) return <p className="p-8" role="status">Loading child…</p>;
+  if (error) return <p className="p-8" role="alert">{error}</p>;
+  if (!child) return <div className="p-8">Add a child first. <Link to="/children/new">Add child</Link></div>;
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">
@@ -190,7 +187,7 @@ function PubertyPage() {
               <li className="flex gap-2">
                 <span className="text-[#056559] dark:text-teal-300">•</span>
                 <span>
-                  Answers are stored against {child.name}&apos;s profile and visible only to their guardians.
+                  This questionnaire is a local preview. Answers are not saved to your account.
                 </span>
               </li>
             </ul>

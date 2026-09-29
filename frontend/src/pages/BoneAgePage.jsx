@@ -1,3 +1,4 @@
+import { useChildren } from '../lib/useChildren';
 import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -11,14 +12,6 @@ import {
   X,
 } from 'lucide-react';
 
-// Mock child shape used across pages — no ChildContext yet.
-const child = {
-  id: 'c1',
-  name: 'growth',
-  gender: 'Girl',
-  ageLabel: '18 Years, 4 Months',
-  bornLabel: 'Born May 5, 2008',
-};
 
 // Demo-only — real calibration/accuracy numbers come from the backend
 // once bone-age analysis is actually wired up.
@@ -69,6 +62,7 @@ function ConfirmDeleteDialog({ onCancel, onConfirm }) {
 // ============================================================
 
 function BoneAgePage() {
+  const { child, loading, error } = useChildren();
   const inputRef = useRef(null);
   const [history, setHistory] = useState([]);
   const [uploadError, setUploadError] = useState(null);
@@ -107,6 +101,9 @@ function BoneAgePage() {
     setPendingDeleteId(null);
   }
 
+  if (loading) return <p className="p-8" role="status">Loading child…</p>;
+  if (error) return <p className="p-8" role="alert">{error}</p>;
+  if (!child) return <div className="p-8">Add a child first. <Link to="/children/new">Add child</Link></div>;
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 py-8">
       <div className="mx-auto w-full max-w-2xl px-4 sm:px-6 lg:px-8">

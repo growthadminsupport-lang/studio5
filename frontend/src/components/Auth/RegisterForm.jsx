@@ -1,3 +1,4 @@
+import GoogleLinkForm from "./GoogleLinkForm";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -15,6 +16,7 @@ function RegisterForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [linkCredential, setLinkCredential] = useState(null);
   const [busy, setBusy] = useState(false);
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -25,8 +27,12 @@ function RegisterForm() {
     if (!acceptedTerms) return setError('Accept the terms and privacy notice first.');
     setError(''); setBusy(true);
     try {
-      await register({ ...form, acceptedTerms });
-      setSuccess('Check your inbox for a verification link. Open it and enter the password you chose here. If no message arrives, use resend verification or password reset if this email already has an account.');
+      const result = await register({ ...form, acceptedTerms });
+      if (result.verification_required === false) {
+        navigate('/login', { replace: true });
+        return;
+      }
+      setSuccess(result.message);
     } catch (reason) { setError(reason.message); }
     finally { setBusy(false); }
   }
@@ -35,14 +41,16 @@ function RegisterForm() {
     if (!acceptedTerms) return setError('Accept the terms and privacy notice first.');
     setError(''); setBusy(true);
     try {
-      await loginWithGoogle(credential, true);
+      await loginWithGoogle(credential, true, false, form.email.trim());
       navigate('/dashboard', { replace: true });
     } catch (reason) {
-      setError(reason.code === 'LINK_REQUIRED'
-        ? 'This email already has a website account. Log in with its password, then link Google in Settings.'
-        : reason.message);
+      if (reason.code === 'LINK_REQUIRED') {
+        setLinkCredential(credential);
+      } else setError(reason.message);
     } finally { setBusy(false); }
   }
+
+  if (linkCredential) return <GoogleLinkForm credential={linkCredential} email={form.email} onCancel={() => setLinkCredential(null)} />;
 
   return (
     <form onSubmit={handleSubmit} className="auth-form">

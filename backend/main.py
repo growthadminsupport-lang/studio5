@@ -23,8 +23,10 @@ from sqlalchemy import text
 
 from config import DEFAULT_CORS_ORIGINS, parse_cors_origins
 from database import engine
+from deploy_checks import validate_configuration, validate_schema
+from cdc_reference import load_reference, existing_reference, check_existing
 from google_oauth import GOOGLE_ENABLED
-from mailer import APP_ENV, SMTP_ENABLED
+from mailer import APP_ENV, EMAIL_ENABLED
 from routes_auth import router as auth_router
 from routes_children import router as children_router
 from routes_growth import router as growth_router
@@ -36,6 +38,7 @@ logger = logging.getLogger("growth.startup")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    validate_configuration()
     # ประกาศตอนสตาร์ทว่าฟีเจอร์ที่ขึ้นกับค่าตั้งเปิดอยู่หรือไม่
     # Google ไม่ตั้งก็รันได้ แต่ production ต้องตั้ง SMTP ไม่เช่นนั้นอีเมลยืนยัน
     # และรีเซ็ตรหัสผ่านจะส่งไม่ได้ อาการที่ผู้ใช้เห็นคือ
@@ -45,13 +48,13 @@ async def lifespan(app: FastAPI):
     # ใช้ warning ไม่ใช่ info เพราะ uvicorn ตั้ง handler ให้เฉพาะ logger ของตัวเอง
     # ส่วน logger อื่นตกไปที่ lastResort ของ Python ซึ่งพิมพ์เฉพาะ WARNING ขึ้นไป
     # ถ้าใช้ info บรรทัดนี้จะไม่โผล่เลย (mailer.py ใช้ warning ด้วยเหตุผลเดียวกัน)
-    if APP_ENV == "production" and not SMTP_ENABLED:
-        raise RuntimeError("Production registration requires working SMTP email configuration")
+    if APP_ENV == "production" and not EMAIL_ENABLED:
+        raise RuntimeError("Production registration requires SMTP or RESEND_API_KEY and MAIL_FROM")
 
     logger.warning(
         "เข้าสู่ระบบด้วย Google: %s · ส่งอีเมลจริง: %s",
         "เปิด" if GOOGLE_ENABLED else "ปิด (ไม่ได้ตั้ง GOOGLE_CLIENT_IDS)",
-        "เปิด" if SMTP_ENABLED else "ปิด (ไม่ได้ตั้ง SMTP_HOST — อีเมลจะพิมพ์ลง log แทน)",
+        "เปิด" if EMAIL_ENABLED else "ปิด (ไม่ได้ตั้งค่าบริการอีเมล — อีเมลจะพิมพ์ลง log แทน)",
     )
     yield
     # ปิด connection pool ให้เรียบร้อยตอนเซิร์ฟเวอร์หยุด
@@ -103,11 +106,11 @@ async def root():
 
 @app.get("/health", tags=["health"])
 async def health():
-    """เช็คว่าต่อฐานข้อมูลได้จริง ไม่ใช่แค่เซิร์ฟเวอร์ยังไม่ตาย"""
-    async with engine.connect() as conn:
-        version = await conn.scalar(text("SHOW server_version"))
-        tables = await conn.scalar(text(
-            "SELECT count(*) FROM information_schema.tables "
-            "WHERE table_schema = 'public' AND table_type = 'BASE TABLE'"
-        ))
-    return {"status": "ok", "postgres": version, "tables": tables}
+    try:
+        async with engine.connect() as conn:
+            await validate_schema(conn)
+            check_existing(await existing_reference(conn), load_reference(), complete=True)
+        return {"status": "ok", "reference": "CDC 2000", "reference_rows": 1308}
+    except Exception:
+        logger.warning("Readiness check failed; check database initialization and CDC seed")
+        return JSONResponse(status_code=503, content={"status": "unavailable"})

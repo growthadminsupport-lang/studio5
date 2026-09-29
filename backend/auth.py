@@ -35,6 +35,12 @@ from security import generate_token, hash_token, normalize_password
 
 load_dotenv()
 
+
+def local_verification_bypass() -> bool:
+    import mailer
+    return mailer.APP_ENV == "development" and os.environ.get("LOCAL_SKIP_EMAIL_VERIFICATION") == "1"
+
+
 try:
     JWT_SECRET = os.environ["JWT_SECRET"]
 except KeyError:
@@ -192,7 +198,7 @@ async def get_current_user(
     if user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ไม่พบบัญชีผู้ใช้")
 
-    if user.email_verification_required and user.email_verified_at is None:
+    if user.email_verification_required and user.email_verified_at is None and not local_verification_bypass():
         raise HTTPException(status.HTTP_403_FORBIDDEN, "กรุณายืนยันอีเมลก่อนใช้งาน")
 
     # token ที่ออกก่อนการเปลี่ยนรหัสผ่านครั้งล่าสุดถือว่าใช้ไม่ได้แล้ว
@@ -298,7 +304,7 @@ async def consume_refresh_token(
     if user is None:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ไม่พบบัญชีผู้ใช้")
 
-    if user.email_verification_required and user.email_verified_at is None:
+    if user.email_verification_required and user.email_verified_at is None and not local_verification_bypass():
         raise HTTPException(status.HTTP_403_FORBIDDEN, "กรุณายืนยันอีเมลก่อนใช้งาน")
 
     return user, session

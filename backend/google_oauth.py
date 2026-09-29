@@ -48,6 +48,10 @@ GOOGLE_CLIENT_IDS = parse_google_client_ids(os.environ.get("GOOGLE_CLIENT_IDS", 
 
 GOOGLE_ENABLED = bool(GOOGLE_CLIENT_IDS)
 
+# Allow small clock differences between Google and this server, never minutes
+# of drift. Signature, issuer, audience and required claims remain mandatory.
+_CLOCK_SKEW_SECONDS = 30
+
 # Google หมุนกุญแจทุกไม่กี่วัน จะดึง JWKS ใหม่ทุกคำขอก็ช้าเกินไป (เพิ่ม network
 # round-trip ให้ทุกการเข้าสู่ระบบ) จะแคชถาวรก็พังตอนเขาหมุนกุญแจ
 # แคชไว้ 1 ชั่วโมงคือจุดกลาง และถ้าเจอ kid ที่ไม่รู้จักจะบังคับดึงใหม่ทันที
@@ -192,6 +196,7 @@ async def verify_google_id_token(id_token: str, max_age_seconds: int | None = No
             algorithms=["RS256"],
             audience=GOOGLE_CLIENT_IDS,
             issuer=list(GOOGLE_ISSUERS),
+            leeway=_CLOCK_SKEW_SECONDS,
             options={"require": ["exp", "iat", "aud", "iss", "sub"]},
         )
     except jwt.InvalidTokenError as exc:
@@ -202,7 +207,7 @@ async def verify_google_id_token(id_token: str, max_age_seconds: int | None = No
     # accepted merely because it has not reached Google's normal expiry yet.
     if max_age_seconds is not None:
         issued_at = payload.get("iat")
-        if not isinstance(issued_at, (int, float)) or not 0 <= time.time() - issued_at <= max_age_seconds:
+        if not isinstance(issued_at, (int, float)) or not -_CLOCK_SKEW_SECONDS <= time.time() - issued_at <= max_age_seconds:
             raise INVALID_TOKEN
 
     subject = payload.get("sub")

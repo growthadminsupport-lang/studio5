@@ -1,0 +1,42 @@
+# Free testing only: Render Postgres expires after 30 days.
+databases:
+  - name: growth-db
+    databaseName: growth_db
+    user: growth
+    region: singapore
+    plan: free
+    ipAllowList: []
+
+services:
+  - type: web
+    name: growth-api
+    runtime: python
+    region: singapore
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: python init_database.py && exec uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.14"
+      - key: APP_ENV
+        value: production
+      - key: FORWARDED_ALLOW_IPS
+        value: "*"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: growth-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_IDS
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false

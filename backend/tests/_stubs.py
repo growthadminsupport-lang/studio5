@@ -103,16 +103,7 @@ class _FakeResult:
 
 
 class FakeSession:
-    """
-    แทน AsyncSession — เลียนแบบผลลัพธ์ที่ PostgreSQL จะคืนให้ get_lms_params
-
-    get_lms_params ยิง query 2 ครั้งต่อ 1 metric เสมอ และเรียงลำดับแน่นอน:
-    ครั้งแรกหาแถว age <= ที่ต้องการ (lower) ครั้งที่สองหาแถว age >= (upper)
-    คลาสนี้จึงนับจำนวนครั้งที่ถูกเรียกแล้วคืนแถวที่ถูกต้องให้ตามนั้น
-
-    evaluate_metric ถูกเรียกตามลำดับ height -> weight -> bmi ดังนั้นทุก ๆ 2 ครั้ง
-    จะเลื่อนไป metric ถัดไปใน metric_order
-    """
+    """Return exact CDC monthly-bin rows, one query per metric."""
 
     def __init__(self, rows_by_metric, age_months, metric_order=("height", "weight", "bmi")):
         self.rows_by_metric = rows_by_metric
@@ -121,18 +112,9 @@ class FakeSession:
         self.calls = 0
 
     async def execute(self, _query):
-        pair_index = self.calls // 2
-        wants_lower = self.calls % 2 == 0
+        from growth_calc import cdc_lookup_age
+        index = self.calls
         self.calls += 1
-
-        if pair_index >= len(self.metric_order):
-            raise AssertionError(f"ถูก query เกินจำนวน metric ที่เตรียมไว้ (ครั้งที่ {self.calls})")
-
-        rows = self.rows_by_metric.get(self.metric_order[pair_index], [])
-        if wants_lower:
-            candidates = [r for r in rows if r.age_months <= self.age_months]
-            row = max(candidates, key=lambda r: r.age_months) if candidates else None
-        else:
-            candidates = [r for r in rows if r.age_months >= self.age_months]
-            row = min(candidates, key=lambda r: r.age_months) if candidates else None
-        return _FakeResult(row)
+        target = cdc_lookup_age(self.age_months)
+        rows = self.rows_by_metric.get(self.metric_order[index], [])
+        return _FakeResult(next((r for r in rows if r.age_months == target), None))

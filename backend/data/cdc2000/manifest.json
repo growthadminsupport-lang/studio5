@@ -1,0 +1,23 @@
+{
+  "reference": "CDC 2000",
+  "release": "2000-05-30",
+  "retrieved": "2026-09-29",
+  "documentation": "https://www.cdc.gov/growthcharts/cdc-data-files.htm",
+  "files": {
+    "statage.csv": {
+      "metric": "height",
+      "url": "https://www.cdc.gov/growthcharts/data/zscore/statage.csv",
+      "sha256": "45130d2a9d7c50c54a47e7ba626b66c61d4554bc2d901198cedd9419a53f7251"
+    },
+    "wtage.csv": {
+      "metric": "weight",
+      "url": "https://www.cdc.gov/growthcharts/data/zscore/wtage.csv",
+      "sha256": "3406c9d125bcb69c062a9e84eb8c0209bfe9346542bdc1d308643750dcc241b7"
+    },
+    "bmiagerev.csv": {
+      "metric": "bmi",
+      "url": "https://www.cdc.gov/growthcharts/data/zscore/bmiagerev.csv",
+      "sha256": "cbeea0e8d500ee15c652f3fdc45bcd02cb9c15d4d1e86f4d8048bbfea8d166e5"
+    }
+  }
+}
