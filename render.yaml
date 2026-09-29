@@ -31,9 +31,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS
-        sync: false
+        value: https://studio5-phi.vercel.app
       - key: APP_BASE_URL
-        sync: false
+        value: https://studio5-phi.vercel.app
       - key: GOOGLE_CLIENT_IDS
         sync: false
       - key: RESEND_API_KEY

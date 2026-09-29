@@ -15,7 +15,6 @@ function RegisterForm() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", password: "" });
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [linkCredential, setLinkCredential] = useState(null);
   const [busy, setBusy] = useState(false);
   const { register, loginWithGoogle } = useAuth();
@@ -27,12 +26,8 @@ function RegisterForm() {
     if (!acceptedTerms) return setError('Accept the terms and privacy notice first.');
     setError(''); setBusy(true);
     try {
-      const result = await register({ ...form, acceptedTerms });
-      if (result.verification_required === false) {
-        navigate('/login', { replace: true });
-        return;
-      }
-      setSuccess(result.message);
+      await register({ ...form, acceptedTerms });
+      navigate('/login', { replace: true });
     } catch (reason) { setError(reason.message); }
     finally { setBusy(false); }
   }
@@ -60,7 +55,6 @@ function RegisterForm() {
       <h1 className="font-semibold text-3xl">Create your account</h1>
       <p className="auth-subtitle">Start tracking your child's growth journey</p>
       {error && <p role="alert" className="auth-error">{error}</p>}
-      {success && <p role="status" className="auth-success-box">{success}</p>}
       <label><input type="text" name="name" placeholder="Full name" value={form.name} onChange={handleChange} required /></label>
       <label><input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required /></label>
       <label><input type="tel" name="phone" placeholder="Phone number (optional)" value={form.phone} onChange={handleChange} /></label>

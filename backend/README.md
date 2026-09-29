@@ -2,11 +2,11 @@
 
 FastAPI backend for parent accounts, child profiles, and growth records, backed by PostgreSQL.
 
-**Status, 2026-09-23:** password-preserving Google linking and new-account email verification are implemented. Regression tests, the React build, a disposable PostgreSQL HTTP smoke run, and a legacy-schema migration check pass. SMTP delivery and a real Google browser sign-in still need live verification before deployment.
+**Status, 2026-09-29:** password registration signs in without email verification. Email delivery is reserved for password reset/setup. Google linking and CDC 2000 reference data are implemented; real inbox delivery and Google browser sign-in still need live checks after deployment.
 
 ## Latest authentication update
 
-The current local API uses port 8001 through the root `start-local.ps1`; the commands below retain the standalone port-8000 example. Google linking now works before login and preserves website passwords. Resend HTTPS or SMTP can provide email delivery; real inbox delivery remains unverified. All 10 backend regression files, the frontend build, targeted auth lint, and a PostgreSQL linking smoke test passed. The smoke test mocked Google verification and rolled back its data. See the frontend authentication guide for the current API contract and testing limits. The new Render blueprint is at repository-root `render.yaml`; no deployment has been performed.
+The current local API uses port 8001 through the root `start-local.ps1`; the commands below retain the standalone port-8000 example. Google linking preserves website passwords. Resend HTTPS or SMTP can deliver password recovery mail; real inbox delivery remains unverified. See the frontend authentication guide for the current API contract. The Render blueprint is at repository-root `render.yaml`; no deployment has been performed.
 
 ## Start here
 
@@ -32,12 +32,12 @@ After starting the backend:
 
 | Area | Current behavior |
 | --- | --- |
-| Accounts | New password registrations require an email link plus registration password, or matching Google plus website-password confirmation, before login. Existing accounts remain accessible. |
+| Accounts | New password registrations can sign in immediately. Registration sends no email. Existing accounts remain accessible. |
 | Sessions | Bearer access tokens, rotating refresh tokens, session listing, logout, and logout from all devices. |
 | Google | Verify a Google ID token, create an account, or sign in with an already-linked identity. An email match returns `LINK_REQUIRED`; inline password confirmation can verify and link the account through `/api/auth/google/link-login`. Settings linking remains available. |
 | Children | Create, list, read, update, and delete profiles belonging to the authenticated parent. |
 | Growth | Save height/weight, calculate BMI, and read measurement history. Percentile/SDS require reference LMS data. |
-| Email | Password reset and security notification code is implemented. SMTP delivery has not been verified; development mode logs email content. |
+| Email | Only password reset/setup sends email. Live delivery has not been verified; development mode logs email content. |
 | Hosting | Local setup works; `render.yaml` supplies a deployment blueprint. Online deployment is pending. |
 | AI and other modules | Bone-age, puberty screening, admin, and article tables exist, but their APIs are not implemented. |
 
@@ -97,7 +97,7 @@ psql -h localhost -U postgres -d growth_db -v ON_ERROR_STOP=1 -f growth_schema.s
 psql -h localhost -U postgres -d growth_db -v ON_ERROR_STOP=1 -f admin_schema.sql
 ```
 
-Enter the database password when prompted. If `psql` is not on PATH, invoke its installed executable instead. The main schema is a fresh-database initialization script, not a repeatable migration; do not rerun it over an existing database. Existing installations must first have [the Google migration](migrations/2026-08-22_google_signin.sql) if it was not already applied, then apply [the email verification migration](migrations/2026-09-23_email_verification.sql). The latter leaves legacy accounts accessible and unmarked as verified.
+Enter the database password when prompted. If `psql` is not on PATH, invoke its installed executable instead. The main schema is for an empty database. For an existing database, run `python init_database.py`; it applies known migrations and seeds CDC without clearing accounts or history.
 
 ### 4. Start the API
 
@@ -153,7 +153,7 @@ Use the returned API `id` fields for URLs. Database primary keys have names such
 - Child and growth endpoints check ownership. A missing child or another parent's child returns `404`.
 - Google verification checks the signature, audience, issuer, expiry, subject, and verified email. Email alone never links an existing account.
 - Linking requires the current website password and a Google ID token issued within five minutes for the same email. It retains the password, sessions, and child data.
-- New password registrations cannot log in until email verification. A delivered password reset also verifies a pending account's email. Legacy accounts are not silently marked verified.
+- New password registrations can log in immediately. A delivered password reset verifies the current email; legacy accounts are not silently marked verified.
 - Failed-login controls and temporary account lockout are implemented. Registration still needs rate limiting before public launch.
 - Validation errors omit rejected raw input and exception context, including submitted passwords/tokens.
 - Logout and logout-all revoke refresh sessions; already-issued access tokens can remain valid until expiry. Logout-all does not itself change the password timestamp.
@@ -187,7 +187,7 @@ powershell -File tests\auth_api_smoke_test.ps1 -Psql "<path-to-psql.exe>" -Datab
 powershell -File tests\children_growth_api_smoke_test.ps1 -Psql "<path-to-psql.exe>" -Db "<test-database>"
 ```
 
-These smoke tests create disposable accounts/data and clean them up. Configure PostgreSQL authentication for the scripts; `psql` does not read the application's `.env` automatically. Never target a production database. The auth script verifies the email registration and password reset paths; the real Google button and link flow still require a Google test account in the browser.
+These legacy smoke scripts create disposable accounts/data. Configure PostgreSQL authentication for the scripts; `psql` does not read the application's `.env` automatically. Never target a production database. For the current registration and CDC contract, use `tests/render_database_smoke.py` against a fresh disposable localhost database named `render_test*`. The real Google button and link flow still require a Google test account in the browser.
 
 Verification record:
 - 2026-09-23: the Python regression runner passed all eight test files, including Google linking and email verification checks. The React production build passed.
@@ -219,7 +219,7 @@ render.yaml                 Proposed Render deployment configuration
 
 ## Before going online
 
-Deploy the API and database only after applying the correct schema/migrations, setting actual frontend HTTPS origins and email-link URL, configuring `APP_ENV=production` with SMTP, and receiving a verification and reset email at the reachable React pages. Verify Google origins and end-to-end login, rate limits, session handling, and backup/restore. Reference data and AI/image storage remain separate unfinished work.
+Deploy the API and database with the root Blueprint, set the actual frontend HTTPS origins and password-reset link URL, and configure `APP_ENV=production` with Resend or another supported email provider. Check a real reset email, Google login if enabled, and backup/export. AI/image storage remains separate unfinished work.
 
 Use the actual URL assigned to the deployed service; no example Render URL in documentation should be treated as a live endpoint. Keep `.env`, local credentials, logs, uploads, and virtual environments out of Git.
 

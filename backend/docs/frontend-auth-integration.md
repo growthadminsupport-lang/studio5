@@ -1,6 +1,6 @@
 # Frontend authentication guide
 
-Updated 2026-09-23. The current local API runs on port 8001; the frontend runs on port 5173. This guide describes implemented behavior, not a completed public deployment.
+Updated 2026-09-29. The current local API runs on port 8001; the frontend runs on port 5173. This guide describes implemented behavior, not a completed public deployment.
 
 ## Configuration
 
@@ -22,18 +22,11 @@ RESEND_API_KEY=<private-api-key>
 MAIL_FROM=onboarding@resend.dev
 ```
 
-Keep secrets in ignored backend configuration, never in `VITE_` variables. Google must authorize the frontend origin. Resend's test sender can deliver only to the email associated with your Resend account; other recipients require a verified sender domain. SMTP remains supported. Production startup, registration, and resend recognize either configured provider through `EMAIL_ENABLED`. Provider configuration does not prove inbox delivery.
+Keep secrets in ignored backend configuration, never in `VITE_` variables. Google must authorize the frontend origin. Resend's test sender can deliver only to the email associated with your Resend account; other recipients require a verified sender domain. SMTP remains supported for password recovery. Production startup requires a configured mail provider; registration itself sends no email. Provider configuration does not prove inbox delivery.
 
-## Registration and verification
+## Registration
 
-`POST /api/auth/register` accepts `full_name`, `email`, optional `phone_number`, `password`, and `terms_accepted`. It returns HTTP 202 with a neutral message, not session tokens. Passwords are stored as bcrypt hashes. Duplicate registrations receive the same neutral reply.
-
-A password account starts pending verification. It can be activated in either way:
-
-1. Open `/verify-email?token=...` and enter the registration password. The page sends `{ "token": "...", "password": "..." }` to `POST /api/auth/email/verify`. Links expire after 24 hours and are single-use. The user then logs in normally.
-2. Choose Google with the same email and confirm the existing website password through the linking flow below. This verifies the account and signs in immediately.
-
-`POST /api/auth/email/verification/resend` accepts `{ "email": "..." }`. For eligible pending accounts it generates a new link under the existing quota of fewer than three issued verification tokens in the previous hour. Its neutral response does not prove that an email was sent. Email delivery failures are recorded without provider response bodies, passwords, or API keys.
+`POST /api/auth/register` accepts `full_name`, `email`, optional `phone_number`, `password`, and `terms_accepted`. It returns HTTP 202 with a neutral message, not session tokens. Passwords are stored as bcrypt hashes. Duplicate registrations receive the same neutral reply. New accounts can sign in with their password immediately. No registration email is sent. Existing accounts that were pending verification can also sign in; initialization clears their verification requirement without claiming their address was verified. The former verify and resend endpoints return HTTP 410, and the frontend redirects their old pages to login.
 
 ## Google sign-in and password-preserving linking
 
@@ -71,19 +64,18 @@ The existing authenticated `POST /api/auth/google/link` and Settings flow remain
 
 ## Sessions and password recovery
 
-`POST /api/auth/login` accepts email/password. A pending password account receives 403 `EMAIL_VERIFICATION_REQUIRED`. After activation, password login and linked Google login access the same account.
+`POST /api/auth/login` accepts email/password. A valid password signs in a newly registered or formerly pending account. Linked Google login accesses the same account.
 
 The frontend keeps access tokens in memory. Refresh tokens use session storage, or local storage when Remember me is selected. Refresh tokens rotate through `/api/auth/refresh`; logout revokes the supplied refresh session. Already-issued access tokens can remain valid until expiry.
 
-Google-first users can set a website password using the existing email password-reset flow. Reset revokes old refresh sessions and preserves Google identity and child records. Working email delivery is required for that flow.
+Google-first users can set a website password using the email password-reset flow. Reset revokes old refresh sessions and preserves Google identity and child records. Password reset/setup is the only email sent by the application. Working email delivery is required for that flow.
 
 ## Verification and deployment status
 
-- All 10 isolated backend regression files passed after this change.
-- The frontend production build and lint for the changed authentication files passed.
-- A PostgreSQL-backed HTTP test, with Google token verification mocked, confirmed pending-login denial, Google activation, an unchanged password hash, both login methods returning the same account/child IDs, and repeated linking. Test records were rolled back.
-- Regression coverage includes wrong passwords, email mismatches, stale tokens, identity conflicts, account lockout, request limits, Resend failures, and email-verification expiry/reuse.
-- Real Google account selection and real inbox delivery still need user testing. Concurrent requests were not exercised by the recorded database smoke test.
+- All 12 backend regression files and the frontend production build passed on 2026-09-29.
+- A disposable PostgreSQL/live HTTP smoke test passed fresh and repeated startup, registration/login without verification, CDC reference data, child growth/history, ownership, and CORS checks.
+- The local application database retained two accounts and two growth records; its verification gate is cleared and all 1,308 CDC reference rows remain.
+- Real Google account selection and real password-reset inbox delivery still need user testing.
 - No Render deployment or Google Cloud configuration change was performed.
 
-This linking change needs no migration on the current schema. Older installations still need the existing Google and email-verification migrations; never rerun the fresh schema over a populated database. Use the repository-root `render.yaml` for the new Render blueprint; `backend/render.yaml` is the older SMTP-oriented configuration.
+Run `python init_database.py` to apply known migrations, including the 2026-09-29 registration-verification retirement, on a populated database. Never rerun the fresh schema over a populated database. Use the repository-root `render.yaml` for the Render blueprint; `backend/render.yaml` is retired.

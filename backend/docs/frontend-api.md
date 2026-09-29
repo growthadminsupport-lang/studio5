@@ -1,6 +1,6 @@
 # Frontend API handoff
 
-Updated 2026-09-23. This guide covers the implemented FastAPI backend and React frontend in `studio5`.
+Updated 2026-09-29. This guide covers the implemented FastAPI backend and React frontend in `studio5`.
 
 ## Connection
 
@@ -30,9 +30,9 @@ All paths are relative to the API base. JSON request bodies use `Content-Type: a
 | --- | --- | --- | --- |
 | GET | `/` | None | 200 service info |
 | GET | `/health` | None | 200 database health |
-| POST | `/api/auth/register` | None | 202 generic message; verification email sent for new accounts |
-| POST | `/api/auth/email/verify` | Email token and registration password | 200 message |
-| POST | `/api/auth/email/verification/resend` | Email in body | 200 generic message |
+| POST | `/api/auth/register` | None | 202 generic message; password login available immediately |
+| POST | `/api/auth/email/verify` | Retired | 410 Gone |
+| POST | `/api/auth/email/verification/resend` | Retired | 410 Gone |
 | POST | `/api/auth/login` | None | 200 token pair |
 | POST | `/api/auth/google` | Google ID token in body | 200 token pair and account flags |
 | POST | `/api/auth/google/link` | GrowTH Bearer token, website password, Google ID token | 200 message |

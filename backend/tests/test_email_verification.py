@@ -1,7 +1,6 @@
 """Registration ownership checks, without an external database or mail provider."""
 import os
 import unittest
-from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -28,189 +27,63 @@ def db_with(*rows):
 
 
 class EmailVerificationTests(unittest.IsolatedAsyncioTestCase):
-    def setUp(self):
-        self.enterContext(patch.dict(os.environ, {"LOCAL_SKIP_EMAIL_VERIFICATION": "0"}))
-
-    async def test_local_registration_bypass_is_development_only(self):
+    async def test_registration_never_sends_email_or_claims_verified(self):
         for environment in ("development", "production"):
             db = db_with()
             form = routes.RegisterRequest(full_name="Parent", email="parent@gmail.com",
                                           password="safe long phrase 2026", terms_accepted=True)
-            with (
-                patch.dict(os.environ, {"LOCAL_SKIP_EMAIL_VERIFICATION": "1"}),
-                patch.object(routes.mailer, "APP_ENV", environment),
-                patch.object(routes.mailer, "EMAIL_ENABLED", True),
-                patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-                patch.object(routes, "hash_password", AsyncMock(return_value="hashed")),
-                patch.object(routes, "_issue_email_verification", AsyncMock(return_value="token")) as issue,
-                patch.object(routes.mailer, "send_email_verification", AsyncMock()) as sent,
-            ):
-                await routes.register(form, MagicMock(), db)
+            with (patch.object(routes.mailer, "APP_ENV", environment),
+                  patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
+                  patch.object(routes, "hash_password", AsyncMock(return_value="hashed")),
+                  patch.object(routes.mailer, "_deliver", AsyncMock()) as sent):
+                result = await routes.register(form, MagicMock(), db)
             user = db.add.call_args.args[0]
-            self.assertEqual(user.email_verification_required, environment == "production")
+            self.assertFalse(user.email_verification_required)
+            self.assertFalse(result.verification_required)
             self.assertIsNone(user.email_verified_at)
-            self.assertEqual(user.password_hash, "hashed")
-            self.assertEqual(sent.await_count, int(environment == "production"))
-            self.assertEqual(issue.await_count, int(environment == "production"))
+            sent.assert_not_awaited()
             db.commit.assert_awaited_once()
 
-    async def test_production_registration_with_resend_without_smtp(self):
-        db = db_with()
-        form = routes.RegisterRequest(full_name="Parent", email="parent@gmail.com",
-                                      password="safe long phrase 2026", terms_accepted=True)
-        with (
-            patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-            patch.object(routes, "hash_password", AsyncMock(return_value="hashed")),
-            patch.object(routes, "_issue_email_verification", AsyncMock(return_value="token")),
-            patch.object(routes.mailer, "APP_ENV", "production"),
-            patch.object(routes.mailer, "SMTP_ENABLED", False),
-            patch.object(routes.mailer, "EMAIL_ENABLED", True),
-            patch.object(routes.mailer, "send_email_verification", AsyncMock(return_value=False)) as sent,
+    async def test_retired_verification_endpoints_do_not_send_email(self):
+        for handler, data in (
+            (routes.resend_email_verification, routes.EmailRequest(email="parent@gmail.com")),
+            (routes.verify_email, routes.VerifyEmailRequest(token="old-token", password="password")),
         ):
-            result = await routes.register(form, MagicMock(), db)
-        self.assertEqual(result.message, routes.REGISTRATION_REPLY)
-        sent.assert_awaited_once()
-        db.commit.assert_awaited_once()
+            db = db_with()
+            with patch.object(routes.mailer, "_deliver", AsyncMock()) as sent:
+                with self.assertRaises(HTTPException) as caught:
+                    await handler(data, MagicMock(), db)
+            self.assertEqual(caught.exception.status_code, 410)
+            sent.assert_not_awaited()
+            db.execute.assert_not_awaited()
 
-    async def test_production_resend_and_quota_with_resend_without_smtp(self):
-        user = SimpleNamespace(id="u1", email="parent@gmail.com", full_name="Parent",
-                               email_verification_required=True, email_verified_at=None)
-        for count in (0, 3):
-            db = db_with(MagicMock(scalar_one_or_none=MagicMock(return_value=user)),
-                         MagicMock(scalar_one=MagicMock(return_value=count)))
-            with (
-                patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-                patch.object(routes, "_issue_email_verification", AsyncMock(return_value="token")),
-                patch.object(routes.mailer, "APP_ENV", "production"),
-                patch.object(routes.mailer, "SMTP_ENABLED", False),
-                patch.object(routes.mailer, "EMAIL_ENABLED", True),
-                patch.object(routes.mailer, "send_email_verification", AsyncMock(return_value=True)) as sent,
-            ):
-                result = await routes.resend_email_verification(routes.EmailRequest(email=user.email), MagicMock(), db)
-            self.assertEqual(result.message, routes.REGISTRATION_REPLY)
-            self.assertEqual(sent.await_count, 1 if count == 0 else 0)
-
-    async def test_production_without_provider_rejects_registration(self):
-        form = routes.RegisterRequest(full_name="Parent", email="parent@gmail.com",
-                                      password="safe long phrase 2026", terms_accepted=True)
-        db = db_with()
-        with patch.object(routes, "enforce_ip_rate_limit", AsyncMock()), patch.object(routes.mailer, "APP_ENV", "production"), patch.object(routes.mailer, "EMAIL_ENABLED", False):
-            with self.assertRaises(HTTPException) as caught:
-                await routes.register(form, MagicMock(), db)
-        self.assertEqual(caught.exception.status_code, 503)
-        db.add.assert_not_called()
-
-    async def test_new_password_registration_has_no_session_until_verified(self):
-        db = db_with()
-        form = routes.RegisterRequest(
-            full_name="Parent", email="parent@gmail.com", password="safe long phrase 2026",
-            terms_accepted=True,
-        )
-        with (
-            patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-            patch.object(routes, "hash_password", AsyncMock(return_value="hashed")),
-            patch.object(routes, "_issue_email_verification", AsyncMock(return_value="token")),
-            patch.object(routes.mailer, "SMTP_ENABLED", False),
-            patch.object(routes.mailer, "APP_ENV", "development"),
-            patch.object(routes.mailer, "send_email_verification", AsyncMock()) as sent,
-            patch.object(routes, "issue_refresh_token", AsyncMock()) as sessions,
-        ):
-            result = await routes.register(form, MagicMock(), db)
-        user = db.add.call_args.args[0]
-        self.assertTrue(user.email_verification_required)
-        self.assertIsNone(user.email_verified_at)
-        self.assertFalse(hasattr(result, "access_token"))
-        sessions.assert_not_awaited()
-        sent.assert_awaited_once()
-
-    async def test_pending_password_account_cannot_login(self):
+    async def test_legacy_pending_account_can_login_with_password(self):
         user = SimpleNamespace(password_hash="hashed", email_verification_required=True,
                                email_verified_at=None, locked_until=None)
         db = db_with(MagicMock(scalar_one_or_none=MagicMock(return_value=user)))
-        with (
-            patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-            patch.object(routes, "account_locked_error", return_value=None),
-            patch.object(routes, "verify_password", AsyncMock(return_value=True)),
-            patch.object(routes, "issue_refresh_token", AsyncMock()) as sessions,
-        ):
-            with self.assertRaises(HTTPException) as caught:
-                await routes.login(routes.LoginRequest(email="parent@gmail.com", password="secret"), MagicMock(), db)
-        self.assertEqual(caught.exception.status_code, 403)
-        sessions.assert_not_awaited()
+        with (patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
+              patch.object(routes, "account_locked_error", return_value=None),
+              patch.object(routes, "verify_password", AsyncMock(return_value=True)),
+              patch.object(routes, "clear_failed_attempts"),
+              patch.object(routes, "record_login_attempt", AsyncMock()),
+              patch.object(routes, "create_access_token", return_value="access"),
+              patch.object(routes, "issue_refresh_token", AsyncMock(return_value=("refresh", None)))):
+            result = await routes.login(routes.LoginRequest(email="parent@gmail.com", password="secret"), MagicMock(), db)
+        self.assertEqual(result.access_token, "access")
+        self.assertIsNone(user.email_verified_at)
 
-    async def test_pending_login_bypass_only_in_development(self):
-        for environment in ("development", "production"):
-            user = SimpleNamespace(password_hash="hashed", email_verification_required=True,
-                                   email_verified_at=None, locked_until=None)
-            db = db_with(MagicMock(scalar_one_or_none=MagicMock(return_value=user)))
-            with (
-                patch.dict(os.environ, {"LOCAL_SKIP_EMAIL_VERIFICATION": "1"}),
-                patch.object(routes.mailer, "APP_ENV", environment),
-                patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-                patch.object(routes, "account_locked_error", return_value=None),
-                patch.object(routes, "verify_password", AsyncMock(return_value=True)),
-                patch.object(routes, "clear_failed_attempts"),
-                patch.object(routes, "record_login_attempt", AsyncMock()),
-                patch.object(routes, "create_access_token", return_value="access"),
-                patch.object(routes, "issue_refresh_token", AsyncMock(return_value=("refresh", None))) as sessions,
-            ):
-                if environment == "production":
-                    with self.assertRaises(HTTPException) as caught:
-                        await routes.login(routes.LoginRequest(email="parent@gmail.com", password="secret"), MagicMock(), db)
-                    self.assertEqual(caught.exception.status_code, 403)
-                    sessions.assert_not_awaited()
-                else:
-                    result = await routes.login(routes.LoginRequest(email="parent@gmail.com", password="secret"), MagicMock(), db)
-                    self.assertEqual(result.access_token, "access")
-                    sessions.assert_awaited_once()
-                self.assertIsNone(user.email_verified_at)
-                self.assertTrue(user.email_verification_required)
-
-    async def test_verification_needs_token_and_registration_password(self):
-        now = datetime.now(timezone.utc)
-        record = SimpleNamespace(user_id="u1", used_at=None, expires_at=now + timedelta(hours=1))
-        user = SimpleNamespace(password_hash="hashed", email_verified_at=None)
-        db = db_with(
-            MagicMock(scalar_one_or_none=MagicMock(return_value=record)),
-            MagicMock(scalar_one=MagicMock(return_value=user)),
-        )
-        with (
-            patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-            patch.object(routes, "verify_password", AsyncMock(return_value=True)),
-        ):
-            await routes.verify_email(routes.VerifyEmailRequest(token="secret", password="password"), MagicMock(), db)
-        self.assertIsNotNone(record.used_at)
-        self.assertIsNotNone(user.email_verified_at)
+    async def test_forgot_password_still_sends_reset_mail(self):
+        user = SimpleNamespace(id="u1", email="parent@gmail.com", full_name="Parent", password_hash="hashed")
+        db = db_with(MagicMock(scalar_one_or_none=MagicMock(return_value=user)))
+        with (patch.object(routes, "password_reset_quota_exceeded", AsyncMock(return_value=False)),
+              patch.object(routes, "issue_password_reset", AsyncMock(return_value="secret-token")),
+              patch.object(routes.mailer, "send_password_reset_email", AsyncMock()) as reset_mail,
+              patch.object(routes.mailer, "send_password_setup_email", AsyncMock()) as setup_mail):
+            result = await routes.forgot_password(routes.EmailRequest(email="parent@gmail.com"), db)
+        self.assertEqual(result.message, routes.GENERIC_EMAIL_REPLY)
         db.commit.assert_awaited_once()
-
-    async def test_expired_or_reused_token_is_rejected(self):
-        now = datetime.now(timezone.utc)
-        for used_at, expires_at in ((now, now + timedelta(hours=1)), (None, now - timedelta(seconds=1))):
-            with self.subTest(used_at=used_at, expires_at=expires_at):
-                record = SimpleNamespace(used_at=used_at, expires_at=expires_at)
-                db = db_with(MagicMock(scalar_one_or_none=MagicMock(return_value=record)))
-                with patch.object(routes, "enforce_ip_rate_limit", AsyncMock()):
-                    with self.assertRaises(HTTPException) as caught:
-                        await routes.verify_email(routes.VerifyEmailRequest(token="secret", password="password"), MagicMock(), db)
-                self.assertEqual(caught.exception.status_code, 401)
-                db.commit.assert_not_awaited()
-
-    async def test_wrong_registration_password_does_not_consume_token(self):
-        record = SimpleNamespace(user_id="u1", used_at=None, expires_at=datetime.now(timezone.utc) + timedelta(hours=1))
-        user = SimpleNamespace(password_hash="hashed", email_verified_at=None)
-        db = db_with(
-            MagicMock(scalar_one_or_none=MagicMock(return_value=record)),
-            MagicMock(scalar_one=MagicMock(return_value=user)),
-        )
-        with (
-            patch.object(routes, "enforce_ip_rate_limit", AsyncMock()),
-            patch.object(routes, "verify_password", AsyncMock(return_value=False)),
-        ):
-            with self.assertRaises(HTTPException) as caught:
-                await routes.verify_email(routes.VerifyEmailRequest(token="secret", password="wrong"), MagicMock(), db)
-        self.assertEqual(caught.exception.status_code, 401)
-        self.assertIsNone(record.used_at)
-        db.commit.assert_not_awaited()
+        reset_mail.assert_awaited_once_with("parent@gmail.com", "Parent", "secret-token")
+        setup_mail.assert_not_awaited()
 
     async def test_reset_restores_legacy_google_account_password_without_touching_identity(self):
         user = SimpleNamespace(

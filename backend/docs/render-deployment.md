@@ -1,21 +1,34 @@
-# Render deployment: GrowTH API + CDC 2000
+# Render deployment: backend API + PostgreSQL
 
 Use the **repository-root `render.yaml`**. `backend/render.yaml` is retired.
-The Blueprint provisions a free Python web service and free PostgreSQL in Singapore.
+The Blueprint provisions **only** the FastAPI backend and its PostgreSQL database
+in Singapore. The existing frontend stays on its current host. No frontend service
+is created by this Blueprint.
 No local database is uploaded. The first start creates an empty application database
 and installs only reference data, never user or administrator accounts.
+
+If you later decide to keep local accounts and growth history, create a **new empty**
+Render Postgres destination and restore a `pg_dump` of the local application database
+**before starting the web service**. The normal Blueprint starts the API and initializes
+its database immediately, so a full dump cannot be restored over that initialized
+database. Plan the import sequence before creating the Blueprint, or use a separate
+empty replacement database and repoint the service after restoring. Use the Render
+database's external connection URL for `pg_restore` from your computer and its
+internal URL for the hosted API. Run `python init_database.py` after the restore to
+apply any newer migrations and verify `/health`. Never import the disposable
+`render_test*` databases. See [Render's restore instructions](https://render.com/docs/postgresql-backups).
 
 ## Before creating the Blueprint
 
 Commit the backend code, migrations, `backend/data/cdc2000/` (including the manifest),
 and root Blueprint. Do not commit `.env`, `.local`, test databases, or `tmp/`.
 Use Render **New → Blueprint**, select the repository and the intended branch.
-Fill these environment values in Render, not in source control:
+The Blueprint sets the existing frontend origin to `https://studio5-phi.vercel.app`
+for both `CORS_ORIGINS` and `APP_BASE_URL`. If the frontend domain changes, update
+these two values. Fill the private values in Render, not in source control:
 
 | Variable | Value |
 | --- | --- |
-| `CORS_ORIGINS` | Exact HTTPS frontend origins, comma-separated, without paths or `*` |
-| `APP_BASE_URL` | HTTPS frontend URL used in verification/reset email links |
 | `RESEND_API_KEY` | Private Resend API key |
 | `MAIL_FROM` | Sender on a domain verified with Resend |
 | `GOOGLE_CLIENT_IDS` | Google web client ID(s); leave empty if not using Google login |
@@ -24,8 +37,13 @@ The Blueprint generates `JWT_SECRET` and supplies `DATABASE_URL` from the databa
 internal connection string. Keep the generated JWT secret stable across redeploys.
 Resend uses HTTPS: free Render services block standard SMTP ports. A Resend test
 sender can only send to permitted test recipients; use a verified sender for other users.
-Add the deployed frontend origin in Google Cloud's authorized JavaScript origins.
-Set the frontend API base URL to the new API's HTTPS URL (follow its existing API client convention).
+If Google login is enabled, authorize the existing frontend origin in Google Cloud.
+On the **existing Vercel frontend project**, set `VITE_API_URL` to the new API's HTTPS origin
+(for example, `https://growth-api.onrender.com`) and rebuild/redeploy that frontend.
+Vite embeds this value at build time; it is not read dynamically by an already built
+site. Do not add `/api` to `VITE_API_URL`: the frontend appends `/api/...` itself.
+The API URL is public configuration; keep database URLs, JWT secrets, and mail keys
+only in Render's backend environment.
 
 ## Startup and readiness
 
@@ -78,7 +96,7 @@ test reference data/schema and leaves the test database for inspection. Never po
 at local application or hosted data. It starts/stops its own API process and disables
 external mail/Google; inbox delivery is not covered by this test.
 
-After deploying, verify actual email delivery, verification links, password login,
+After deploying, verify actual password-reset email delivery, password login,
 Google login (if configured), child creation, growth/history, allowed frontend CORS,
 and persistence after a manual service restart. Missing reference values in the UI
 must not be interpreted as a normal result.

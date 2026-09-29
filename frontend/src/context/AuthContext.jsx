@@ -76,8 +76,6 @@ export function AuthProvider({ children }) {
     linkGoogleAndLogin: async (idToken, email, password, remember = false) => acceptTokens(await publicRequest("/api/auth/google/link-login", { id_token: idToken, email, current_password: password }), remember),
     requestPasswordReset: (email) => publicRequest('/api/auth/password/forgot', { email }),
     resetPassword: (token, newPassword) => publicRequest('/api/auth/password/reset', { token, new_password: newPassword }),
-    verifyEmail: (token, password) => publicRequest('/api/auth/email/verify', { token, password }),
-    resendVerification: (email) => publicRequest('/api/auth/email/verification/resend', { email }),
   }}>{children}</AuthContext.Provider>;
 }
 

@@ -1,9 +1,7 @@
 """
 Endpoint การยืนยันตัวตน
 
-    POST /api/auth/register              สมัครสมาชิก รอยืนยันอีเมล
-    POST /api/auth/email/verify          ยืนยันอีเมลด้วยลิงก์และรหัสผ่าน
-    POST /api/auth/email/verification/resend  ส่งลิงก์ยืนยันอีกครั้ง
+    POST /api/auth/register              สมัครสมาชิกแล้วใช้รหัสผ่านเข้าสู่ระบบได้ทันที
     POST /api/auth/google                สมัคร/เข้าสู่ระบบด้วย Google (endpoint เดียวทำทั้งสองอย่าง)
     POST /api/auth/google/link           ผูก Google หลังพิสูจน์รหัสผ่านและ Google
     POST /api/auth/login                 เข้าสู่ระบบด้วยอีเมล + รหัสผ่าน
@@ -30,7 +28,7 @@ usr_accounts แถวเดียวกันหลังเจ้าของ�
 **password_hash เป็น NULL ได้** ทุกจุดที่แตะรหัสผ่านจึงต้องคิดเผื่อกรณีนี้เสมอ
 — ดู verify_password() ใน auth.py ที่รับ None แล้วตอบ False พร้อมเผาเวลาให้เท่ากัน
 
-บัญชีที่สมัครใหม่ด้วยรหัสผ่านต้องยืนยันอีเมลและรหัสผ่านก่อนใช้งาน
+บัญชีที่สมัครด้วยรหัสผ่านเข้าสู่ระบบได้ทันทีโดยไม่ส่งอีเมลยืนยัน
 บัญชีเดิมไม่ถูกล็อกระหว่างย้ายระบบ และไม่ถูกระบุว่าอีเมลยืนยันแล้วโดยไม่มีหลักฐาน
 อีเมลตรงกันอย่างเดียวไม่เพียงพอที่จะผูก Google
 
@@ -47,18 +45,17 @@ usr_accounts แถวเดียวกันหลังเจ้าของ�
 4. ส่งอีเมลไม่สำเร็จ ห้ามทำให้คำขอที่สำเร็จไปแล้วกลายเป็น error
    (mailer กลืน error ให้เองแล้ว — ดูเหตุผลในหัวไฟล์ mailer.py)
 """
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr, Field, StringConstraints, field_validator
-from sqlalchemy import func, select, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import mailer
 from auth import (
-    local_verification_bypass,
     account_locked_error,
     clear_failed_attempts,
     consume_password_reset,
@@ -90,7 +87,7 @@ from google_oauth import (
     verify_google_id_token,
 )
 from models import EmailVerification, Identity, Session as SessionModel, User
-from security import PasswordPolicyError, generate_token, hash_token, validate_password
+from security import PasswordPolicyError, hash_token, validate_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -224,7 +221,7 @@ class MessageReply(BaseModel):
 
 
 class RegistrationReply(MessageReply):
-    verification_required: bool = True
+    verification_required: bool = False
 
 
 class MeReply(BaseModel):
@@ -254,39 +251,19 @@ class SessionReply(BaseModel):
 # สมัครสมาชิกด้วยอีเมล + รหัสผ่าน
 # ------------------------------------------------------------
 
-REGISTRATION_REPLY = "หากสมัครได้ เราได้ส่งลิงก์ยืนยันอีเมลแล้ว กรุณาตรวจกล่องจดหมาย"
-
-
-async def _issue_email_verification(db: AsyncSession, user: User) -> str:
-    raw = generate_token()
-    db.add(EmailVerification(
-        user_id=user.id,
-        token_hash=hash_token(raw),
-        expires_at=_now() + timedelta(hours=24),
-    ))
-    await db.flush()
-    return raw
+REGISTRATION_REPLY = "Continue to sign in with your email and password."
 
 
 @router.post("/register", response_model=RegistrationReply, status_code=status.HTTP_202_ACCEPTED)
 async def register(data: RegisterRequest, request: Request, db: Db):
     """
-    สร้างบัญชีที่ยังไม่อนุญาตให้เข้าสู่ระบบและส่งลิงก์ยืนยันทางอีเมล
+    สร้างบัญชีที่เข้าสู่ระบบด้วยรหัสผ่านได้ทันที โดยไม่ส่งอีเมลยืนยัน
     ตอบข้อความกลางเหมือนกันเมื่ออีเมลซ้ำ เพื่อไม่เปิดเผยว่ามีบัญชีอยู่แล้ว
     """
     if not data.terms_accepted:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, TERMS_REQUIRED)
 
     await enforce_ip_rate_limit(db, request)
-
-    local_registration = local_verification_bypass()
-    registration_reply = (
-        "Continue to sign in with your email and password."
-        if local_registration else REGISTRATION_REPLY
-    )
-
-    if mailer.APP_ENV == "production" and not mailer.EMAIL_ENABLED:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "ยังไม่ได้ตั้งค่าระบบส่งอีเมลยืนยัน")
 
     # ตรวจซ้ำอีกรอบโดยเอาอีเมลกับชื่อมาประกอบ กันตั้งรหัสเป็นข้อมูลตัวเอง
     try:
@@ -301,7 +278,7 @@ async def register(data: RegisterRequest, request: Request, db: Db):
         password_hash=await hash_password(data.password),
         terms_accepted=True,
         terms_accepted_at=_now(),
-        email_verification_required=not local_registration,
+        email_verification_required=False,
     )
     db.add(user)
 
@@ -309,56 +286,20 @@ async def register(data: RegisterRequest, request: Request, db: Db):
         await db.flush()
     except IntegrityError:
         await db.rollback()
-        return RegistrationReply(message=registration_reply, verification_required=not local_registration)
+        return RegistrationReply(message=REGISTRATION_REPLY)
 
-    if local_registration:
-        await db.commit()
-        return RegistrationReply(message=registration_reply, verification_required=False)
-
-    token = await _issue_email_verification(db, user)
     await db.commit()
-    await mailer.send_email_verification(user.email, user.full_name, token)
     return RegistrationReply(message=REGISTRATION_REPLY)
 
 
-@router.post("/email/verification/resend", response_model=MessageReply)
+@router.post("/email/verification/resend", response_model=MessageReply, deprecated=True)
 async def resend_email_verification(data: EmailRequest, request: Request, db: Db):
-    await enforce_ip_rate_limit(db, request)
-    user = (await db.execute(select(User).where(User.email == data.email))).scalar_one_or_none()
-    if user and user.email_verification_required and user.email_verified_at is None:
-        sent_last_hour = (await db.execute(
-            select(func.count()).select_from(EmailVerification).where(
-                EmailVerification.user_id == user.id,
-                EmailVerification.created_at > _now() - timedelta(hours=1),
-            )
-        )).scalar_one()
-        if sent_last_hour < 3 and (mailer.EMAIL_ENABLED or mailer.APP_ENV != "production"):
-            token = await _issue_email_verification(db, user)
-            await db.commit()
-            await mailer.send_email_verification(user.email, user.full_name, token)
-    return MessageReply(message=REGISTRATION_REPLY)
+    raise HTTPException(status.HTTP_410_GONE, "Email verification is no longer required. Sign in with your password.")
 
 
-@router.post("/email/verify", response_model=MessageReply)
+@router.post("/email/verify", response_model=MessageReply, deprecated=True)
 async def verify_email(data: VerifyEmailRequest, request: Request, db: Db):
-    await enforce_ip_rate_limit(db, request)
-    record = (await db.execute(
-        select(EmailVerification)
-        .where(EmailVerification.token_hash == hash_token(data.token))
-        .with_for_update()
-    )).scalar_one_or_none()
-    if record is None or record.used_at is not None or record.expires_at <= _now():
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ลิงก์ยืนยันอีเมลไม่ถูกต้องหรือหมดอายุ")
-    user = (await db.execute(select(User).where(User.id == record.user_id).with_for_update())).scalar_one()
-    if user.email_verified_at is not None:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "ลิงก์ยืนยันอีเมลถูกใช้ไปแล้ว")
-    if not await verify_password(data.password, user.password_hash):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "รหัสผ่านไม่ถูกต้อง")
-    if user.email_verified_at is None:
-        user.email_verified_at = _now()
-    record.used_at = _now()
-    await db.commit()
-    return MessageReply(message="ยืนยันอีเมลแล้ว กรุณาเข้าสู่ระบบ")
+    raise HTTPException(status.HTTP_410_GONE, "Email verification is no longer required. Sign in with your password.")
 
 
 # ------------------------------------------------------------
@@ -527,7 +468,6 @@ async def google_link(data: GoogleLinkRequest, user: CurrentUser, db: Db):
     if profile.email_authoritative and locked_user.email_verified_at is None:
         locked_user.email_verified_at = _now()
     await db.commit()
-    await mailer.send_google_linked_notice(locked_user.email, locked_user.full_name)
     return MessageReply(message="Google linked. Your website password still works.")
 
 
@@ -621,12 +561,6 @@ async def login(data: LoginRequest, request: Request, db: Db):
         await record_login_attempt(db, str(data.email), request, succeeded=False)
         await db.commit()
         raise invalid
-
-    if user.email_verification_required and user.email_verified_at is None and not local_verification_bypass():
-        raise HTTPException(
-            status.HTTP_403_FORBIDDEN,
-            {"code": "EMAIL_VERIFICATION_REQUIRED", "message": "Verify your email before signing in."},
-        )
 
     clear_failed_attempts(user)
     refresh_raw, _ = await issue_refresh_token(db, user, request)
@@ -728,7 +662,7 @@ async def me(user: CurrentUser, db: Db):
         has_password=user.password_hash is not None,
         providers=await list_providers(db, user.id),
         email_verified=user.email_verified_at is not None,
-        verification_required=user.email_verification_required,
+        verification_required=False,
     )
 
 
@@ -741,8 +675,7 @@ async def change_email(data: ChangeEmailRequest, user: CurrentUser, db: Db):
     """
     เปลี่ยนอีเมลของบัญชีตัวเอง
 
-    บัญชีเดิมยังต้องมีทางแก้อีเมลที่สะกดผิด บัญชีที่สมัครใหม่และยังไม่ยืนยัน
-    จะเข้า endpoint นี้ไม่ได้ เพราะต้องยืนยันอีเมลก่อนเข้าพื้นที่ที่ต้องล็อกอิน
+    บัญชีเดิมยังต้องมีทางแก้อีเมลที่สะกดผิด ต้องยืนยันรหัสผ่านปัจจุบันก่อนเปลี่ยน
     """
     if user.password_hash is None:
         # บัญชีที่มีแต่ Google ไม่มีรหัสผ่านให้ยืนยัน จะปล่อยให้เปลี่ยนอีเมลโดยไม่ต้อง
@@ -761,7 +694,6 @@ async def change_email(data: ChangeEmailRequest, user: CurrentUser, db: Db):
             status.HTTP_422_UNPROCESSABLE_ENTITY, "อีเมลใหม่ต้องไม่ซ้ำกับอีเมลเดิม"
         )
 
-    old_email = user.email
     user.email = data.new_email
     # Verification belongs to the previous address, not this new one.
     user.email_verified_at = None
@@ -779,8 +711,6 @@ async def change_email(data: ChangeEmailRequest, user: CurrentUser, db: Db):
     await void_pending_password_resets(db, user.id)
     await db.commit()
 
-    # แจ้งกล่องเดิม ไม่ใช่กล่องใหม่ — ถ้าเป็นคนอื่นแอบเปลี่ยน เจ้าของตัวจริงจะได้รู้
-    await mailer.send_email_changed_notice(old_email, user.full_name, str(data.new_email))
     return MessageReply(message=f"เปลี่ยนอีเมลเป็น {data.new_email} เรียบร้อยแล้ว")
 
 
@@ -854,7 +784,6 @@ async def reset_password(data: ResetPasswordRequest, db: Db):
     await void_pending_password_resets(db, user.id)
     await db.commit()
 
-    await mailer.send_password_changed_notice(user.email, user.full_name)
     return MessageReply(
         message=f"ตั้งรหัสผ่านใหม่เรียบร้อย และให้ออกจากระบบแล้ว {revoked} อุปกรณ์"
     )
@@ -896,7 +825,6 @@ async def change_password(data: ChangePasswordRequest, user: CurrentUser, db: Db
     await void_pending_password_resets(db, user.id)
     await db.commit()
 
-    await mailer.send_password_changed_notice(user.email, user.full_name)
 
     if not has_password:
         # ตั้งรหัสผ่านครั้งแรก ข้อความต้องบอกว่ายังใช้ Google ได้อยู่

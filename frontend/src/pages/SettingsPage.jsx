@@ -46,7 +46,6 @@ function SettingsPage() {
         <h2>Account</h2>
         <p>{user?.email}</p>
         <p>Google: {user?.providers?.includes('google') ? 'Linked' : 'Not linked'}</p>
-        {user?.verification_required && !user?.email_verified && <p>Email verification is required.</p>}
       </section>
       {!user?.providers?.includes('google') && user?.has_password && <section className="settings-card">
         <h2>Link Google</h2>

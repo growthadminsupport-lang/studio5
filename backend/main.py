@@ -40,8 +40,8 @@ logger = logging.getLogger("growth.startup")
 async def lifespan(app: FastAPI):
     validate_configuration()
     # ประกาศตอนสตาร์ทว่าฟีเจอร์ที่ขึ้นกับค่าตั้งเปิดอยู่หรือไม่
-    # Google ไม่ตั้งก็รันได้ แต่ production ต้องตั้ง SMTP ไม่เช่นนั้นอีเมลยืนยัน
-    # และรีเซ็ตรหัสผ่านจะส่งไม่ได้ อาการที่ผู้ใช้เห็นคือ
+    # Google ไม่ตั้งก็รันได้ แต่ production ต้องตั้งผู้ให้บริการอีเมล
+    # ไม่เช่นนั้นอีเมลรีเซ็ตรหัสผ่านจะส่งไม่ได้ อาการที่ผู้ใช้เห็นคือ
     # "อีเมลไม่มา" กับ "กดปุ่ม Google แล้วไม่เข้า" โดยไม่มี error ให้ดูเลย
     # บรรทัดนี้คือที่แรกที่คนไล่ปัญหาจะเห็นว่าต้นเหตุอยู่ที่ค่าตั้ง
     #
@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
     # ส่วน logger อื่นตกไปที่ lastResort ของ Python ซึ่งพิมพ์เฉพาะ WARNING ขึ้นไป
     # ถ้าใช้ info บรรทัดนี้จะไม่โผล่เลย (mailer.py ใช้ warning ด้วยเหตุผลเดียวกัน)
     if APP_ENV == "production" and not EMAIL_ENABLED:
-        raise RuntimeError("Production registration requires SMTP or RESEND_API_KEY and MAIL_FROM")
+        raise RuntimeError("Production password reset requires SMTP or RESEND_API_KEY and MAIL_FROM")
 
     logger.warning(
         "เข้าสู่ระบบด้วย Google: %s · ส่งอีเมลจริง: %s",

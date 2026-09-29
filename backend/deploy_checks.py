@@ -14,7 +14,7 @@ def validate_configuration():
     if os.environ.get("APP_ENV") != "production":
         return
     if not EMAIL_ENABLED:
-        raise RuntimeError("Production requires a mail provider and MAIL_FROM")
+        raise RuntimeError("Production password reset requires a mail provider and MAIL_FROM")
     origins = parse_cors_origins(os.environ.get("CORS_ORIGINS", ""))
     base = os.environ.get("APP_BASE_URL", "")
     if not origins or any(urlsplit(o).scheme != "https" for o in origins):

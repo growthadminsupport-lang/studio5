@@ -54,13 +54,11 @@ SERVICE_NAME = "GrowTH"
 
 # path ของหน้าเว็บที่รับโทเคน ถ้าฝั่ง frontend ใช้ path อื่นให้แก้ตรงนี้จุดเดียว
 RESET_PASSWORD_PATH = "/reset-password"
-VERIFY_EMAIL_PATH = "/verify-email"
 
 # ประกอบลิงก์ทิ้งหนึ่งครั้งตั้งแต่ตอน import เพื่อให้ APP_BASE_URL ที่ผิดรูปแบบ
 # ระเบิดตอนเซิร์ฟเวอร์สตาร์ท ไม่ใช่ตอนผู้ใช้คนแรกกดลืมรหัสผ่าน — ซึ่งจะกลายเป็น
 # 500 จาก endpoint ที่ต้องตอบข้อความกลาง ๆ เสมอ
 build_frontend_link(APP_BASE_URL, RESET_PASSWORD_PATH, token="startup-check")
-build_frontend_link(APP_BASE_URL, VERIFY_EMAIL_PATH, token="startup-check")
 
 # ตรวจค่าตั้งตั้งแต่ตอน import — ตั้งผิดจะรู้ตอนเซิร์ฟเวอร์สตาร์ท
 # ไม่ใช่ตอนผู้ใช้จริงกดลืมรหัสผ่านแล้วอีเมลไม่มา
@@ -206,17 +204,6 @@ async def send_password_reset_email(to_email: str, full_name: str, token: str) -
         f"ลิงก์ใช้ได้ภายใน 1 ชั่วโมง และใช้ได้ครั้งเดียว\n"
         f"ถ้าคุณไม่ได้ขอเปลี่ยนรหัสผ่าน ไม่ต้องทำอะไร รหัสเดิมยังใช้ได้ตามปกติ\n"
         f"แต่ถ้าได้รับอีเมลนี้บ่อยผิดปกติ แปลว่าอาจมีคนพยายามเข้าบัญชีคุณอยู่",
-    )
-
-
-async def send_email_verification(to_email: str, full_name: str, token: str) -> bool:
-    link = build_frontend_link(APP_BASE_URL, VERIFY_EMAIL_PATH, token=token)
-    return await _deliver(
-        to_email,
-        f"ยืนยันอีเมล — {SERVICE_NAME}",
-        f"สวัสดีคุณ{full_name}\n\nเปิดลิงก์นี้แล้วกรอกรหัสผ่านที่ใช้สมัครเพื่อยืนยันอีเมล:\n"
-        f"{link}\n\nลิงก์ใช้ได้ 24 ชั่วโมงและใช้ได้ครั้งเดียว\n"
-        "ถ้าคุณไม่ได้สมัคร โปรดละเว้นอีเมลนี้",
     )
 
 

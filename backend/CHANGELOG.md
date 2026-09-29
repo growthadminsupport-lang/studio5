@@ -1,3 +1,9 @@
+## 2026-09-29 — Password-only registration
+
+- Register and sign in with a password without email verification. Existing pending accounts remain usable without being marked as email verified.
+- Retire verification/resend endpoints and pages; send email only for password reset or first password setup.
+- Apply the registration-verification retirement migration during initialization; retain account and growth history.
+
 ## 2026-09-29 — CDC 2000 and Render preparation
 
 - Vendor official CDC CSVs and SHA-256 manifest; seed 1,308 rows transactionally without overwriting conflicts.

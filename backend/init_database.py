@@ -28,7 +28,7 @@ async def initialize():
                 raise RuntimeError("Unsupported existing database; initialization will not overwrite it")
             # Known additive migrations, enclosed in this transaction, including seed.
             for name in ("2026-08-22_google_signin.sql", "2026-09-23_email_verification.sql",
-                         "2026-09-29_cdc_lms.sql"):
+                         "2026-09-29_cdc_lms.sql", "2026-09-29_disable_registration_verification.sql"):
                 sql = (folder / "migrations" / name).read_text(encoding="utf-8")
                 sql = re.sub(r"(?m)^\s*(BEGIN|COMMIT);\s*$", "", sql)
                 await raw.driver_connection.execute(sql)

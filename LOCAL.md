@@ -1,22 +1,22 @@
 # Local development
 
-## Temporary password-registration database testing
+## Accounts and email
 
-Set `LOCAL_SKIP_EMAIL_VERIFICATION=1` in `backend/.env` with `APP_ENV=development` to let newly registered password accounts log in immediately without sending verification email. Passwords are still hashed and checked; email ownership is not marked verified. Existing pending accounts can also sign in with the correct password while this flag is enabled; their stored verification status remains unchanged. The flag has no effect in production. Set it to `0` and restart the API to restore verification for future registrations; existing test accounts keep their original verification requirement.
+Register with email and password, then sign in immediately. Registration does not send email. `python init_database.py` lets existing pending accounts sign in while preserving their account and child records. It does not falsely mark their email as verified. `LOCAL_SKIP_EMAIL_VERIFICATION` is obsolete.
 
 Set `VITE_HIDE_GOOGLE_LOGIN=1` in `frontend/.env` to hide the Google button in the development server. Remove it and restart Vite to restore the button. Google credentials and linking code are preserved.
 
-## Local Resend verification testing
+## Local password-reset email testing
 
-Set `RESEND_API_KEY` privately in `backend/.env`. The local test sender is `MAIL_FROM=onboarding@resend.dev`; it can send only to the email address associated with your Resend account. `APP_BASE_URL=http://127.0.0.1:5173` sends users back to the local verification page, so open the email link on this computer while the app is running. Never put the API key in a `VITE_` variable or Git.
+Set `RESEND_API_KEY` privately in `backend/.env` if you want real reset emails. The local test sender is `MAIL_FROM=onboarding@resend.dev`; it can send only to the email address associated with your Resend account. `APP_BASE_URL=http://127.0.0.1:5173` sends users back to the local reset page. Never put the API key in a `VITE_` variable or Git.
 
-Restart the API after changing these settings. Register the Resend account email, open the delivered link, enter the registration password, then log in. For an existing pending account, use `/resend-verification` instead. Verification links expire after 24 hours and are single-use; requests are limited by the existing quota. Public resend replies intentionally do not reveal whether an account exists. A successful API reply alone does not prove inbox delivery; check the inbox and Resend dashboard. Delivery failures are logged without provider response bodies or credentials.
+Restart the API after changing these settings. Use Forgot password, open the delivered reset link and set a new password. The public reply does not reveal whether an account exists. Check the inbox and Resend dashboard to confirm delivery; a successful API reply alone does not prove it. Delivery failures are logged without provider response bodies or credentials.
 
 ## Starting the app
 
 ## Password and Google on the same account
 
-Register with email/password, then either verify by email or choose Google with the same email. If the Google identity is not linked yet, the login/register page asks for the existing website password once. Successful confirmation verifies the pending account, links Google, and signs in without changing the password hash or child records. Later, either login method opens the same account. Google-first accounts still start without a website password.
+Register with email/password, then optionally choose Google with the same email. If the Google identity is not linked yet, the login/register page asks for the existing website password once. Successful confirmation links Google and signs in without changing the password hash or child records. Later, either login method opens the same account. Google-first accounts still start without a website password.
 
 `POST /api/auth/google/link-login` accepts `id_token`, `email`, and `current_password` and returns the normal Google token pair. The Google token must be no more than five minutes old. Invalid/expired credentials return `GOOGLE_REAUTH_REQUIRED`; mismatched emails return `GOOGLE_EMAIL_MISMATCH`. Wrong passwords use the existing attempt limits. `POST /api/auth/google` also accepts optional `expected_email` so the selected Google email can be checked against the form before sign-in or creation. Existing Settings linking remains available.
 
@@ -34,8 +34,8 @@ The ignored `backend/.env` contains the connection URL, generated JWT secret, an
 
 Dependencies are installed in `backend/venv` and `frontend/node_modules`. For a fresh checkout, follow `backend/README.md` from the **backend directory**, install frontend dependencies from **frontend**, and configure a PostgreSQL database before starting. `start-local.ps1` reuses the initialized project-local cluster; it does not provision or reset databases.
 
-Register through the app. In development, verification emails are written to `.local/api.error.log`; open the verification link and enter the registration password. Google sign-in is configured locally using the client ID from D:/Studio5/backend/.env. The Google button renders; a real Google account sign-in still needs user testing. Actual email delivery requires SMTP configuration.
+Register through the app and sign in with your password. In development without an email provider, password-reset links are written to `.local/api.error.log`. The Google button renders; a real Google account sign-in still needs user testing. Actual reset-email delivery requires Resend or SMTP configuration.
 
-Dashboard child profiles, child creation/edit/deletion, and growth creation/history use the API. Profile displays the signed-in account. Growth charts show stored measurements; reference data has not been seeded. Bone-age and puberty processing remain previews with no persistence API.
+Dashboard child profiles, child creation/edit/deletion, and growth creation/history use the API. Profile displays the signed-in account. Growth charts show stored measurements with CDC 2000 reference data for ages 24–240 months. Bone-age and puberty processing remain previews with no persistence API.
 
 Build the frontend from its directory: `node node_modules/vite/bin/vite.js build`. Run backend regressions from the backend directory: `./venv/Scripts/python.exe -X utf8 tests/run_regression_tests.py`.

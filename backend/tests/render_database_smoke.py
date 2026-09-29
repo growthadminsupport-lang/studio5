@@ -77,12 +77,17 @@ if __name__ == "__main__":
         for _ in range(2):
             email = f"render-{uuid.uuid4().hex}@example.com"
             payload = dict(email=email, password="ParentPhrase2026", full_name="Render test", terms_accepted=True)
-            assert client.post("/api/auth/register", json=payload).status_code == 202
-            # Inbox verification is a separate live-provider check; activate only our test users.
-            sql("UPDATE usr_accounts SET email_verified_at=now(), email_verification_required=false")
+            registration = client.post("/api/auth/register", json=payload)
+            assert registration.status_code == 202
+            assert registration.json()["verification_required"] is False
             response = client.post("/api/auth/login", json={"email":email,"password":payload["password"]})
             assert response.status_code == 200, response.text
             headers.append({"Authorization": "Bearer " + response.json()["access_token"]})
+        assert all(not row["email_verification_required"] for row in sql(
+            "SELECT email_verification_required FROM usr_accounts"))
+        assert not sql("SELECT * FROM usr_email_verifications")
+        assert client.post("/api/auth/email/verification/resend", json={"email": email}).status_code == 410
+        assert client.post("/api/auth/email/verify", json={"token": "old", "password": "old"}).status_code == 410
         response = client.post("/api/children", headers=headers[0], json={
             "name":"CDC test", "sex":"male", "date_of_birth":"2015-01-01"})
         assert response.status_code == 201, response.text

@@ -29,9 +29,7 @@ function LoginForm() {
       await login(email, password, remember);
       navigate("/dashboard", { replace: true });
     } catch (reason) {
-      setError(reason.code === 'EMAIL_VERIFICATION_REQUIRED'
-        ? 'Verify your email using its link, or choose Google with the same email and confirm your website password.'
-        : reason.status === 401 ? 'Invalid email or password.' : reason.message);
+      setError(reason.status === 401 ? 'Invalid email or password.' : reason.message);
     } finally { setBusy(false); }
   }
 
@@ -68,7 +66,6 @@ function LoginForm() {
       <GoogleButton onCredential={handleGoogle} disabled={busy} />
       <div className="auth-links">
         <span>New here? <Link to="/register">Create an account</Link></span>
-        <span><Link to="/resend-verification">Resend verification email</Link></span>
       </div>
     </form>
   );
