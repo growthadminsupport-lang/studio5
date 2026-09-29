@@ -50,3 +50,8 @@ Verification: 10 exact Linux source/website prediction comparisons and transform
 Files: backend/bone_age_ai/**, routes_bone_age.py, models.py, main.py, init_database.py, requirements*.txt, config.py, migration, integration docs/README, model smoke check and two existing test-isolation/config checks; frontend/src/lib/api.js, pages/BoneAgePage.jsx, frontend/vercel.json; root render.yaml and this memory.
 
 Deployment limitation: studio5-phi.vercel.app serves main demo, no current auth/model API and /login returned 404; Backend+AI produces Vercel previews. Hosted API URL is still needed. Public GitHub release publication of the checkpoint was rejected by automatic approval review as sensitive egress requiring explicit approval for that public release destination. Weight remains local, release download/build is pending that approval. See backend/docs/refine9-integration.md. Local test API 127.0.0.1:8019/frontend 127.0.0.1:5173 and disposable PostgreSQL cluster remain available for review.
+
+
+## Session log: 2026-09-29, public refine9 weight release
+
+User approved public publication after the earlier explicit public-release question. Published best_model_refine9_b5_456.pth (115,444,602 bytes) to https://github.com/growthadminsupport-lang/studio5/releases/tag/refine9-b5-456-v1, targeting Backend+AI. Tested the existing deployment downloader without credentials in a fresh temporary directory. Downloaded size and SHA-256 matched the manifest: 18ba920a8d2eada0198477619b2b1945df98f028384aeae0fafc8aa82987491c. Local checkpoints preserved, weight stays excluded from Git. The deployment download URL now works. Hosted inference remains unverified. Files touched: backend/docs/refine9-integration.md and this memory.

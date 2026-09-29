@@ -10,7 +10,7 @@ All saved single-model validation CSVs were recomputed on 2026-09-29. Refine9 ha
 
 The 115,444,602-byte checkpoint is installed locally at `bone_age_ai/models/`, which is ignored by Git. Its checksum is `18ba920a8d2eada0198477619b2b1945df98f028384aeae0fafc8aa82987491c`.
 
-Publication as a public GitHub release asset is pending explicit approval. Automatic approval review rejected that separate disclosure. Until the release is published, the configured deployment download URL will not work. Once approved, the intended release is `refine9-b5-456-v1` in `growthadminsupport-lang/studio5`.
+The checkpoint was published with explicit user approval on 2026-09-29: [refine9-b5-456-v1 release](https://github.com/growthadminsupport-lang/studio5/releases/tag/refine9-b5-456-v1). The existing deployment downloader was tested without credentials in a fresh temporary directory. The public download matched all 115,444,602 bytes and the pinned SHA-256 above. The configured deployment download URL now works; hosted inference remains unverified.
 
 ## Run locally
 
