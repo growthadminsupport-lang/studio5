@@ -846,28 +846,38 @@
     font-size: 22px;
   }
 
+  /* Filter chips on phones: 3 equal chips on the first row,
+     the remaining 2 centered underneath. */
   .kn-chip-row {
-    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
   }
 
   .kn-chip {
-    min-width: 96px;
-    height: 78px;
-    padding: 8px 10px;
-    font-size: 13px;
+    flex: 0 0 calc((100% - 24px) / 3);
+    max-width: 150px;
+    min-width: 0;
+    height: auto;
+    min-height: 90px;
+    padding: 10px 6px;
+    font-size: clamp(14px, 3.8vw, 17px);
+    line-height: 1.15;
+    white-space: normal;
+    text-align: center;
   }
 
   .kn-chip-icon {
-    width: 30px;
-    height: 30px;
-    flex-basis: 30px;
+    width: clamp(32px, 9.5vw, 44px);
+    height: clamp(32px, 9.5vw, 44px);
+    flex-basis: auto;
   }
 
   .kn-chip-icon img {
-    width: 30px;
-    height: 30px;
-    max-width: 30px;
-    max-height: 30px;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
   }
 
   .knowledge-grid {
@@ -1053,4 +1063,217 @@
 
 [data-theme="dark"] .kn-resource-row:hover {
   border-color: #5eead4;
+}
+
+
+/* =========================================================
+   PHONE LAYOUT: "Nurturing Knowledge" list  (600px and below)
+   Tablet / desktop keep the featured card + Explore More grid.
+   ========================================================= */
+
+/* Hidden everywhere except phones */
+.kn-mobile-list,
+.kn-h-mobile {
+  display: none;
+}
+
+@media (max-width: 600px) {
+
+  .kn-h-desktop {
+    display: none;
+  }
+
+  .kn-h-mobile {
+    display: inline;
+  }
+
+  .knowledge-heading {
+    margin: 0 0 12px;
+    font-size: 22px;
+  }
+
+  /* Replace the featured card, Explore More grid and Resources list */
+  .kn-featured,
+  .kn-explore-heading,
+  .knowledge-grid,
+  .kn-resources-list {
+    display: none;
+  }
+
+  .kn-layout {
+    gap: 14px;
+  }
+
+  /* ---------- Horizontal cards: image left, text right ---------- */
+
+  .kn-mobile-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 -6px;
+  }
+
+  .kn-mcard {
+    display: flex;
+    min-height: 142px;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .kn-mcard-art {
+    position: relative;
+    flex: 0 0 58%;
+    overflow: hidden;
+  }
+
+  .kn-mcard-art .kn-explore-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kn-mcard-art.art-bone-age .kn-explore-image {
+    object-position: 25% 50%;
+  }
+
+  .kn-mcard-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    min-width: 0;
+    padding: 12px 10px 12px 12px;
+  }
+
+  .kn-mcard-tag {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #e4edf0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: #0f5b52;
+  }
+
+  .kn-mcard-body h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #111827;
+    overflow-wrap: anywhere;
+  }
+
+  .kn-mcard-body p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #374151;
+  }
+
+  .kn-mcard-btn {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #00695c;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .kn-mcard-btn .arrow-icon {
+    font-size: 13px;
+  }
+
+  /* ---------- Quick Facts: no box, larger text ---------- */
+
+  .kn-quickfacts {
+    padding: 10px 8px 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .kn-quickfacts-head {
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .kn-quickfacts-value {
+    margin-bottom: 6px;
+    font-size: 40px;
+  }
+
+  .kn-quickfacts p {
+    font-size: 17px;
+    line-height: 1.5;
+    color: #6b7280;
+  }
+
+  .kn-quickfacts-image {
+    width: 100px;
+    height: 120px;
+  }
+
+  /* ---------- Support Healthy Growth card ---------- */
+
+  .kn-support-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .kn-support-card strong {
+    font-size: 19px;
+  }
+
+  .kn-support-card p {
+    font-size: 16px;
+  }
+
+  /* ---------- Dark mode ---------- */
+
+  [data-theme="dark"] .kn-mcard {
+    background: #0f172a;
+    border-color: #334155;
+  }
+
+  [data-theme="dark"] .kn-mcard-body h3 {
+    color: #f1f5f9;
+  }
+
+  [data-theme="dark"] .kn-mcard-body p {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .kn-mcard-tag {
+    background: rgba(94, 234, 212, 0.14);
+    color: #5eead4;
+  }
+
+  [data-theme="dark"] .kn-mcard-btn {
+    background: #0d9488;
+  }
+
+  [data-theme="dark"] .kn-quickfacts {
+    background: transparent;
+    border: 0;
+  }
+
+  [data-theme="dark"] .kn-quickfacts p {
+    color: #94a3b8;
+  }
 }

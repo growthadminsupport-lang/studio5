@@ -886,18 +886,34 @@
   font-size: 13px;   /* text, change as you like */
 }
 
-@media (max-width: 480px) {
+/* Phones: logo on the left (overlapping the top edge), text on the right.
+   Used by "Everyone has their own timeline" (Puberty) and "Remember"
+   (Support Healthy Growth). */
+@media (max-width: 600px) {
   .info-note {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;                    /* was 8px */
-    margin-top: 44px;
-    padding: 0 12px 12px;        /* was 0 16px 16px */
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    margin: 40px clamp(0px, 4vw, 20px) 0;
+    padding: 8px 14px 8px 8px;
+    border-radius: 8px;
   }
 
   .info-note-logo {
-    width: 120px;                /* unchanged */
-    margin: -36px 0 0 0;         /* unchanged */
+    width: clamp(96px, 26vw, 115px);
+    margin: -24px 0 -20px -2px;
+  }
+
+  .info-note .info-note-text h3 {
+    margin: 0 0 3px;
+    font-size: clamp(15px, 3.8vw, 17px);
+    line-height: 1.2;
+  }
+
+  .info-note .info-note-text p {
+    font-size: clamp(12.5px, 3.3vw, 14px);
+    line-height: 1.35;
   }
 }
 
@@ -1003,4 +1019,622 @@
 
 [data-theme="dark"] .hg-card-body p {
   color: #cbd5e1;
+}
+
+/* =========================================================
+   GROWTH SPURTS PAGE: phone layout
+   (scoped with .article-flat so other articles are unchanged)
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .article-flat .article-page {
+    padding: 10px 14px 32px;
+  }
+
+  /* Back link: small, top right ("← Back") */
+  .article-flat .article-back-top {
+    display: block;
+    margin: 0 0 2px;
+    text-align: right;
+    font-size: 12px;
+  }
+
+  .article-flat .article-back-extra,
+  .article-flat .article-type {
+    display: none;
+  }
+
+  .article-flat .article-disclaimer {
+    margin-top: 24px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+  }
+
+  /* No white card: content sits directly on the page background */
+  .article-flat .article-card {
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .article-flat .article-card h1 {
+    margin: 0 0 6px;
+    font-size: clamp(22px, 5.4vw, 26px);
+    line-height: 1.2;
+  }
+
+  .article-flat .article-description {
+    margin: 0 0 14px;
+    font-size: clamp(17px, 4.3vw, 20px);
+    line-height: 1.3;
+  }
+
+  /* Chart image: full width, whole image visible, soft rounded card */
+  .article-flat .article-main-image-wrap {
+    max-width: none;
+    margin: 0;
+    border-radius: 16px;
+    background: #ffffff;
+  }
+
+  .article-flat .article-main-image {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .article-flat .article-section {
+    margin-top: 14px;
+  }
+
+  .article-flat .article-section h2 {
+    margin: 0 0 12px;
+    font-size: clamp(22px, 5.4vw, 26px);
+  }
+
+  /* "What to expect": 3 equal boxes in one row */
+  .article-growth .growth-info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 0;
+    padding: 0 clamp(4px, 3.5vw, 16px);
+  }
+
+  .article-growth .growth-info-box:not(:nth-child(4)) {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 6px 16px;
+    text-align: center;
+    background: #e6f5f0;
+    border: 0;
+    border-radius: 6px;
+  }
+
+  .article-growth .growth-info-box:not(:nth-child(4)) .growth-info-icon {
+    width: clamp(44px, 12vw, 56px);
+    height: clamp(44px, 12vw, 56px);
+    min-height: 0;
+    margin: 0;
+  }
+
+  .article-growth .growth-info-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .article-growth .growth-info-box .growth-info-text h3 {
+    margin: 0 0 4px;
+    font-size: clamp(15px, 3.9vw, 18px);
+    line-height: 1.2;
+  }
+
+  .article-growth .growth-info-box p,
+  .article-growth .growth-info-text .article-bullet-list {
+    font-size: clamp(12.5px, 3.3vw, 15px);
+    line-height: 1.35;
+  }
+
+  /* Bullets stay left-aligned, but the list block is centered */
+  .article-growth .growth-info-text .article-bullet-list {
+    display: inline-block;
+    margin: 0;
+    padding-left: 18px;
+    text-align: left;
+  }
+
+  .article-growth .growth-info-text .article-bullet-list li {
+    margin-bottom: 4px;
+  }
+
+  /* "Did you know?": logo on the left, text on the right */
+  .article-growth .growth-info-box:nth-child(4) {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 8px 14px 8px 8px;
+    text-align: left;
+  }
+
+  .article-growth .growth-info-box:nth-child(4) .growth-info-icon {
+    width: clamp(100px, 28vw, 135px);
+    height: auto;
+    margin: -26px 0 -22px -4px;
+  }
+
+  .article-growth .growth-info-box:nth-child(4) .growth-info-text {
+    text-align: left;
+  }
+
+  .article-growth .growth-info-box:nth-child(4) .growth-info-text h3 {
+    margin-left: 0;
+  }
+
+  .article-growth .growth-info-box:nth-child(4) p {
+    font-size: clamp(13.5px, 3.5vw, 15.5px);
+  }
+}
+
+@media (max-width: 600px) {
+  [data-theme="dark"] .article-growth .growth-info-box:not(:nth-child(4)) {
+    background: #1c3324;
+  }
+
+  [data-theme="dark"] .article-growth .article-main-image-wrap {
+    background: #1e293b;
+  }
+}
+
+
+/* =========================================================
+   UNDERSTANDING BONE AGE PAGE: phone layout
+   (shares the flat chrome above via .article-flat)
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .article-bone .article-main-image-wrap {
+    border-radius: 14px;
+  }
+
+  .article-bone .article-section {
+    margin-top: 24px;
+  }
+
+  .article-bone .article-section-content > p {
+    margin: 0 0 14px;
+    font-size: clamp(16px, 4.1vw, 19px);
+    line-height: 1.3;
+    color: var(--color-text-muted);
+  }
+
+  /* What is Bone Age?: two cards side by side */
+  .article-bone .bone-age-grid {
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .article-bone .bone-age-card {
+    flex: 1 1 0;
+    min-width: 0;
+    gap: 8px;
+    padding: 10px;
+    background: #e6f5f0;
+    border-radius: 4px;
+  }
+
+  .article-bone .bone-age-icon {
+    width: clamp(34px, 9.5vw, 44px);
+    height: clamp(34px, 9.5vw, 44px);
+  }
+
+  .article-bone .bone-age-card h3 {
+    font-size: clamp(14px, 3.6vw, 16.5px);
+    line-height: 1.2;
+  }
+
+  .article-bone .bone-age-card p {
+    font-size: clamp(12.5px, 3.3vw, 15px);
+    line-height: 1.3;
+  }
+
+  /* How is it measured?: 3 steps in a row with arrows between */
+  .article-bone .bone-steps {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    padding-top: 12px;
+  }
+
+  .article-bone .bone-step {
+    align-self: stretch;
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    justify-content: center;
+    padding: 18px 6px 12px;
+    border-radius: 4px;
+  }
+
+  .article-bone .bone-step-num {
+    top: -10px;
+    left: -8px;
+  }
+
+  .article-bone .bone-step-icon {
+    width: clamp(52px, 15vw, 70px);
+    height: clamp(52px, 15vw, 70px);
+    margin-bottom: 6px;
+  }
+
+  .article-bone .bone-step h3 {
+    font-size: clamp(14px, 3.7vw, 16.5px);
+    line-height: 1.2;
+  }
+
+  .article-bone .bone-step p {
+    font-size: clamp(11.5px, 3vw, 14px);
+    line-height: 1.25;
+  }
+
+  .article-bone .bone-step-arrow {
+    flex: 0 0 clamp(22px, 7vw, 34px);
+    width: clamp(22px, 7vw, 34px);
+    margin: 0;
+    transform: none;
+  }
+
+  /* Two common methods: two stacked cards side by side */
+  .article-bone .bone-method-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 5vw, 30px);
+    padding: 0 clamp(0px, 8vw, 40px);
+  }
+
+  .article-bone .bone-method-card {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 8px 16px;
+    text-align: center;
+    background: #fbf5e1;
+    border-radius: 4px;
+  }
+
+  .article-bone .bone-method-icon {
+    width: clamp(64px, 19vw, 90px);
+    height: clamp(64px, 19vw, 90px);
+  }
+
+  .article-bone .bone-method-card h3 {
+    font-size: clamp(14px, 3.6vw, 16.5px);
+    line-height: 1.2;
+  }
+
+  .article-bone .bone-method-card p {
+    font-size: clamp(12.5px, 3.3vw, 15px);
+    line-height: 1.3;
+  }
+
+  /* Dark mode */
+  [data-theme="dark"] .article-bone .article-section-content > p {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .article-bone .bone-age-card {
+    background: #12332e;
+  }
+
+  [data-theme="dark"] .article-bone .bone-method-card {
+    background: #3a3520;
+  }
+}
+
+/* =========================================================
+   NUTRITION PAGE: phone layout
+   (shares the flat chrome via .article-flat; the rules below
+   only add what is specific to the nutrition page)
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  /* Hero: wide banner, whole illustration visible, soft corners */
+  .article-nutri .article-main-image-wrap {
+    aspect-ratio: 3.5 / 1;
+    border-radius: 14px;
+    background: transparent;
+  }
+
+  .article-nutri .article-main-image,
+  .article-nutri .article-main-image--hero {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+  }
+
+  .article-nutri .article-section {
+    margin-top: 18px;
+  }
+
+  .article-nutri .article-section h2 {
+    margin: 0 0 10px;
+    padding-left: 4px;
+  }
+
+  /* The 4 key nutrients: one full-width card per row */
+  .article-nutri .nutri-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    max-width: none;
+    padding: 0 2px;
+  }
+
+  .article-nutri .nutri-card {
+    gap: 14px;
+    padding: 6px 12px;
+    border-radius: 4px;
+  }
+
+  .article-nutri .nutri-card-icon {
+    width: clamp(56px, 15vw, 66px);
+    height: clamp(56px, 15vw, 66px);
+  }
+
+  .article-nutri .nutri-card-text h3,
+  .article-nutri .nutri-card-text .nutri-card-amount {
+    margin: 0;
+    font-size: clamp(17px, 4.4vw, 19px);
+    line-height: 1.3;
+  }
+
+  .article-nutri .nutri-card-text .nutri-card-note {
+    font-size: clamp(12.5px, 3.3vw, 14px);
+    line-height: 1.3;
+  }
+
+  /* Food sources: 2 x 2 */
+  .article-nutri .food-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px clamp(14px, 5vw, 21px);
+    padding: 0 clamp(4px, 3vw, 12px);
+  }
+
+  .article-nutri .food-card {
+    padding: 10px 8px 12px;
+    border-radius: 4px;
+  }
+
+  .article-nutri .food-card-icon {
+    width: clamp(84px, 25vw, 104px);
+    height: clamp(84px, 25vw, 104px);
+    margin-bottom: 4px;
+  }
+
+  .article-nutri .food-card h3 {
+    margin: 0 0 4px;
+    font-size: clamp(15px, 3.9vw, 17px);
+  }
+
+  .article-nutri .food-card p {
+    font-size: clamp(12.5px, 3.3vw, 14px);
+    line-height: 1.35;
+  }
+
+  /* The footer already carries the medical disclaimer on phones */
+  .article-nutri .article-disclaimer {
+    display: none;
+  }
+
+  /* Dark mode: keep the banner from showing a white edge */
+  [data-theme="dark"] .article-nutri .article-main-image-wrap {
+    background: transparent;
+  }
+}
+
+
+/* =========================================================
+   UNDERSTANDING PUBERTY PAGE: phone layout
+   (shares the flat chrome via .article-flat)
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  /* Hero: wide rounded banner, whole illustration visible */
+  .article-puberty .article-main-image-wrap {
+    aspect-ratio: 3.4 / 1;
+    border-radius: 14px;
+    background: transparent;
+  }
+
+  .article-puberty .article-main-image,
+  .article-puberty .article-main-image--hero {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: none;
+  }
+
+  .article-puberty .article-section {
+    margin-top: 18px;
+  }
+
+  .article-puberty .article-section h2 {
+    margin: 0 0 10px;
+    padding-left: 4px;
+  }
+
+  /* What is puberty?: grey intro text */
+  .article-puberty .article-section-content > p {
+    margin: 0 0 6px;
+    padding-left: 4px;
+    font-size: clamp(15.5px, 4vw, 17.5px);
+    line-height: 1.3;
+    color: var(--color-text-muted);
+  }
+
+  /* Changes you may notice: one white card per row */
+  .article-puberty .pub-change-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    max-width: none;
+    padding: 0 2px;
+  }
+
+  .article-puberty .pub-change-card {
+    gap: 14px;
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+  }
+
+  .article-puberty .pub-change-icon {
+    width: clamp(58px, 16vw, 68px);
+    height: clamp(58px, 16vw, 68px);
+  }
+
+  .article-puberty .pub-change-card h3 {
+    margin: 0 0 2px;
+    font-size: clamp(17px, 4.4vw, 19px);
+    line-height: 1.3;
+  }
+
+  .article-puberty .pub-change-card p {
+    font-size: clamp(12.5px, 3.3vw, 14px);
+    line-height: 1.3;
+  }
+
+  /* Support through the changes: 3 grey cards across */
+  .article-puberty .pub-support-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(8px, 3vw, 14px);
+    padding: 0 clamp(2px, 2vw, 8px);
+  }
+
+  .article-puberty .pub-support-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 8px 14px;
+    text-align: center;
+    background: #f6f6f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+  }
+
+  .article-puberty .pub-support-art {
+    height: clamp(60px, 18vw, 78px);
+    margin-bottom: 6px;
+  }
+
+  .article-puberty .pub-support-icon {
+    max-height: 100%;
+  }
+
+  .article-puberty .pub-support-card h3 {
+    margin: 0 0 4px;
+    font-size: clamp(14.5px, 3.8vw, 16.5px);
+    line-height: 1.2;
+  }
+
+  .article-puberty .pub-support-card p {
+    font-size: clamp(12.5px, 3.3vw, 14px);
+    line-height: 1.3;
+  }
+
+  /* "Everyone has their own timeline" note */
+  .article-puberty .info-note {
+    margin-top: 28px;
+    border: 0;
+    background: #faf6e1;
+  }
+
+  /* The footer already carries the medical disclaimer on phones */
+  .article-puberty .article-disclaimer {
+    display: none;
+  }
+
+  [data-theme="dark"] .article-puberty .article-main-image-wrap {
+    background: transparent;
+  }
+
+  [data-theme="dark"] .article-puberty .pub-change-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  [data-theme="dark"] .article-puberty .pub-support-card {
+    background: #1e293b;
+    border-color: #334155;
+  }
+
+  [data-theme="dark"] .article-puberty .article-section-content > p {
+    color: #94a3b8;
+  }
+
+  [data-theme="dark"] .article-puberty .info-note {
+    background: #3a3520;
+  }
+}
+
+
+/* =========================================================
+   SUPPORT HEALTHY GROWTH PAGE: phone layout
+   (shares the flat chrome via .article-flat)
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .article-habits .article-section {
+    margin-top: 8px;
+  }
+
+  /* One big picture card per row */
+  .article-habits .hg-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .article-habits .hg-card {
+    border-radius: 8px;
+  }
+
+  .article-habits .hg-card-body {
+    padding: 10px 16px 14px;
+  }
+
+  .article-habits .hg-card-body h3 {
+    margin: 0 0 4px;
+    font-size: clamp(21px, 5.5vw, 24px);
+  }
+
+  .article-habits .hg-card-body p {
+    font-size: clamp(16px, 4.2vw, 18px);
+    line-height: 1.4;
+  }
+
+  /* "Remember" note: flat, no border */
+  .article-habits .info-note {
+    margin-top: 28px;
+    border: 0;
+    background: #faf6e1;
+  }
+
+  /* The footer already carries the medical disclaimer on phones */
+  .article-habits .article-disclaimer {
+    display: none;
+  }
+
+  [data-theme="dark"] .article-habits .info-note {
+    background: #3a3520;
+  }
 }

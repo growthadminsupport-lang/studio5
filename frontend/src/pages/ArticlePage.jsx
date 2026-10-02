@@ -47,17 +47,17 @@ const keyNutrients = [
     tone: "blue",
   },
   {
-    name: "Vitamin D",
-    amount: "600 IU/day",
-    note: "Helps your body absorb calcium.",
-    icon: vitaminDIcon,
-    tone: "amber",
-  },
-  {
     name: "Protein",
     amount: "10–30% of daily calories",
     note: "Supports tissue growth and repair.",
     icon: proteinIcon,
+    tone: "amber",
+  },
+  {
+    name: "Vitamin D",
+    amount: "600 IU/day",
+    note: "Helps your body absorb calcium.",
+    icon: vitaminDIcon,
     tone: "green",
   },
   {
@@ -180,6 +180,7 @@ const healthyHabits = [
 
 const articles = {
   "understanding-bone-age": {
+    pageClass: "article-flat article-bone",
     type: "Explainer",
     title: "Understanding Bone Age",
     description:
@@ -277,6 +278,7 @@ const articles = {
   },
 
   "nutrition-for-pre-teens": {
+    pageClass: "article-flat article-nutri",
     type: "Guide",
     title: "Nutrition for Pre-teens",
     description:
@@ -328,6 +330,7 @@ const articles = {
   },
 
   "understanding-puberty": {
+    pageClass: "article-flat article-puberty",
     type: "Explainer",
     title: "Understanding Puberty",
     description: "Growing up brings changes to your body and feelings.",
@@ -403,6 +406,7 @@ const articles = {
   },
 
   "support-healthy-growth": {
+    pageClass: "article-flat article-habits",
     type: "Guide",
     title: "Support Healthy Growth",
     description: "Healthy habits today build a stronger, healthier you tomorrow.",
@@ -447,6 +451,7 @@ const articles = {
   },
 
   "navigating-growth-spurts": {
+    pageClass: "article-flat article-growth",
     type: "Article",
     title: "Navigating Growth Spurts",
     description:
@@ -550,7 +555,14 @@ function ArticlePage() {
   // Determine back navigation route and label dynamically based on state
   const fromHome = location.state?.from === "/";
   const backTarget = fromHome ? "/" : "/knowledge";
-  const backLabel = fromHome ? "← Back to Home" : "← Back to Resources";
+  const backLabel = (
+    <>
+      ← Back
+      <span className="article-back-extra">
+        {fromHome ? " to Home" : " to Resources"}
+      </span>
+    </>
+  );
 
   const article = articles[slug];
 
@@ -574,7 +586,7 @@ function ArticlePage() {
   }
 
   return (
-    <div className="article-bg">
+    <div className={`article-bg ${article.pageClass || ""}`}>
     <div className="article-page">
       {/* Back link + type label stay OUTSIDE the white box */}
       <Link to={backTarget} className="article-back-link article-back-top">

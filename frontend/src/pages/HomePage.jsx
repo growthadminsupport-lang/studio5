@@ -46,10 +46,22 @@ const articles = [
     slug: "understanding-bone-age",
     label: "Explainer",
     title: "Understanding Bone Age",
-    desc: "How skeletal maturity is read from a hand X-ray.",
+    desc: "Find out how doctors estimate skeletal maturity from a hand X-ray.",
     category: "bone age",
     image: boneAgeExploreImg,
     bgColor: "bg-[#eaf6f5] dark:bg-teal-500/10",
+    featured: true,       // phones: shown first, with a tag
+  },
+  {
+    id: 4,
+    slug: "understanding-puberty",
+    label: "Explainer",
+    title: "Puberty",
+    desc: "What to expect and how to prepare.",
+    category: "puberty",
+    image: pubertyExploreImg,
+    bgColor: "bg-[#fbe9f1] dark:bg-pink-500/10",
+    phoneOnly: true,      // 4th card: phones only, desktop keeps 3 columns
   },
 ];
 
@@ -298,8 +310,8 @@ export default function HomePage() {
 
       {/* ----------------- Nurturing Knowledge Section ----------------- */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-20 text-left">
-        <div className="flex justify-between items-end mb-8">
-          <div>
+        <div className="flex justify-between items-end gap-4 mb-8">
+          <div className="min-w-0">
             <h2 className="text-2xl md:text-3xl font-bold text-[#004640] dark:text-teal-300 mb-1">
               Nurturing Knowledge
             </h2>
@@ -307,40 +319,52 @@ export default function HomePage() {
               Expert articles to guide you through every stage.
             </p>
           </div>
-          <Link to="/knowledge" className="text-xs font-semibold text-[#00685f] dark:text-teal-300 hover:underline">
+          <Link
+            to="/knowledge"
+            className="shrink-0 whitespace-nowrap text-sm font-semibold text-[#00685f] dark:text-teal-300 hover:underline"
+          >
             View all
           </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-[18px] items-stretch">
-          {articles.map((a) => {
-            const IconComponent = a.Icon;
-            return (
-              <div key={a.id} className="rounded-[14px] overflow-hidden bg-white dark:bg-slate-800/60 border border-transparent dark:border-slate-700 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-none flex flex-col justify-between">
-                <div className={`h-[180px] overflow-hidden ${a.bgColor}`}>
-                  <img src={a.image} alt="" className="w-full h-full object-cover" />
-                </div>
-                <div className="p-[22px] flex flex-col justify-between flex-1">
-                  <div>
-                    <h3 className="text-[16px] mb-2 text-[#111827] dark:text-slate-100 font-semibold">
-                      {a.title}
-                    </h3>
-                    <p className="text-[13px] leading-[1.5] text-[#6b7280] dark:text-slate-400">
-                      {a.desc}
-                    </p>
-                  </div>
-
-                  <Link
-                    to={`/knowledge/${a.slug}`}
-                    state={{ from: "/" }}
-                    className="text-xs font-semibold inline-block mt-4 text-[#00685f] dark:text-teal-300 hover:underline"
-                  >
-                    Read More →
-                  </Link>
-                </div>
+          {articles.map((a) => (
+            <div
+              key={a.id}
+              className={`flex flex-row md:flex-col md:justify-between min-h-[150px] md:min-h-0 rounded-[14px] max-md:rounded-lg overflow-hidden bg-white dark:bg-slate-800/60 border border-slate-200/70 md:border-transparent dark:border-slate-700 shadow-[0_4px_12px_rgba(0,0,0,0.02)] dark:shadow-none ${
+                a.featured ? "max-md:order-first" : ""
+              } ${a.phoneOnly ? "md:hidden" : ""}`}
+            >
+              {/* Image: left column on phones, top on desktop */}
+              <div className={`relative w-[56%] shrink-0 md:w-full md:h-[180px] overflow-hidden ${a.bgColor}`}>
+                <img src={a.image} alt="" className="absolute inset-0 w-full h-full object-cover" />
               </div>
-            );
-          })}
+
+              <div className="flex flex-col justify-between flex-1 min-w-0 p-3 md:p-[22px]">
+                <div>
+                  {a.featured && (
+                    <span className="md:hidden inline-block mb-1.5 rounded-full bg-[#e4edf0] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#0f5b52] dark:bg-teal-300/15 dark:text-teal-300">
+                      {a.category}
+                    </span>
+                  )}
+                  <h3 className="text-[16px] leading-tight mb-1.5 md:mb-2 text-[#111827] dark:text-slate-100 font-semibold">
+                    {a.title}
+                  </h3>
+                  <p className="text-[13px] leading-[1.4] md:leading-[1.5] text-[#374151] md:text-[#6b7280] dark:text-slate-400">
+                    {a.desc}
+                  </p>
+                </div>
+
+                <Link
+                  to={`/knowledge/${a.slug}`}
+                  state={{ from: "/" }}
+                  className="self-start mt-3 md:mt-4 inline-flex items-center rounded-full bg-[#00695c] px-3 py-1 text-xs font-semibold text-white shadow-[0_3px_6px_rgba(0,0,0,0.25)] hover:no-underline dark:bg-teal-600 md:rounded-none md:bg-transparent md:p-0 md:text-[#00685f] md:shadow-none md:hover:underline md:dark:bg-transparent md:dark:text-teal-300"
+                >
+                  Read More →
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

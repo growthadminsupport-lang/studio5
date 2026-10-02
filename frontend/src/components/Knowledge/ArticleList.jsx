@@ -60,7 +60,7 @@ const articles = [
     label: "Explainer",
     tag: "bone age",
     title: "Understanding Bone Age",
-    blurb: "How skeletal maturity is read from a hand X-ray.",
+    blurb: "Find out how doctors estimate skeletal maturity from a hand X-ray.",
     category: "bone age",
   },
 
@@ -94,6 +94,19 @@ const featured = articles.find(
 const exploreMore = articles.filter(
   (article) => article.slug !== featuredSlug
 );
+
+
+/* =========================================================
+   PHONE LIST  (Bone Age first, then the other topic cards;
+   "Support Healthy Growth" has its own card in the sidebar)
+   ========================================================= */
+
+const phoneList = [
+  featured,
+  ...exploreMore.filter(
+    (article) => article.slug !== "support-healthy-growth"
+  ),
+];
 
 
 /* =========================================================
@@ -267,7 +280,8 @@ function ArticleList() {
          ===================================================== */}
 
       <h2 className="knowledge-heading">
-        Parenting Resources
+        <span className="kn-h-desktop">Parenting Resources</span>
+        <span className="kn-h-mobile">Nurturing Knowledge</span>
       </h2>
 
 
@@ -436,6 +450,65 @@ function ArticleList() {
                 </p>
 
               )}
+
+          </div>
+
+
+          {/* =================================================
+             PHONE LIST (phones only; hidden on larger screens)
+             ================================================= */}
+
+          <div className="kn-mobile-list">
+
+            {(category === "all" ? phoneList : filtered).map(
+              (article) => (
+
+                <Link
+                  key={article.id}
+                  to={`/knowledge/${article.slug}`}
+                  state={{ from: "/knowledge" }}
+                  className="kn-mcard"
+                >
+
+                  <div
+                    className={`kn-mcard-art art-${article.tag.replace(
+                      /\s/g,
+                      "-"
+                    )}`}
+                  >
+                    <ExploreImage tag={article.tag} />
+                  </div>
+
+                  <div className="kn-mcard-body">
+
+                    <div>
+                      {article.slug === featuredSlug && (
+                        <span className="kn-mcard-tag">
+                          {article.tag}
+                        </span>
+                      )}
+
+                      <h3>{article.title}</h3>
+                      <p>{article.blurb}</p>
+                    </div>
+
+                    <span className="kn-mcard-btn">
+                      Read More
+                      <span className="arrow-icon">→</span>
+                    </span>
+
+                  </div>
+
+                </Link>
+
+              )
+            )}
+
+            {category !== "all" && filtered.length === 0 && (
+              <p className="kn-empty">
+                No articles in this category yet.
+              </p>
+            )}
 
           </div>
 
